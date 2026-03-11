@@ -1,0 +1,433 @@
+@import "tailwindcss";
+@import "lenis/dist/lenis.css";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* ═══════════════════════════════════════════════════════════
+   BRAND TOKENS + SHADCN INTEGRATION
+   Brand: #045184 deep blue — white surface — sharp corners
+   ═══════════════════════════════════════════════════════════ */
+:root {
+  /* ── Brand Blue Scale ── */
+  --primary: #045184;
+  --primary-deep: #033660;
+  --primary-dark: #022A4A;
+  --primary-light: #0A6BAF;
+  --primary-bright: #1E88C9;
+  --primary-soft: #4DA8DB;
+  --primary-pale: #7EC4E8;
+  --primary-wash: #B0DDEF;
+  --primary-ghost: #E0F0F8;
+
+  /* ── Surfaces ── */
+  --white: #FFFFFF;
+  --off-white: #F8FAFC;
+  --light: #F1F5F9;
+
+  /* ── Borders ── */
+  --border: #CBD5E1;
+  --border-light: #E2E8F0;
+
+  /* ── Text ── */
+  --foreground: #0F172A;
+  --foreground-secondary: #334155;
+  --foreground-muted: #64748B;
+  --foreground-subtle: #94A3B8;
+
+  /* ── Surface ── */
+  --surface: #FFFFFF;
+  --surface-raised: #F8FAFC;
+  --surface-overlay: rgba(4, 81, 132, 0.03);
+
+  /* ── Accent ── */
+  --accent: #F8FAFC;
+  --accent-orange: #FF6B35;
+  --accent-orange-soft: #FF8F66;
+
+  /* ── Gradients ── */
+  --gradient-primary: linear-gradient(135deg, #045184 0%, #0A6BAF 50%, #1E88C9 100%);
+  --gradient-hero: linear-gradient(135deg, #045184 0%, #033660 40%, #022A4A 100%);
+  --gradient-soft: linear-gradient(135deg, #E0F0F8 0%, #F1F5F9 50%, #FFFFFF 100%);
+  --gradient-card: linear-gradient(145deg, #F8FAFC 0%, #FFFFFF 100%);
+  --gradient-blue-wash: linear-gradient(180deg, #E0F0F8 0%, #FFFFFF 100%);
+  --gradient-diagonal: linear-gradient(135deg, #045184 0%, #1E88C9 100%);
+
+  /* ── Shadows ── */
+  --shadow-sm: 0 1px 2px 0 rgba(4, 81, 132, 0.05);
+  --shadow-md: 0 4px 16px -2px rgba(4, 81, 132, 0.08);
+  --shadow-lg: 0 12px 32px -4px rgba(4, 81, 132, 0.10);
+  --shadow-xl: 0 24px 48px -8px rgba(4, 81, 132, 0.12);
+
+  /* ── shadcn required tokens — mapped to brand ── */
+  --radius: 0rem;
+  --background: #FFFFFF;
+  --card: #FFFFFF;
+  --card-foreground: #0F172A;
+  --popover: #FFFFFF;
+  --popover-foreground: #0F172A;
+  --primary-foreground: #FFFFFF;
+  --secondary: #F1F5F9;
+  --secondary-foreground: #0F172A;
+  --muted: #F1F5F9;
+  --muted-foreground: #64748B;
+  --accent-foreground: #0F172A;
+  --destructive: #EF4444;
+  --input: #CBD5E1;
+  --ring: #045184;
+  --chart-1: #045184;
+  --chart-2: #0A6BAF;
+  --chart-3: #1E88C9;
+  --chart-4: #4DA8DB;
+  --chart-5: #7EC4E8;
+  --sidebar: #F8FAFC;
+  --sidebar-foreground: #0F172A;
+  --sidebar-primary: #045184;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #F1F5F9;
+  --sidebar-accent-foreground: #0F172A;
+  --sidebar-border: #E2E8F0;
+  --sidebar-ring: #045184;
+}
+
+/* ── Theme inline — wire CSS vars to Tailwind ── */
+@theme inline {
+  /* Brand colors */
+  --color-white: var(--white);
+  --color-black: #000000;
+  --color-transparent: transparent;
+  --color-primary: var(--primary);
+  --color-primary-deep: var(--primary-deep);
+  --color-primary-dark: var(--primary-dark);
+  --color-primary-light: var(--primary-light);
+  --color-primary-bright: var(--primary-bright);
+  --color-primary-soft: var(--primary-soft);
+  --color-primary-pale: var(--primary-pale);
+  --color-primary-wash: var(--primary-wash);
+  --color-primary-ghost: var(--primary-ghost);
+  --color-off-white: var(--off-white);
+  --color-light: var(--light);
+  --color-border: var(--border);
+  --color-border-light: var(--border-light);
+  --color-foreground: var(--foreground);
+  --color-foreground-secondary: var(--foreground-secondary);
+  --color-foreground-muted: var(--foreground-muted);
+  --color-foreground-subtle: var(--foreground-subtle);
+  --color-surface: var(--surface);
+  --color-surface-raised: var(--surface-raised);
+  --color-accent-orange: var(--accent-orange);
+  --color-accent-orange-soft: var(--accent-orange-soft);
+  --font-heading: var(--font-inter);
+  --font-body: var(--font-inter);
+
+  /* shadcn token passthroughs */
+  --color-background: var(--background);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-destructive: var(--destructive);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  /* Radius */
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+}
+
+/* Base element resets moved into @layer base below
+   so Tailwind v4 utilities can properly override them. */
+
+/* ═══ SELECTION + SCROLLBAR ═══ */
+::selection {
+  background: var(--primary);
+  color: var(--white);
+}
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--off-white); }
+::-webkit-scrollbar-thumb { background: var(--primary-soft); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+
+/* ═══ LAYOUT UTILITIES ═══ */
+.section-padding {
+  padding: 96px 0;
+}
+@media (max-width: 768px) {
+  .section-padding { padding: 64px 0; }
+}
+
+.container-wide {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 48px;
+}
+@media (max-width: 1024px) {
+  .container-wide { padding: 0 32px; }
+}
+@media (max-width: 768px) {
+  .container-wide { padding: 0 20px; }
+}
+
+/* ═══ DECORATIVE ═══ */
+.line-accent {
+  width: 48px;
+  height: 3px;
+  background: var(--gradient-primary);
+  margin-bottom: 1.5rem;
+  border-radius: 2px;
+}
+
+.gradient-text {
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ═══ HOVER EFFECTS ═══ */
+.hover-fill {
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+  transition: color 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+}
+.hover-fill::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--primary);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+  z-index: -1;
+}
+.hover-fill:hover::before { transform: scaleX(1); }
+.hover-fill:hover { color: var(--white); }
+
+.hover-fill-white {
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+  transition: color 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+}
+.hover-fill-white::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--white);
+  transform: scaleY(0);
+  transform-origin: bottom;
+  transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+  z-index: -1;
+}
+.hover-fill-white:hover::before { transform: scaleY(1); }
+.hover-fill-white:hover { color: var(--primary) !important; }
+
+.hover-lift {
+  transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+}
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* ═══ CARD SHINE ═══ */
+.card-shine {
+  position: relative;
+  overflow: hidden;
+}
+.card-shine::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(45deg, transparent 40%, rgba(4,81,132,0.03) 45%, rgba(4,81,132,0.06) 50%, rgba(4,81,132,0.03) 55%, transparent 60%);
+  transform: translateX(-100%);
+  transition: transform 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+  pointer-events: none;
+}
+.card-shine:hover::after { transform: translateX(50%); }
+
+/* ═══ BACKGROUNDS ═══ */
+.grid-pattern {
+  background-image:
+    linear-gradient(rgba(4, 81, 132, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(4, 81, 132, 0.04) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+.noise-overlay::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.02'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ═══ IMAGE COVER ═══ */
+.img-cover {
+  position: relative;
+  overflow: hidden;
+}
+.img-cover img,
+.img-cover > span {
+  object-fit: cover;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* ═══ ANIMATIONS ═══ */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
+}
+@keyframes slideUp {
+  from { transform: translateY(30px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.animate-float { animation: float 6s ease-in-out infinite; }
+.animate-slide-up { animation: slideUp 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards; }
+.animate-fade-in { animation: fadeIn 0.6s ease forwards; }
+
+/* ═══ BRACKET DECORATORS ═══ */
+.bracket-left::before {
+  content: '[';
+  font-family: var(--font-heading);
+  font-weight: 300;
+  font-size: 1.5em;
+  color: var(--primary-soft);
+  margin-right: 0.5rem;
+}
+.bracket-right::after {
+  content: ']';
+  font-family: var(--font-heading);
+  font-weight: 300;
+  font-size: 1.5em;
+  color: var(--primary-soft);
+  margin-left: 0.5rem;
+}
+
+/* ═══ FLOWING MENU ═══ */
+.menu-wrap { width: 100%; height: 100%; overflow: hidden; }
+.menu { display: flex; flex-direction: column; height: 100%; margin: 0; padding: 0; }
+.menu__item { flex: 1; position: relative; overflow: hidden; text-align: center; border-top: 1px solid; }
+.menu__item:first-child { border-top: none; }
+.menu__item-link {
+  display: flex; align-items: center; justify-content: center;
+  height: 100%; position: relative; cursor: pointer;
+  text-transform: uppercase; text-decoration: none;
+  white-space: nowrap; font-weight: 600; font-size: 4vh;
+}
+.menu__item-link:hover { color: inherit; }
+.marquee {
+  position: absolute; top: 0; left: 0; overflow: hidden;
+  width: 100%; height: 100%; pointer-events: none;
+  transform: translate3d(0, 101%, 0);
+}
+.marquee__inner-wrap { height: 100%; width: 100%; overflow: hidden; }
+.marquee__inner {
+  display: flex; align-items: center; position: relative;
+  height: 100%; width: fit-content; will-change: transform;
+}
+.marquee__part { display: flex; align-items: center; flex-shrink: 0; }
+.marquee span {
+  white-space: nowrap; text-transform: uppercase;
+  font-weight: 400; font-size: 4vh; line-height: 1; padding: 0 1vw;
+}
+.marquee__img {
+  width: 200px; height: 7vh; margin: 2em 2vw; padding: 1em 0;
+  border-radius: 50px; background-size: cover; background-position: 50% 50%;
+}
+
+/* ═══ SCROLL STACK ═══ */
+.scroll-stack-scroller {
+  position: relative; width: 100%; height: 100%;
+  overflow-y: auto; overflow-x: visible;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+  transform: translateZ(0);
+  will-change: scroll-position;
+}
+.scroll-stack-inner { padding: 20vh 0 50rem; min-height: 100vh; }
+.scroll-stack-card {
+  transform-origin: top center;
+  will-change: transform, filter;
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
+  box-shadow: 0 0 30px rgba(4, 81, 132, 0.08);
+  width: 100%; margin: 30px 0; padding: 3rem;
+  box-sizing: border-box;
+  transform: translateZ(0);
+  position: relative;
+}
+.scroll-stack-end { width: 100%; height: 1px; }
+
+/* ═══ BASE LAYER (brand resets + shadcn) ═══ */
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    scroll-behavior: auto;
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-body, "Inter", sans-serif);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+    line-height: 1.6;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading, "Inter", sans-serif);
+    font-weight: 700;
+    color: var(--primary);
+    letter-spacing: -0.03em;
+    line-height: 1.15;
+  }
+  p {
+    line-height: 1.7;
+  }
+  a {
+    text-decoration: none;
+    color: inherit;
+  }
+}
