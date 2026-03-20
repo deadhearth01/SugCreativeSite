@@ -26,6 +26,7 @@ import {
   X,
   LogOut,
   ChevronRight,
+  Wallet,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 
@@ -42,6 +43,7 @@ const roleNavItems: Record<string, NavItem[]> = {
     { label: 'Meetings', href: '/dashboard/admin/meetings', icon: Video },
     { label: 'SUG Calendar', href: '/dashboard/admin/calendar', icon: Calendar },
     { label: 'Course Management', href: '/dashboard/admin/courses', icon: BookOpen },
+    { label: 'Budget & Finances', href: '/dashboard/admin/budget', icon: Wallet },
     { label: 'Payments', href: '/dashboard/admin/payments', icon: CreditCard },
     { label: 'Announcements', href: '/dashboard/admin/announcements', icon: Megaphone },
     { label: 'Support & Tickets', href: '/dashboard/admin/tickets', icon: LifeBuoy },
@@ -70,6 +72,7 @@ const roleNavItems: Record<string, NavItem[]> = {
     { label: 'Dashboard', href: '/dashboard/mentor', icon: LayoutDashboard },
     { label: 'My Students', href: '/dashboard/mentor/students', icon: UserCheck },
     { label: 'Sessions', href: '/dashboard/mentor/sessions', icon: Video },
+    { label: 'Meetings', href: '/dashboard/mentor/meetings', icon: Calendar },
     { label: 'Calendar', href: '/dashboard/mentor/calendar', icon: Calendar },
     { label: 'Resources', href: '/dashboard/mentor/resources', icon: BookOpen },
     { label: 'Earnings', href: '/dashboard/mentor/earnings', icon: CreditCard },
@@ -81,6 +84,7 @@ const roleNavItems: Record<string, NavItem[]> = {
     { label: 'Support Tickets', href: '/dashboard/employee/tickets', icon: LifeBuoy },
     { label: 'Courses', href: '/dashboard/employee/courses', icon: BookOpen },
     { label: 'Calendar', href: '/dashboard/employee/calendar', icon: Calendar },
+    { label: 'Meetings', href: '/dashboard/employee/meetings', icon: Video },
     { label: 'Announcements', href: '/dashboard/employee/announcements', icon: Megaphone },
     { label: 'Attendance', href: '/dashboard/employee/attendance', icon: Clock },
     { label: 'Settings', href: '/dashboard/employee/settings', icon: Settings },
@@ -90,6 +94,7 @@ const roleNavItems: Record<string, NavItem[]> = {
     { label: 'My Tasks', href: '/dashboard/intern/tasks', icon: ClipboardList },
     { label: 'Reports', href: '/dashboard/intern/reports', icon: FileText },
     { label: 'Calendar', href: '/dashboard/intern/calendar', icon: Calendar },
+    { label: 'Meetings', href: '/dashboard/intern/meetings', icon: Video },
     { label: 'Learning', href: '/dashboard/intern/learning', icon: BookOpen },
     { label: 'Attendance', href: '/dashboard/intern/attendance', icon: Clock },
     { label: 'Support', href: '/dashboard/intern/support', icon: LifeBuoy },
@@ -106,13 +111,45 @@ const roleLabels: Record<string, string> = {
   intern: 'Intern',
 }
 
+type UserProfile = {
+  full_name: string | null
+  email: string | null
+  avatar_url: string | null
+}
+
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
 
   // Extract role from pathname
   const role = pathname.split('/')[2] || 'admin'
   const navItems = roleNavItems[role] || roleNavItems.admin
+
+  useEffect(() => {
+    const supabase = createClient()
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (!user) return
+      supabase
+        .from('profiles')
+        .select('full_name, email, avatar_url')
+        .eq('id', user.id)
+        .single()
+        .then(({ data }) => {
+          if (data) setUserProfile(data)
+        })
+    })
+  }, [])
+
+  const getInitials = (name: string | null) => {
+    if (!name) return 'U'
+    return name
+      .split(' ')
+      .map((n) => n[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2)
+  }
 
   const handleLogout = async () => {
     const supabase = createClient()
@@ -204,9 +241,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </h1>
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
+            {userProfile?.full_name && (
+              <span className="text-sm text-foreground/60 font-medium hidden sm:block">
+                {userProfile.full_name}
+              </span>
+            )}
             <div className="w-8 h-8 rounded-xl bg-primary flex items-center justify-center text-white text-xs font-bold">
-              U
+              {getInitials(userProfile?.full_name || null)}
             </div>
           </div>
         </header>

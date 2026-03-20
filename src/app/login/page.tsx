@@ -84,12 +84,25 @@ function LoginContent() {
         if (signUpError) throw signUpError
         setError('Check your email for the confirmation link!')
       } else {
-        const { error: signInError } = await supabase.auth.signInWithPassword({
+        const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
           email,
           password,
         })
         if (signInError) throw signInError
-        window.location.href = `/dashboard/${selectedRole}`
+
+        // Fetch the actual role from the database
+        let redirectRole = selectedRole
+        if (signInData.user) {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('role')
+            .eq('id', signInData.user.id)
+            .single()
+          if (profile?.role) {
+            redirectRole = profile.role
+          }
+        }
+        window.location.href = `/dashboard/${redirectRole}`
       }
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'An error occurred'

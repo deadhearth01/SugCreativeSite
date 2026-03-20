@@ -1,33 +1,141 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { ClipboardList, LifeBuoy, Calendar, Megaphone, Clock, ArrowUpRight, BookOpen } from 'lucide-react'
+import { ClipboardList, LifeBuoy, Calendar, Clock, ArrowUpRight, BookOpen, Megaphone, Loader2 } from 'lucide-react'
 import { StatCard, DashboardPanel, DashboardTable, StatusBadge } from '@/components/dashboard/DashboardUI'
+import { createClient } from '@/lib/supabase/client'
 
-const tasks = [
-  ['Update course content — Business Strategy', 'High', <StatusBadge key="1" status="In Progress" />, 'Jun 20'],
-  ['Review student submissions', 'Medium', <StatusBadge key="2" status="Pending" />, 'Jun 18'],
-  ['Prepare workshop materials', 'Low', <StatusBadge key="3" status="Completed" />, 'Jun 15'],
-]
+type Task = {
+  id: string
+  title: string
+  priority: string
+  status: string
+  due_date: string | null
+  created_at: string
+}
 
-const announcements = [
-  { title: 'Quarterly Review Meeting', date: 'Jun 20, 3:00 PM' },
-  { title: 'New Course Launch — Public Speaking', date: 'Jul 01' },
-]
+type Announcement = {
+  id: string
+  title: string
+  created_at: string
+  author: { full_name: string } | null
+}
 
 export default function EmployeeDashboard() {
+  const [loading, setLoading] = useState(true)
+  const [userName, setUserName] = useState('Employee')
+  const [pendingTasksCount, setPendingTasksCount] = useState(0)
+  const [attendanceStatus, setAttendanceStatus] = useState<string | null>(null)
+  const [openTicketsCount, setOpenTicketsCount] = useState(0)
+  const [enrolledCoursesCount, setEnrolledCoursesCount] = useState(0)
+  const [recentTasks, setRecentTasks] = useState<Task[]>([])
+  const [announcements, setAnnouncements] = useState<Announcement[]>([])
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) { setLoading(false); return }
+
+      // Profile
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('full_name')
+        .eq('id', user.id)
+        .single()
+      if (profile) setUserName(profile.full_name || 'Employee')
+
+      // Tasks
+      const { data: tasks } = await supabase
+        .from('tasks')
+        .select('id, title, priority, status, due_date, created_at')
+        .eq('assigned_to', user.id)
+        .order('created_at', { ascending: false })
+        .limit(5)
+      const allTasks = (tasks as Task[]) || []
+      setRecentTasks(allTasks)
+      setPendingTasksCount(allTasks.filter((t) => t.status === 'pending' || t.status === 'in_progress').length)
+
+      // Today's attendance
+      const today = new Date().toISOString().split('T')[0]
+      const { data: attendance } = await supabase
+        .from('attendance')
+        .select('id, status')
+        .eq('user_id', user.id)
+        .eq('date', today)
+        .maybeSingle()
+      setAttendanceStatus(attendance?.status || null)
+
+      // Open tickets
+      const { count: ticketCount } = await supabase
+        .from('tickets')
+        .select('id', { count: 'exact', head: true })
+        .or(`created_by.eq.${user.id},assigned_to.eq.${user.id}`)
+        .in('status', ['open', 'in_progress'])
+      setOpenTicketsCount(ticketCount || 0)
+
+      // Enrolled courses
+      const { count: courseCount } = await supabase
+        .from('enrollments')
+        .select('id', { count: 'exact', head: true })
+        .eq('student_id', user.id)
+      setEnrolledCoursesCount(courseCount || 0)
+
+      // Announcements
+      const { data: announcementsData } = await supabase
+        .from('announcements')
+        .select('id, title, created_at, author:created_by(full_name)')
+        .or('target_roles.cs.{employee},target_roles.cs.{all}')
+        .order('is_pinned', { ascending: false })
+        .order('created_at', { ascending: false })
+        .limit(4)
+      setAnnouncements((announcementsData as Announcement[]) || [])
+
+      setLoading(false)
+    }
+    fetchData()
+  }, [])
+
+  const priorityStyles: Record<string, string> = {
+    urgent: 'text-red-600 font-semibold',
+    high: 'text-orange-500 font-semibold',
+    medium: 'text-yellow-600 font-semibold',
+    low: 'text-foreground/50',
+  }
+
+  const taskRows = recentTasks.map((t) => [
+    <span key="t" className="font-medium text-primary text-sm">{t.title}</span>,
+    <span key="p" className={`text-xs ${priorityStyles[t.priority?.toLowerCase()] || 'text-foreground/50'}`}>{t.priority}</span>,
+    <StatusBadge key="s" status={t.status} />,
+    <span key="d" className="text-foreground/50 text-xs">{t.due_date ? new Date(t.due_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '—'}</span>,
+  ])
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-32">
+        <Loader2 size={28} className="animate-spin text-primary-bright" />
+      </div>
+    )
+  }
+
   return (
     <div className="space-y-8">
       <div className="bg-gradient-to-r from-navy to-teal p-6 rounded-xl text-white">
-        <h2 className="text-xl font-heading font-bold">Welcome back, Employee!</h2>
-        <p className="text-white/70 text-sm mt-1">You have 2 tasks pending and 1 ticket assigned.</p>
+        <h2 className="text-xl font-heading font-bold">Welcome back, {userName}!</h2>
+        <p className="text-white/70 text-sm mt-1">
+          {pendingTasksCount > 0
+            ? `You have ${pendingTasksCount} task${pendingTasksCount === 1 ? '' : 's'} pending.`
+            : 'All tasks are up to date.'}
+          {attendanceStatus === null ? ' Remember to check in today.' : ` Today's attendance: ${attendanceStatus}.`}
+        </p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard label="My Tasks" value="5" change="2 pending" icon={ClipboardList} color="navy" />
-        <StatCard label="Assigned Tickets" value="3" icon={LifeBuoy} color="teal" />
-        <StatCard label="Attendance" value="95%" change="This month" icon={Clock} color="mint" />
-        <StatCard label="Courses Managed" value="4" icon={BookOpen} color="sky" />
+        <StatCard label="Pending Tasks" value={pendingTasksCount} icon={ClipboardList} color="navy" />
+        <StatCard label="Open Tickets" value={openTicketsCount} icon={LifeBuoy} color="teal" />
+        <StatCard label="Today" value={attendanceStatus ? attendanceStatus.charAt(0).toUpperCase() + attendanceStatus.slice(1) : 'Not checked in'} icon={Clock} color="mint" />
+        <StatCard label="Enrolled Courses" value={enrolledCoursesCount} icon={BookOpen} color="sky" />
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -47,21 +155,31 @@ export default function EmployeeDashboard() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <DashboardPanel title="My Tasks" action={<Link href="/dashboard/employee/tasks" className="text-xs text-primary-bright font-semibold hover:underline">View All</Link>}>
-          <DashboardTable headers={['Task', 'Priority', 'Status', 'Due']} rows={tasks} />
+          {taskRows.length > 0 ? (
+            <DashboardTable headers={['Task', 'Priority', 'Status', 'Due']} rows={taskRows} />
+          ) : (
+            <p className="text-sm text-foreground/40 py-8 text-center">No tasks assigned</p>
+          )}
         </DashboardPanel>
 
-        <DashboardPanel title="Announcements">
-          <div className="space-y-3">
-            {announcements.map((a, i) => (
-              <div key={i} className="flex items-center gap-3 p-3 border border-border/50 hover:bg-off-white/50 transition-colors">
-                <Megaphone size={16} className="text-primary-bright flex-shrink-0" />
-                <div>
-                  <p className="text-sm font-medium text-primary">{a.title}</p>
-                  <p className="text-xs text-foreground/50">{a.date}</p>
+        <DashboardPanel title="Announcements" action={<Link href="/dashboard/employee/announcements" className="text-xs text-primary-bright font-semibold hover:underline">View All</Link>}>
+          {announcements.length > 0 ? (
+            <div className="space-y-3">
+              {announcements.map((a) => (
+                <div key={a.id} className="flex items-center gap-3 p-3 border border-border/50 hover:bg-off-white/50 transition-colors">
+                  <Megaphone size={16} className="text-primary-bright flex-shrink-0" />
+                  <div>
+                    <p className="text-sm font-medium text-primary">{a.title}</p>
+                    <p className="text-xs text-foreground/50">
+                      {new Date(a.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-foreground/40 py-8 text-center">No announcements</p>
+          )}
         </DashboardPanel>
       </div>
     </div>

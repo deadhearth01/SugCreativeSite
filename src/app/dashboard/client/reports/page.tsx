@@ -1,33 +1,77 @@
 'use client'
 
-import { PageHeader, DashboardPanel } from '@/components/dashboard/DashboardUI'
-import { BarChart3, TrendingUp, FileText } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { PageHeader } from '@/components/dashboard/DashboardUI'
+import { FileText, Loader2 } from 'lucide-react'
+import { createClient } from '@/lib/supabase/client'
 
-const reports = [
-  { title: 'Brand Strategy — Phase 1 Report', date: 'Jun 10, 2025', type: 'Progress Report' },
-  { title: 'Website Redesign — Final Deliverables', date: 'May 30, 2025', type: 'Completion Report' },
-  { title: 'Marketing Campaign — Performance Metrics', date: 'May 15, 2025', type: 'Analytics Report' },
-]
+type Report = {
+  id: string
+  title: string
+  report_type: string | null
+  feedback: string | null
+  created_at: string
+  project: { title: string } | null
+}
 
 export default function ClientReportsPage() {
+  const [loading, setLoading] = useState(true)
+  const [reports, setReports] = useState<Report[]>([])
+
+  useEffect(() => {
+    const load = async () => {
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+
+      const { data } = await supabase
+        .from('reports')
+        .select('id, title, report_type, feedback, created_at, project:project_id(title)')
+        .eq('submitted_by', user.id)
+        .order('created_at', { ascending: false })
+
+      if (data) setReports(data as Report[])
+      setLoading(false)
+    }
+    load()
+  }, [])
+
+  if (loading) return <div className="flex items-center justify-center py-32"><Loader2 size={28} className="animate-spin text-primary-bright" /></div>
+
   return (
     <div>
       <PageHeader title="Reports" description="Project reports and performance metrics" />
 
-      <div className="space-y-4">
-        {reports.map((report, i) => (
-          <div key={i} className="bg-white border border-border rounded-xl p-5 flex items-center justify-between hover:shadow-sm transition-shadow">
-            <div className="flex items-center gap-4">
-              <div className="w-10 h-10 bg-primary-bright/10 flex items-center justify-center"><FileText size={18} className="text-primary-bright" /></div>
-              <div>
-                <h3 className="font-medium text-primary text-sm">{report.title}</h3>
-                <p className="text-xs text-foreground/50">{report.date} · {report.type}</p>
+      {reports.length === 0 ? (
+        <div className="bg-white border border-border rounded-xl p-12 text-center">
+          <p className="text-foreground/50 text-sm">No reports found.</p>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {reports.map((report) => (
+            <div key={report.id} className="bg-white border border-border rounded-xl p-5 hover:shadow-sm transition-shadow">
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 bg-primary-bright/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <FileText size={18} className="text-primary-bright" />
+                  </div>
+                  <div>
+                    <h3 className="font-medium text-primary text-sm">{report.title}</h3>
+                    <p className="text-xs text-foreground/50 mt-0.5">
+                      {new Date(report.created_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
+                      {report.report_type && ` · ${report.report_type}`}
+                      {report.project && ` · ${report.project.title}`}
+                    </p>
+                    {report.feedback && (
+                      <p className="text-xs text-foreground/60 mt-1 italic">{report.feedback}</p>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
-            <button className="text-xs text-primary-bright font-semibold hover:underline">Download</button>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   )
 }

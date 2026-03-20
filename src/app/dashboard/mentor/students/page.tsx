@@ -1,40 +1,92 @@
 'use client'
 
-import { PageHeader, DashboardTable, StatusBadge } from '@/components/dashboard/DashboardUI'
+import { useEffect, useState } from 'react'
+import { PageHeader } from '@/components/dashboard/DashboardUI'
+import { UserCheck, Loader2 } from 'lucide-react'
+import { createClient } from '@/lib/supabase/client'
 
-const students = [
-  { name: 'Arjun Mehta', course: 'Business Strategy Masterclass', progress: 75, lastActive: '2 hours ago', status: 'Active' },
-  { name: 'Sneha Patel', course: 'Digital Marketing Essentials', progress: 30, lastActive: '1 day ago', status: 'Active' },
-  { name: 'Karan Joshi', course: 'Resume Building Bootcamp', progress: 45, lastActive: '3 hours ago', status: 'Active' },
-  { name: 'Meera Nair', course: 'Business Strategy Masterclass', progress: 90, lastActive: '5 hours ago', status: 'Active' },
-  { name: 'Rahul Verma', course: 'Startup Foundation Program', progress: 15, lastActive: '2 days ago', status: 'Active' },
-  { name: 'Priya Sharma', course: 'Digital Marketing Essentials', progress: 60, lastActive: '12 hours ago', status: 'Active' },
-  { name: 'Vikash Kumar', course: 'Interview Preparation Pro', progress: 0, lastActive: '1 week ago', status: 'Inactive' },
-  { name: 'Deepika Rao', course: 'Leadership & Management', progress: 100, lastActive: '3 days ago', status: 'Completed' },
-]
+type Student = {
+  id: string
+  full_name: string
+  email: string
+  avatar_url: string | null
+  created_at: string
+  sessionCount: number
+}
 
 export default function MentorStudentsPage() {
+  const [loading, setLoading] = useState(true)
+  const [students, setStudents] = useState<Student[]>([])
+
+  useEffect(() => {
+    const load = async () => {
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+
+      const { data } = await supabase
+        .from('mentor_sessions')
+        .select('student_id, student:student_id(id, full_name, email, avatar_url, created_at)')
+        .eq('mentor_id', user.id)
+
+      if (data) {
+        // Deduplicate by student_id and count sessions
+        const map = new Map<string, Student>()
+        for (const row of data) {
+          const s = row.student as { id: string; full_name: string; email: string; avatar_url: string | null; created_at: string } | null
+          if (!s) continue
+          if (map.has(s.id)) {
+            map.get(s.id)!.sessionCount++
+          } else {
+            map.set(s.id, { ...s, sessionCount: 1 })
+          }
+        }
+        setStudents(Array.from(map.values()))
+      }
+
+      setLoading(false)
+    }
+    load()
+  }, [])
+
+  if (loading) return <div className="flex items-center justify-center py-32"><Loader2 size={28} className="animate-spin text-primary-bright" /></div>
+
   return (
     <div>
-      <PageHeader title="My Students" description="Students currently under your mentorship" />
+      <PageHeader title="My Students" description="Students who have had sessions with you" />
 
-      <div className="bg-white border border-border rounded-xl">
-        <DashboardTable
-          headers={['Student', 'Course', 'Progress', 'Last Active', 'Status']}
-          rows={students.map((s) => [
-            <span key="n" className="font-medium text-primary">{s.name}</span>,
-            <span key="c" className="text-foreground/60 text-sm">{s.course}</span>,
-            <div key="p" className="flex items-center gap-2 min-w-[120px]">
-              <div className="flex-1 h-2 bg-off-white">
-                <div className="h-full bg-primary-bright rounded-full" style={{ width: `${s.progress}%` }} />
+      {students.length === 0 ? (
+        <div className="bg-white border border-border rounded-xl p-12 text-center">
+          <UserCheck size={40} className="mx-auto text-foreground/20 mb-3" />
+          <p className="text-foreground/50 text-sm">No students found. Sessions will appear here.</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {students.map((student) => (
+            <div key={student.id} className="bg-white border border-border rounded-xl p-5 hover:shadow-sm transition-shadow">
+              <div className="flex items-center gap-4 mb-4">
+                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 overflow-hidden">
+                  {student.avatar_url ? (
+                    <img src={student.avatar_url} alt={student.full_name} className="w-full h-full object-cover" />
+                  ) : (
+                    <span className="text-lg font-bold text-primary">{student.full_name?.charAt(0)?.toUpperCase() || '?'}</span>
+                  )}
+                </div>
+                <div className="min-w-0">
+                  <h3 className="font-heading font-bold text-primary truncate">{student.full_name}</h3>
+                  <p className="text-xs text-foreground/50 truncate">{student.email}</p>
+                </div>
               </div>
-              <span className="text-xs font-semibold text-primary">{s.progress}%</span>
-            </div>,
-            <span key="a" className="text-foreground/50 text-xs">{s.lastActive}</span>,
-            <StatusBadge key="s" status={s.status} />,
-          ])}
-        />
-      </div>
+              <div className="flex items-center justify-between text-xs text-foreground/60">
+                <span className="bg-primary-bright/10 text-primary-bright px-2.5 py-1 rounded-md font-semibold">
+                  {student.sessionCount} {student.sessionCount === 1 ? 'session' : 'sessions'}
+                </span>
+                <span>Joined {new Date(student.created_at).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
