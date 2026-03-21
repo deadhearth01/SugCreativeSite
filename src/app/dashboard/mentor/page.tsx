@@ -53,7 +53,7 @@ export default function MentorDashboard() {
         .order('created_at', { ascending: false })
 
       if (sessions) {
-        const rawSessions = sessions as RawSession[]
+        const rawSessions = sessions as unknown as RawSession[]
         const earnings = rawSessions.reduce((acc: number, s: RawSession) => acc + (s.amount || 0), 0)
         setTotalEarnings(earnings)
         setTotalSessions(rawSessions.length)
@@ -67,7 +67,7 @@ export default function MentorDashboard() {
           setAvgRating(Math.round(avg * 10) / 10)
         }
 
-        setRecentSessions(rawSessions.slice(0, 5) as Session[])
+        setRecentSessions(rawSessions.slice(0, 5) as unknown as Session[])
       }
 
       setLoading(false)

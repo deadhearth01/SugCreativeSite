@@ -30,7 +30,7 @@ export default function ClientReportsPage() {
         .eq('submitted_by', user.id)
         .order('created_at', { ascending: false })
 
-      if (data) setReports(data as Report[])
+      if (data) setReports(data as unknown as Report[])
       setLoading(false)
     }
     load()

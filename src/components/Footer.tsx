@@ -25,7 +25,7 @@ const footerLinks = {
 
 export default function Footer() {
   return (
-    <footer className="bg-primary-dark text-white relative font-body border-t border-white/10 mt-24 overflow-hidden">
+    <footer className="bg-primary-dark text-white relative font-body border-t-2 border-white/10 overflow-hidden">
       {/* Background Pattern */}
       <div 
         className="absolute inset-0 opacity-20" 

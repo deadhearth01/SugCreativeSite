@@ -58,7 +58,7 @@ export default function EmployeeTasksPage() {
       .eq('assigned_to', user.id)
       .order('created_at', { ascending: false })
 
-    setTasks((data as Task[]) || [])
+    setTasks((data as unknown as Task[]) || [])
     setLoading(false)
   }, [])
 

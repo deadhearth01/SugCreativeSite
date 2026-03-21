@@ -44,7 +44,7 @@ export default function EmployeeCalendarPage() {
         .select('*')
         .or('target_roles.cs.{employee},target_roles.cs.{all}')
         .order('start_at')
-      setEvents((data as CalendarEvent[]) || [])
+      setEvents((data as unknown as CalendarEvent[]) || [])
       setLoading(false)
     }
     fetchEvents()

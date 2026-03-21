@@ -53,7 +53,7 @@ export default function EmployeeDashboard() {
         .eq('assigned_to', user.id)
         .order('created_at', { ascending: false })
         .limit(5)
-      const allTasks = (tasks as Task[]) || []
+      const allTasks = (tasks as unknown as Task[]) || []
       setRecentTasks(allTasks)
       setPendingTasksCount(allTasks.filter((t) => t.status === 'pending' || t.status === 'in_progress').length)
 
@@ -90,7 +90,7 @@ export default function EmployeeDashboard() {
         .order('is_pinned', { ascending: false })
         .order('created_at', { ascending: false })
         .limit(4)
-      setAnnouncements((announcementsData as Announcement[]) || [])
+      setAnnouncements((announcementsData as unknown as Announcement[]) || [])
 
       setLoading(false)
     }

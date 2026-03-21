@@ -1,14 +1,16 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import { useRouter } from 'next/navigation'
 import {
   Search, Filter, X, Eye, EyeOff, Ban, Trash2,
   Edit, ChevronLeft, ChevronRight, UserPlus, RefreshCw, Copy, Check, Shuffle, Loader2,
   MoreVertical, User, KeyRound, Activity, Lock, ShieldOff, Shield, Mail, Phone, Calendar,
-  Tag, Plus, Users, UserCheck, ShieldCheck, Layers
+  Tag, Plus, Users, UserCheck, ShieldCheck, Layers, ExternalLink
 } from 'lucide-react'
 import { PageHeader, StatusBadge } from '@/components/dashboard/DashboardUI'
 import { createClient } from '@/lib/supabase/client'
+import { createPortal } from 'react-dom'
 
 type Profile = {
   id: string
@@ -170,6 +172,7 @@ function TagChipSelector({
 function UserActionsMenu({
   user,
   onEdit,
+  onViewDetails,
   onViewProfile,
   onViewCredentials,
   onViewActivity,
@@ -179,6 +182,7 @@ function UserActionsMenu({
 }: {
   user: Profile
   onEdit: () => void
+  onViewDetails: () => void
   onViewProfile: () => void
   onViewCredentials: () => void
   onViewActivity: () => void
@@ -187,14 +191,22 @@ function UserActionsMenu({
   onDelete: () => void
 }) {
   const [open, setOpen] = useState(false)
-  const [openUp, setOpenUp] = useState(false)
+  const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0, openUp: false })
   const ref = useRef<HTMLDivElement>(null)
   const btnRef = useRef<HTMLButtonElement>(null)
   const isAdmin = user.role === 'admin'
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
+      if (ref.current && !ref.current.contains(e.target as Node) &&
+          btnRef.current && !btnRef.current.contains(e.target as Node)) {
+        setOpen(false)
+      }
     }
     if (open) document.addEventListener('mousedown', handler)
     return () => document.removeEventListener('mousedown', handler)
@@ -204,7 +216,12 @@ function UserActionsMenu({
     if (!open && btnRef.current) {
       const rect = btnRef.current.getBoundingClientRect()
       const spaceBelow = window.innerHeight - rect.bottom
-      setOpenUp(spaceBelow < 320)
+      const openUp = spaceBelow < 380
+      setMenuPosition({
+        top: openUp ? rect.top - 8 : rect.bottom + 4,
+        left: rect.right - 208, // 208 = menu width (w-52 = 13rem = 208px)
+        openUp
+      })
     }
     setOpen(v => !v)
   }
@@ -224,8 +241,51 @@ function UserActionsMenu({
     </button>
   )
 
+  const menuContent = (
+    <div
+      ref={ref}
+      style={{
+        position: 'fixed',
+        top: menuPosition.openUp ? 'auto' : menuPosition.top,
+        bottom: menuPosition.openUp ? window.innerHeight - menuPosition.top : 'auto',
+        left: menuPosition.left,
+        zIndex: 9999,
+      }}
+      className="w-52 bg-white border border-border rounded-xl shadow-2xl py-1.5 animate-in fade-in zoom-in-95"
+    >
+      <div className="px-3 pt-1 pb-2 border-b border-border/60 mb-1">
+        <p className="text-xs font-semibold text-foreground/50 uppercase tracking-wider">Quick Actions</p>
+      </div>
+      {item(<ExternalLink size={14} />, 'View Details', onViewDetails)}
+      {item(<Edit size={14} />, 'Edit User', onEdit)}
+      <div className="border-t border-border/60 my-1" />
+      <div className="px-3 pt-1 pb-0.5">
+        <p className="text-xs font-semibold text-foreground/50 uppercase tracking-wider">Info</p>
+      </div>
+      {item(<User size={14} />, 'View Profile', onViewProfile)}
+      {item(<KeyRound size={14} />, 'View Credentials', onViewCredentials)}
+      {item(<Activity size={14} />, 'View Activity Log', onViewActivity)}
+      {item(<Lock size={14} />, 'Update Password', onUpdatePassword)}
+      <div className="border-t border-border/60 my-1" />
+      <div className="px-3 pt-1 pb-0.5">
+        <p className="text-xs font-semibold text-foreground/50 uppercase tracking-wider">Security</p>
+      </div>
+      {isAdmin
+        ? item(<ShieldOff size={14} />, 'Cannot ban admin', () => {}, false, true)
+        : user.status === 'banned'
+          ? item(<Shield size={14} />, 'Unban User', onBan)
+          : item(<ShieldOff size={14} />, 'Ban User', onBan)
+      }
+      <div className="border-t border-border/60 my-1" />
+      {isAdmin
+        ? item(<Trash2 size={14} />, 'Cannot delete admin', () => {}, false, true)
+        : item(<Trash2 size={14} />, 'Delete User', onDelete, true)
+      }
+    </div>
+  )
+
   return (
-    <div ref={ref} className="relative">
+    <div className="relative">
       <button
         ref={btnRef}
         onClick={toggleMenu}
@@ -234,40 +294,13 @@ function UserActionsMenu({
       >
         <MoreVertical size={15} />
       </button>
-      {open && (
-        <div className={`absolute right-0 z-50 w-52 bg-white border border-border rounded-xl shadow-xl py-1.5 animate-in fade-in zoom-in-95 ${
-          openUp ? 'bottom-8' : 'top-8'
-        }`}>
-          <div className="px-3 pt-1 pb-2 border-b border-border/60 mb-1">
-            <p className="text-xs font-semibold text-foreground/50 uppercase tracking-wider">Actions</p>
-          </div>
-          {item(<Edit size={14} />, 'Edit User', onEdit)}
-          {item(<User size={14} />, 'View Profile', onViewProfile)}
-          {item(<KeyRound size={14} />, 'View Credentials', onViewCredentials)}
-          {item(<Activity size={14} />, 'View Activity Log', onViewActivity)}
-          {item(<Lock size={14} />, 'Update Password', onUpdatePassword)}
-          <div className="border-t border-border/60 my-1" />
-          <div className="px-3 pt-1 pb-0.5">
-            <p className="text-xs font-semibold text-foreground/50 uppercase tracking-wider">Security</p>
-          </div>
-          {isAdmin
-            ? item(<ShieldOff size={14} />, 'Cannot ban admin', () => {}, false, true)
-            : user.status === 'banned'
-              ? item(<Shield size={14} />, 'Unban User', onBan)
-              : item(<ShieldOff size={14} />, 'Ban User', onBan)
-          }
-          <div className="border-t border-border/60 my-1" />
-          {isAdmin
-            ? item(<Trash2 size={14} />, 'Cannot delete admin', () => {}, false, true)
-            : item(<Trash2 size={14} />, 'Delete User', onDelete, true)
-          }
-        </div>
-      )}
+      {open && mounted && createPortal(menuContent, document.body)}
     </div>
   )
 }
 
 export default function UsersPage() {
+  const router = useRouter()
   const [users, setUsers] = useState<Profile[]>([])
   const [loading, setLoading] = useState(true)
   const [actionLoading, setActionLoading] = useState(false)
@@ -663,7 +696,11 @@ export default function UsersPage() {
               </thead>
               <tbody>
                 {paginated.map((u) => (
-                  <tr key={u.id} className="border-b border-border/50 last:border-0 hover:bg-off-white/50 transition-colors">
+                  <tr
+                    key={u.id}
+                    onClick={() => router.push(`/dashboard/admin/users/${u.id}`)}
+                    className="border-b border-border/50 last:border-0 hover:bg-off-white/50 transition-colors cursor-pointer"
+                  >
                     <td className="py-3 px-4">
                       <div className="flex items-center gap-3">
                         <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center text-primary text-xs font-bold flex-shrink-0">
@@ -705,10 +742,11 @@ export default function UsersPage() {
                     <td className="py-3 px-4 hidden lg:table-cell">
                       <span className="text-xs text-foreground/50">{timeAgo(u.created_at)}</span>
                     </td>
-                    <td className="py-3 px-4">
+                    <td className="py-3 px-4" onClick={(e) => e.stopPropagation()}>
                       <UserActionsMenu
                         user={u}
                         onEdit={() => openEdit(u)}
+                        onViewDetails={() => router.push(`/dashboard/admin/users/${u.id}`)}
                         onViewProfile={() => setViewProfileUser(u)}
                         onViewCredentials={() => setViewCredentialsUser(u)}
                         onViewActivity={() => setViewActivityUser(u)}

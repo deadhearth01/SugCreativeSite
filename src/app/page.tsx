@@ -16,13 +16,13 @@ import { NumberTicker } from '@/components/ui/number-ticker'
 gsap.registerPlugin(ScrollTrigger)
 
 const collaborations = [
-  { name: 'GMUN', url: '/logos/gmun.png', fallback: 'GMUN' },
-  { name: 'IETE', url: 'https://upload.wikimedia.org/wikipedia/en/2/23/IETE_logo.png', fallback: 'IETE' },
-  { name: 'IEEE', url: 'https://upload.wikimedia.org/wikipedia/commons/2/21/IEEE_logo.svg', fallback: 'IEEE' },
-  { name: 'Toastmasters', url: 'https://upload.wikimedia.org/wikipedia/commons/8/86/Toastmasters_International_logo.png', fallback: 'Toastmasters' },
-  { name: 'Teks Academy', url: 'https://www.teksacademy.com/assets/images/logo.png', fallback: 'Teks Academy' },
-  { name: 'Gitam', url: 'https://upload.wikimedia.org/wikipedia/en/e/e5/GITAM_University_logo.png', fallback: 'GITAM' },
-  { name: 'GTech', url: '/logos/gtech.png', fallback: 'GTech' }
+  { name: 'GMUN', logo: '/CompanyLogos/gmun.svg' },
+  { name: 'IETE', logo: '/CompanyLogos/iete.svg' },
+  { name: 'IEEE', logo: '/CompanyLogos/ieee.svg' },
+  { name: 'Toastmasters', logo: '/CompanyLogos/toastmasters.svg' },
+  { name: 'Teks Academy', logo: '/CompanyLogos/teks.svg' },
+  { name: 'GITAM', logo: '/CompanyLogos/gitam.svg' },
+  { name: 'GTech', logo: '/CompanyLogos/gtech.svg' },
 ]
 
 const services = [
@@ -235,7 +235,9 @@ export default function HomePage() {
 
       {/* ═══ COLLABORATIONS LOGO BAND ═══ */}
       <section className="py-20 bg-primary-dark border-b-2 border-black overflow-hidden relative">
-        <div className="container-wide mb-12 text-center relative z-10">
+        <div className="absolute inset-0" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px)', backgroundSize: '80px 80px' }} />
+
+        <div className="container-wide mb-14 text-center relative z-10">
           <div className="inline-block bg-white text-primary-dark font-black text-xs uppercase tracking-widest px-4 py-2 mb-6 rounded-none shadow-[4px_4px_0px_rgba(77,168,219,1)] border-2 border-white">
             Our Collaborations
           </div>
@@ -243,74 +245,42 @@ export default function HomePage() {
             Trusted by Leaders <br className="hidden md:block" /> Across Industries
           </h2>
         </div>
-        
-        {/* Infinite Marquee Native CSS implementation */}
-        <div className="relative flex overflow-x-hidden group z-10 pb-8">
+
+        {/* Infinite Marquee — Styled Text Cards */}
+        <div className="relative overflow-hidden group z-10">
           <style dangerouslySetInnerHTML={{__html: `
-            @keyframes marquee {
+            @keyframes marquee-scroll {
               0% { transform: translateX(0%); }
               100% { transform: translateX(-50%); }
             }
-            .animate-marquee {
-              animation: marquee 35s linear infinite;
+            .marquee-track {
+              animation: marquee-scroll 30s linear infinite;
             }
-            .group:hover .animate-marquee {
+            .marquee-track:hover {
               animation-play-state: paused;
             }
           `}} />
-          
-          <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-primary-dark to-transparent z-20 pointer-events-none" />
-          <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-primary-dark to-transparent z-20 pointer-events-none" />
 
-          <div className="animate-marquee flex whitespace-nowrap w-max items-center bg-white/5 border-y-2 border-white/10 py-6 backdrop-blur-sm">
-            {/* First Set */}
-            <div className="flex items-center shrink-0 w-max">
-              {collaborations.map((collab, i) => (
-                <div key={`${collab.name}-1-${i}`} className="flex items-center">
-                  <div className="px-12 md:px-20 flex-shrink-0 flex items-center justify-center grayscale brightness-0 invert opacity-60 hover:opacity-100 transition-all duration-300">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img 
-                      src={collab.url} 
-                      alt={collab.name} 
-                      className="w-auto h-12 md:h-16 object-contain" 
-                      onError={(e) => {
-                        e.currentTarget.style.display = 'none';
-                        e.currentTarget.nextElementSibling?.classList.remove('hidden');
-                      }}
-                    />
-                    <div className="hidden font-heading font-black text-2xl tracking-widest uppercase">
-                      {collab.fallback}
-                    </div>
-                  </div>
-                  {/* Vertical Divider */}
-                  <div className="w-[2px] h-16 bg-white/10"></div>
+          {/* Fade edges */}
+          <div className="absolute left-0 top-0 bottom-0 w-24 md:w-40 bg-gradient-to-r from-primary-dark to-transparent z-20 pointer-events-none" />
+          <div className="absolute right-0 top-0 bottom-0 w-24 md:w-40 bg-gradient-to-l from-primary-dark to-transparent z-20 pointer-events-none" />
+
+          <div className="marquee-track flex items-center gap-0 w-max border-y-2 border-white/10 py-5 bg-white/5 backdrop-blur-sm">
+            {/* Render 2 sets for seamless loop */}
+            {[...collaborations, ...collaborations].map((collab, i) => (
+              <div key={i} className="flex items-center shrink-0">
+                <div className="px-10 md:px-16 flex items-center justify-center group/item cursor-default opacity-60 hover:opacity-100 transition-all duration-300">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={collab.logo}
+                    alt={collab.name}
+                    className="h-10 md:h-14 w-auto object-contain brightness-0 invert group-hover/item:brightness-100 group-hover/item:invert-0 transition-all duration-300"
+                    loading="lazy"
+                  />
                 </div>
-              ))}
-            </div>
-            {/* Duplicate Set for Seamless Loop */}
-            <div className="flex items-center shrink-0 w-max">
-              {collaborations.map((collab, i) => (
-                <div key={`${collab.name}-2-${i}`} className="flex items-center">
-                  <div className="px-12 md:px-20 flex-shrink-0 flex items-center justify-center grayscale brightness-0 invert opacity-60 hover:opacity-100 transition-all duration-300">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img 
-                      src={collab.url} 
-                      alt={collab.name} 
-                      className="w-auto h-12 md:h-16 object-contain" 
-                      onError={(e) => {
-                        e.currentTarget.style.display = 'none';
-                        e.currentTarget.nextElementSibling?.classList.remove('hidden');
-                      }}
-                    />
-                    <div className="hidden font-heading font-black text-2xl tracking-widest uppercase">
-                      {collab.fallback}
-                    </div>
-                  </div>
-                  {/* Vertical Divider */}
-                  {i !== collaborations.length - 1 && <div className="w-[2px] h-16 bg-white/10"></div>}
-                </div>
-              ))}
-            </div>
+                <div className="w-[2px] h-14 bg-white/10 shrink-0" />
+              </div>
+            ))}
           </div>
         </div>
       </section>

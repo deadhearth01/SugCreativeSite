@@ -52,7 +52,7 @@ export default function InternReportsPage() {
       .eq('submitted_by', user.id)
       .order('created_at', { ascending: false })
 
-    setReports((data as Report[]) || [])
+    setReports((data as unknown as Report[]) || [])
     setLoading(false)
   }, [])
 

@@ -57,11 +57,11 @@ export default function InternLearningPage() {
         fetch('/api/mentor/resources'),
       ])
 
-      setEnrolledCourses((enrollmentsRes.data as EnrolledCourse[]) || [])
+      setEnrolledCourses((enrollmentsRes.data as unknown as EnrolledCourse[]) || [])
 
       if (resourcesRes.ok) {
         const json = await resourcesRes.json()
-        setResources((json.data as MentorResource[]) || [])
+        setResources((json.data as unknown as MentorResource[]) || [])
       }
 
       setLoading(false)

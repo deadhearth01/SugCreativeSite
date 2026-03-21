@@ -36,7 +36,7 @@ export default function StudentMeetingsPage() {
 
       if (meetingsData) {
         // Filter to only meetings where this user is a participant
-        const userMeetings = (meetingsData as Meeting[]).filter((m) =>
+        const userMeetings = (meetingsData as unknown as Meeting[]).filter((m) =>
           m.meeting_participants?.some((p) => p.user_id === user.id)
         )
         setMeetings(userMeetings)

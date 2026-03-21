@@ -44,7 +44,7 @@ export default function InternCalendarPage() {
         .select('*')
         .or('target_roles.cs.{intern},target_roles.cs.{all}')
         .order('start_at')
-      setEvents((data as CalendarEvent[]) || [])
+      setEvents((data as unknown as CalendarEvent[]) || [])
       setLoading(false)
     }
     fetchEvents()

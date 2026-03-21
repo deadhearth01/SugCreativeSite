@@ -29,7 +29,7 @@ export default function EmployeeAnnouncementsPage() {
         .or('target_roles.cs.{employee},target_roles.cs.{all}')
         .order('is_pinned', { ascending: false })
         .order('created_at', { ascending: false })
-      setAnnouncements((data as Announcement[]) || [])
+      setAnnouncements((data as unknown as Announcement[]) || [])
       setLoading(false)
     }
     fetchAnnouncements()

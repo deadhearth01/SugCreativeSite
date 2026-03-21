@@ -13,54 +13,106 @@ import {
   Heart,
   Shield,
   Zap,
+  Users,
+  TrendingUp,
+  Award,
 } from 'lucide-react'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import AnimatedSection from '@/components/AnimatedSection'
-import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
+import { NumberTicker } from '@/components/ui/number-ticker'
 
 gsap.registerPlugin(ScrollTrigger)
 
 const timeline = [
-  { year: '2015', title: 'The Beginning', desc: 'Founded with a vision to bridge the gap between potential and opportunity.' },
-  { year: '2017', title: 'First 500 Careers', desc: 'Reached our first milestone — 500 careers transformed through guided mentorship.' },
-  { year: '2019', title: 'Business Consulting Launch', desc: 'Expanded into full-spectrum business solutions for SMEs and enterprises.' },
-  { year: '2021', title: 'Startup Hub Launched', desc: 'Opened our incubation program, helping 20+ startups get off the ground.' },
-  { year: '2023', title: 'Edu Tech Division', desc: 'Launched our technology-powered learning platform for scalable education.' },
-  { year: '2025', title: '3000+ Lives Impacted', desc: 'Continuing to grow, innovate, and transform futures across India and beyond.' },
+  { year: '2015', title: 'The Beginning', desc: 'Founded with a vision to bridge the gap between potential and opportunity across businesses and careers.' },
+  { year: '2017', title: 'First 500 Careers', desc: 'Reached our first major milestone — 500 careers transformed through guided mentorship and strategic coaching.' },
+  { year: '2019', title: 'Business Consulting Launch', desc: 'Expanded into full-spectrum business solutions for SMEs and enterprises across South India.' },
+  { year: '2021', title: 'Startup Hub Opened', desc: 'Launched our flagship incubation program, helping 20+ startups validate, fund, and scale from zero.' },
+  { year: '2023', title: 'Edu Tech Division', desc: 'Introduced our technology-powered learning platform for scalable, outcome-focused education.' },
+  { year: '2025', title: '3000+ Lives Impacted', desc: 'Continuing to grow, innovate, and transform futures across India and beyond with measurable results.' },
 ]
 
 const values = [
-  { icon: Lightbulb, title: 'Innovation', desc: 'We push boundaries and embrace creative solutions.' },
-  { icon: Heart, title: 'Empathy', desc: 'We listen first, understand deeply, then act decisively.' },
-  { icon: Shield, title: 'Integrity', desc: 'Transparent, honest, and ethical in everything we do.' },
-  { icon: Zap, title: 'Excellence', desc: 'We never settle for good enough — we aim for exceptional.' },
+  { icon: Lightbulb, title: 'Innovation', desc: 'We push boundaries, embrace creative thinking, and deliver solutions that didn\'t exist before.' },
+  { icon: Heart, title: 'Empathy', desc: 'We listen first, understand deeply, then act decisively with the human impact always in mind.' },
+  { icon: Shield, title: 'Integrity', desc: 'Transparent, honest, and ethical in everything we do — no shortcuts, no compromises.' },
+  { icon: Zap, title: 'Excellence', desc: 'We never settle for good enough. We aim for exceptional outcomes at every engagement.' },
+]
+
+const stats = [
+  { value: 3000, suffix: '+', label: 'Lives Impacted', icon: Users },
+  { value: 200, suffix: '+', label: 'Businesses Scaled', icon: TrendingUp },
+  { value: 50, suffix: '+', label: 'Startups Launched', icon: Lightbulb },
+  { value: 98, suffix: '%', label: 'Satisfaction Rate', icon: Award },
 ]
 
 const team = [
-  { name: 'Sujith Kumar', role: 'Founder & CEO', image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=500&fit=crop&crop=face' },
-  { name: 'Ananya Rao', role: 'Head of Operations', image: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400&h=500&fit=crop&crop=face' },
-  { name: 'Vikram Desai', role: 'Career Strategy Lead', image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=500&fit=crop&crop=face' },
-  { name: 'Meera Nair', role: 'Startup Hub Director', image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=500&fit=crop&crop=face' },
+  { name: 'Vamsi', role: 'Founder & CEO', image: '/team/vamsi.jpg' },
+  { name: 'Teja Madhuri', role: 'Head of Operations', image: '/team/teja.jpg' },
+  { name: 'Depika', role: 'Career Strategy Lead', image: '/team/depika.jpg' },
+  { name: 'Meg', role: 'Startup Hub Director', image: '/team/meg.jpg' },
   { name: 'Rahul Joshi', role: 'Tech & Product Lead', image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=500&fit=crop&crop=face' },
   { name: 'Preethi Menon', role: 'Client Success Manager', image: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&h=500&fit=crop&crop=face' },
 ]
 
+const galleryImages = [
+  '/events/event1.jpg',
+  '/events/event2.jpg',
+  '/events/event3.jpg',
+  '/events/event4.jpg',
+  '/events/event5.jpg',
+  '/events/event6.jpg',
+]
+
 export default function AboutPage() {
-  const heroTextRef = useRef<HTMLHeadingElement>(null)
+  const heroRef = useRef<HTMLDivElement>(null)
+  const statsRef = useRef<HTMLDivElement>(null)
+  const timelineRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    if (heroTextRef.current) {
-      gsap.from(heroTextRef.current, {
-        y: 60,
+    if (heroRef.current) {
+      const tl = gsap.timeline({ delay: 0.4 })
+      tl.from(heroRef.current.querySelectorAll('.hero-animate'), {
+        y: 50,
         opacity: 0,
-        duration: 1,
+        duration: 0.9,
+        stagger: 0.15,
         ease: 'power3.out',
-        delay: 0.3,
       })
     }
+
+    if (statsRef.current) {
+      gsap.fromTo(
+        statsRef.current.querySelectorAll('.stat-card'),
+        { y: 40, opacity: 0 },
+        {
+          y: 0, opacity: 1,
+          duration: 0.7,
+          stagger: 0.1,
+          ease: 'back.out(1.4)',
+          scrollTrigger: { trigger: statsRef.current, start: 'top 80%' },
+        }
+      )
+    }
+
+    if (timelineRef.current) {
+      const items = timelineRef.current.querySelectorAll('.timeline-item')
+      items.forEach((item, i) => {
+        gsap.fromTo(item,
+          { x: i % 2 === 0 ? -60 : 60, opacity: 0 },
+          {
+            x: 0, opacity: 1,
+            duration: 0.8,
+            ease: 'power3.out',
+            scrollTrigger: { trigger: item, start: 'top 85%' },
+          }
+        )
+      })
+    }
+
+    return () => { ScrollTrigger.getAll().forEach(t => t.kill()) }
   }, [])
 
   return (
@@ -68,129 +120,188 @@ export default function AboutPage() {
       <Navbar />
 
       {/* ═══ HERO ═══ */}
-      <section className="relative pt-32 pb-20 bg-white overflow-hidden">
-        <div className="container-wide">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div className="max-w-xl">
-              <Badge variant="secondary" className="mb-4 rounded-sm bg-primary-ghost text-primary-bright font-semibold uppercase tracking-widest text-xs px-3 py-1">
+      <section className="relative min-h-[85vh] flex items-center pt-32 pb-20 bg-[#fdfbf9] border-b-2 border-black/10 overflow-hidden">
+        <div className="absolute inset-0" style={{ backgroundImage: 'linear-gradient(rgba(0,0,0,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.03) 1px, transparent 1px)', backgroundSize: '60px 60px' }} />
+        {/* Corner decoration */}
+        <div className="absolute top-0 right-0 w-1/3 h-full bg-primary-dark/3 border-l-2 border-primary-dark/10 hidden lg:block" />
+
+        <div className="container-wide relative z-10 w-full" ref={heroRef}>
+          <div className="flex flex-col lg:flex-row items-center gap-16 lg:gap-12">
+            {/* Left Text */}
+            <div className="lg:w-[50%]">
+              <div className="hero-animate inline-flex items-center gap-3 bg-white text-primary font-black text-xs uppercase tracking-widest px-4 py-2 mb-6 rounded-none shadow-[4px_4px_0px_rgba(0,0,0,1)] border-2 border-primary-dark">
+                <div className="w-2 h-2 bg-green-500 rounded-none animate-pulse" />
                 Our Story
-              </Badge>
-              <h1
-                ref={heroTextRef}
-                className="text-4xl md:text-5xl lg:text-[3.25rem] font-heading font-bold text-primary leading-tight mb-6"
-              >
-                We Don&apos;t Just Consult —{' '}
-                <span className="bg-gradient-to-r from-primary via-primary-light to-primary-bright bg-clip-text text-transparent">We Transform</span>
+              </div>
+              <h1 className="hero-animate text-5xl sm:text-6xl md:text-7xl font-heading font-black text-primary-dark leading-[1.05] tracking-tight mb-8">
+                We Don&apos;t<br />
+                Just Consult —<br />
+                <span className="text-[#4DA8DB]">We Transform</span>
               </h1>
-              <p className="text-lg text-foreground-muted max-w-lg leading-relaxed">
-                Sug Creative was born from a simple belief: everyone deserves access to 
-                world-class guidance, whether they&apos;re building a business, launching a startup, 
-                or shaping a career.
-              </p>
+              <div className="hero-animate text-lg md:text-xl text-primary-dark/70 max-w-xl leading-relaxed font-bold border-l-4 border-primary pl-5 mb-10">
+                Sug Creative was born from a simple belief: everyone deserves access to world-class
+                guidance — whether they&apos;re building a business, launching a startup, or shaping a career.
+              </div>
+              <div className="hero-animate flex flex-wrap gap-4">
+                <Button asChild size="lg" className="bg-primary-dark hover:bg-black text-white font-black text-sm uppercase tracking-widest rounded-none border-2 border-primary-dark px-10 h-16 shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-[8px_8px_0px_rgba(0,0,0,1)] hover:-translate-y-1 transition-all">
+                  <Link href="/contact" className="flex items-center gap-3">
+                    Work With Us <ArrowUpRight size={20} />
+                  </Link>
+                </Button>
+                <Button asChild variant="outline" size="lg" className="bg-transparent border-2 border-primary-dark text-primary-dark hover:bg-primary-dark hover:text-white font-black text-sm uppercase tracking-widest rounded-none px-10 h-16 transition-all shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:-translate-y-1 hover:shadow-[8px_8px_0px_rgba(0,0,0,1)]">
+                  <Link href="/services">View Services</Link>
+                </Button>
+              </div>
             </div>
-            <div className="relative h-72 lg:h-96 overflow-hidden hidden lg:block">
-              <Image
-                src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&h=600&fit=crop"
-                alt="Our team at work"
-                fill
-                className="object-cover"
-                sizes="50vw"
-                priority
-              />
-              <div className="absolute inset-0 bg-gradient-to-l from-transparent to-white/10" />
+
+            {/* Right: Image grid */}
+            <div className="lg:w-[50%] relative w-full">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="hero-animate relative h-64 border-2 border-primary-dark shadow-[8px_8px_0px_rgba(0,0,0,1)] overflow-hidden">
+                  <Image src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=600&h=500&fit=crop" alt="Team collaboration" fill className="object-cover grayscale hover:grayscale-0 transition-all duration-700" />
+                  <div className="absolute inset-0 bg-primary-dark/20 group-hover:opacity-0 transition-opacity" />
+                </div>
+                <div className="hero-animate relative h-64 mt-8 border-2 border-primary-dark shadow-[8px_8px_0px_rgba(77,168,219,1)] overflow-hidden">
+                  <Image src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=600&h=500&fit=crop" alt="Business growth" fill className="object-cover grayscale hover:grayscale-0 transition-all duration-700" />
+                  <div className="absolute inset-0 bg-[#4DA8DB]/20 group-hover:opacity-0 transition-opacity" />
+                </div>
+                {/* Stat overlay box */}
+                <div className="hero-animate absolute -bottom-6 left-4 bg-primary-dark text-white border-2 border-primary-dark p-5 rounded-none shadow-[8px_8px_0px_rgba(77,168,219,1)] z-20">
+                  <div className="text-3xl font-black font-heading text-[#4DA8DB] mb-1">10+</div>
+                  <div className="text-[10px] uppercase tracking-widest font-black text-white/70">Years of Impact</div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
+      {/* ═══ STATS ═══ */}
+      <section className="py-20 bg-primary-dark border-b-2 border-black relative overflow-hidden">
+        <div className="absolute inset-0" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px)', backgroundSize: '80px 80px' }} />
+        <div className="container-wide relative z-10" ref={statsRef}>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+            {stats.map((stat, i) => (
+              <div key={stat.label} className="stat-card text-center p-8 border-2 border-white/10 hover:border-[#4DA8DB] bg-white/5 backdrop-blur-sm shadow-[4px_4px_0px_rgba(0,0,0,0.5)] transition-all duration-300 group hover:-translate-y-1">
+                <div className="w-12 h-12 mx-auto mb-4 bg-white/10 border border-white/20 flex items-center justify-center group-hover:bg-[#4DA8DB] transition-colors">
+                  <stat.icon size={22} className="text-[#4DA8DB] group-hover:text-white transition-colors" />
+                </div>
+                <div className="text-4xl md:text-5xl font-heading font-black text-white mb-2 tabular-nums">
+                  <NumberTicker value={stat.value} />{stat.suffix}
+                </div>
+                <div className="text-[10px] font-black uppercase tracking-widest text-[#4DA8DB]">{stat.label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ═══ MISSION & VISION ═══ */}
-      <section className="section-padding bg-off-white">
+      <section className="py-24 md:py-32 bg-white border-b-2 border-black/10">
         <div className="container-wide">
+          <AnimatedSection>
+            <div className="text-center mb-16">
+              <div className="inline-block bg-primary text-white font-black text-xs uppercase tracking-widest px-4 py-2 mb-6 rounded-none shadow-[4px_4px_0px_rgba(0,0,0,1)] border-2 border-primary-dark">
+                Our Foundation
+              </div>
+              <h2 className="text-4xl md:text-5xl font-heading font-black text-primary-dark tracking-tight">
+                Mission & Vision
+              </h2>
+            </div>
+          </AnimatedSection>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <AnimatedSection direction="left">
-              <Card className="rounded-sm shadow-none border-none bg-primary h-full">
-                <CardContent className="p-10">
-                  <div className="w-14 h-14 flex items-center justify-center bg-primary-bright mb-6">
-                    <Target size={24} className="text-white" />
-                  </div>
-                  <h2 className="text-2xl font-heading font-bold text-white mb-4">Our Mission</h2>
-                  <p className="text-white/70 leading-relaxed">
-                    To democratize access to premium business consulting, career guidance, 
-                    and startup mentorship — making world-class expertise available to 
-                    everyone, regardless of background or budget.
-                  </p>
-                </CardContent>
-              </Card>
+              <div className="bg-primary-dark text-white border-2 border-primary-dark p-10 md:p-12 rounded-none shadow-[10px_10px_0px_rgba(0,0,0,1)] h-full group hover:-translate-y-1 hover:shadow-[14px_14px_0px_rgba(0,0,0,1)] transition-all duration-300">
+                <div className="w-16 h-16 flex items-center justify-center bg-[#4DA8DB] border-2 border-white/20 mb-8 shadow-[4px_4px_0px_rgba(77,168,219,0.5)]">
+                  <Target size={28} className="text-white" />
+                </div>
+                <div className="text-[10px] font-black uppercase tracking-widest text-[#4DA8DB] mb-3">Mission</div>
+                <h3 className="text-2xl md:text-3xl font-heading font-black text-white mb-6 leading-tight">
+                  Democratize Premium Guidance
+                </h3>
+                <p className="text-white/70 leading-relaxed font-bold text-base">
+                  To make world-class business consulting, career guidance, and startup mentorship
+                  accessible to everyone — regardless of background, budget, or location.
+                  Every ambitious person deserves expert support.
+                </p>
+              </div>
             </AnimatedSection>
 
             <AnimatedSection direction="right" delay={0.15}>
-              <Card className="rounded-sm shadow-none border-2 border-primary bg-white h-full">
-                <CardContent className="p-10">
-                  <div className="w-14 h-14 flex items-center justify-center bg-primary mb-6">
-                    <Eye size={24} className="text-white" />
-                  </div>
-                  <h2 className="text-2xl font-heading font-bold text-primary mb-4">Our Vision</h2>
-                  <p className="text-foreground-muted leading-relaxed">
-                    To become India&apos;s most trusted partner for professional growth — 
-                    a platform where businesses thrive, careers flourish, and startups 
-                    find their wings. A future where potential never goes unfulfilled.
-                  </p>
-                </CardContent>
-              </Card>
+              <div className="bg-white text-primary-dark border-2 border-primary-dark p-10 md:p-12 rounded-none shadow-[10px_10px_0px_rgba(77,168,219,1)] h-full group hover:-translate-y-1 hover:shadow-[14px_14px_0px_rgba(77,168,219,1)] transition-all duration-300">
+                <div className="w-16 h-16 flex items-center justify-center bg-primary-dark border-2 border-primary-dark mb-8 shadow-[4px_4px_0px_rgba(0,0,0,1)]">
+                  <Eye size={28} className="text-[#4DA8DB]" />
+                </div>
+                <div className="text-[10px] font-black uppercase tracking-widest text-primary mb-3">Vision</div>
+                <h3 className="text-2xl md:text-3xl font-heading font-black text-primary-dark mb-6 leading-tight">
+                  India&apos;s Most Trusted Growth Partner
+                </h3>
+                <p className="text-primary-dark/70 leading-relaxed font-bold text-base">
+                  To become the definitive platform for professional and business growth across India —
+                  where businesses thrive, careers flourish, startups find their wings, and potential
+                  never goes unfulfilled.
+                </p>
+              </div>
             </AnimatedSection>
           </div>
         </div>
       </section>
 
       {/* ═══ COMPANY TIMELINE ═══ */}
-      <section className="section-padding bg-white">
-        <div className="container-wide">
+      <section className="py-24 md:py-32 bg-[#fdfbf9] border-b-2 border-black/10 relative overflow-hidden">
+        <div className="absolute inset-0" style={{ backgroundImage: 'linear-gradient(rgba(0,0,0,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.025) 1px, transparent 1px)', backgroundSize: '60px 60px' }} />
+        <div className="container-wide relative z-10">
           <AnimatedSection>
-            <div className="text-center mb-16">
-              <div className="line-accent mx-auto" />
-              <h2 className="text-3xl lg:text-[2.75rem] font-heading font-bold text-primary">
+            <div className="text-center mb-20">
+              <div className="inline-block bg-primary text-white font-black text-xs uppercase tracking-widest px-4 py-2 mb-6 rounded-none shadow-[4px_4px_0px_rgba(0,0,0,1)] border-2 border-primary-dark">
+                Company History
+              </div>
+              <h2 className="text-4xl md:text-5xl font-heading font-black text-primary-dark tracking-tight">
                 A Decade of Impact
               </h2>
             </div>
           </AnimatedSection>
 
-          <div className="relative">
-            <div className="absolute left-1/2 top-0 bottom-0 w-px bg-border hidden md:block" />
+          <div className="relative" ref={timelineRef}>
+            {/* Center line (desktop only) */}
+            <div className="absolute left-1/2 top-0 bottom-0 w-[3px] bg-primary-dark/10 hidden md:block" />
 
-            <div className="space-y-12">
+            <div className="space-y-10">
               {timeline.map((item, i) => (
-                <AnimatedSection
-                  key={item.year}
-                  delay={i * 0.1}
-                  direction={i % 2 === 0 ? 'left' : 'right'}
-                >
-                  <div className={`flex flex-col md:flex-row items-center gap-8 ${i % 2 === 0 ? '' : 'md:flex-row-reverse'}`}>
-                    <div className={`flex-1 ${i % 2 === 0 ? 'md:text-right' : 'md:text-left'}`}>
-                      <Badge variant="outline" className="rounded-sm text-primary-bright border-primary-bright/30 font-bold text-xs mb-1">
-                        {item.year}
-                      </Badge>
-                      <h3 className="text-xl font-heading font-bold text-primary mt-1 mb-2">{item.title}</h3>
-                      <p className="text-foreground-muted text-sm">{item.desc}</p>
+                <div key={item.year} className={`timeline-item flex flex-col md:flex-row items-center gap-0 md:gap-0 ${i % 2 === 0 ? '' : 'md:flex-row-reverse'}`}>
+                  {/* Content side */}
+                  <div className={`flex-1 ${i % 2 === 0 ? 'md:pr-16' : 'md:pl-16'} w-full md:w-auto mb-4 md:mb-0`}>
+                    <div className={`bg-white border-2 border-primary-dark p-8 rounded-none shadow-[8px_8px_0px_rgba(0,0,0,1)] hover:-translate-y-1 hover:shadow-[12px_12px_0px_rgba(0,0,0,1)] transition-all duration-300 ${i % 2 === 0 ? 'md:ml-auto' : 'md:mr-auto'} max-w-lg`}>
+                      <div className="text-[10px] font-black uppercase tracking-widest text-[#4DA8DB] mb-2">{item.year}</div>
+                      <h3 className="text-xl md:text-2xl font-heading font-black text-primary-dark mb-3">{item.title}</h3>
+                      <p className="text-primary-dark/70 font-bold leading-relaxed">{item.desc}</p>
                     </div>
-                    <div className="w-12 h-12 bg-primary flex items-center justify-center text-white font-heading font-bold text-sm shrink-0 z-10">
-                      {item.year.slice(2)}
-                    </div>
-                    <div className="flex-1 hidden md:block" />
                   </div>
-                </AnimatedSection>
+
+                  {/* Year badge (center) */}
+                  <div className="w-16 h-16 bg-primary-dark text-white font-black flex items-center justify-center rounded-none border-2 border-primary-dark shadow-[4px_4px_0px_rgba(77,168,219,1)] z-10 shrink-0 text-lg">
+                    {item.year.slice(2)}
+                  </div>
+
+                  {/* Empty side (desktop) */}
+                  <div className="flex-1 hidden md:block" />
+                </div>
               ))}
             </div>
           </div>
         </div>
       </section>
 
-      {/* ═══ WHY CHOOSE SUG ═══ */}
-      <section className="section-padding bg-off-white grid-pattern">
-        <div className="container-wide relative z-10">
+      {/* ═══ VALUES ═══ */}
+      <section className="py-24 md:py-32 bg-white border-b-2 border-black/10">
+        <div className="container-wide">
           <AnimatedSection>
             <div className="text-center mb-16">
-              <div className="line-accent mx-auto" />
-              <h2 className="text-3xl lg:text-[2.75rem] font-heading font-bold text-primary mb-4">
+              <div className="inline-block bg-primary text-white font-black text-xs uppercase tracking-widest px-4 py-2 mb-6 rounded-none shadow-[4px_4px_0px_rgba(0,0,0,1)] border-2 border-primary-dark">
+                Core Principles
+              </div>
+              <h2 className="text-4xl md:text-5xl font-heading font-black text-primary-dark tracking-tight">
                 Values That Drive Us
               </h2>
             </div>
@@ -199,15 +310,13 @@ export default function AboutPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {values.map((value, i) => (
               <AnimatedSection key={value.title} delay={i * 0.1}>
-                <Card className="rounded-sm shadow-none border-border hover-lift text-center card-shine h-full">
-                  <CardContent className="p-8">
-                    <div className="w-14 h-14 mx-auto flex items-center justify-center bg-primary-ghost mb-6">
-                      <value.icon size={24} className="text-primary-bright" />
-                    </div>
-                    <h3 className="text-lg font-heading font-bold text-primary mb-2">{value.title}</h3>
-                    <p className="text-foreground-muted text-sm">{value.desc}</p>
-                  </CardContent>
-                </Card>
+                <div className="bg-white border-2 border-primary-dark p-8 rounded-none shadow-[8px_8px_0px_rgba(0,0,0,1)] hover:-translate-y-2 hover:shadow-[12px_12px_0px_rgba(0,0,0,1)] transition-all duration-300 group h-full">
+                  <div className="w-14 h-14 flex items-center justify-center bg-primary-dark border-2 border-primary-dark mb-6 shadow-[4px_4px_0px_rgba(77,168,219,1)] group-hover:bg-[#4DA8DB] transition-colors">
+                    <value.icon size={24} className="text-[#4DA8DB] group-hover:text-white transition-colors" />
+                  </div>
+                  <h3 className="text-xl font-heading font-black text-primary-dark mb-3">{value.title}</h3>
+                  <p className="text-primary-dark/70 font-bold text-sm leading-relaxed">{value.desc}</p>
+                </div>
               </AnimatedSection>
             ))}
           </div>
@@ -215,42 +324,87 @@ export default function AboutPage() {
       </section>
 
       {/* ═══ TEAM ═══ */}
-      <section className="section-padding bg-white">
+      <section className="py-24 md:py-32 bg-gray-50 border-b-2 border-black/10">
         <div className="container-wide">
           <AnimatedSection>
             <div className="text-center mb-16">
-              <div className="line-accent mx-auto" />
-              <h2 className="text-3xl lg:text-[2.75rem] font-heading font-bold text-primary mb-4">
+              <div className="inline-block bg-primary text-white font-black text-xs uppercase tracking-widest px-4 py-2 mb-6 rounded-none shadow-[4px_4px_0px_rgba(0,0,0,1)] border-2 border-primary-dark">
+                The Team
+              </div>
+              <h2 className="text-4xl md:text-5xl font-heading font-black text-primary-dark tracking-tight mb-6">
                 Meet the Team
               </h2>
-              <p className="text-foreground-muted text-lg max-w-2xl mx-auto">
-                A diverse team of strategists, mentors, technologists, and dreamers united 
-                by a shared passion for creating impact.
+              <p className="text-primary-dark/60 text-lg font-bold max-w-2xl mx-auto">
+                A diverse team of strategists, mentors, technologists, and dreamers united by
+                a shared passion for creating measurable impact.
               </p>
             </div>
           </AnimatedSection>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {team.map((member, i) => (
               <AnimatedSection key={member.name} delay={i * 0.1}>
-                <Card className="rounded-sm shadow-none border-border hover-lift group overflow-hidden card-shine h-full">
-                  <div className="relative h-64 overflow-hidden">
+                <div className="group border-2 border-primary-dark rounded-none shadow-[8px_8px_0px_rgba(0,0,0,1)] hover:-translate-y-2 hover:shadow-[16px_16px_0px_rgba(0,0,0,1)] transition-all duration-300 overflow-hidden bg-white">
+                  <div className="relative h-72 overflow-hidden border-b-2 border-primary-dark">
                     <Image
                       src={member.image}
                       alt={member.name}
                       fill
-                      className="object-cover transition-transform duration-700 group-hover:scale-105"
+                      className="object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105"
                       sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-primary-dark/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-primary-dark/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                    {/* Hover overlay */}
+                    <div className="absolute bottom-0 inset-x-0 p-6 translate-y-full group-hover:translate-y-0 transition-transform duration-500">
+                      <div className="w-10 h-10 bg-[#4DA8DB] border-2 border-white flex items-center justify-center rounded-none shadow-[2px_2px_0px_rgba(255,255,255,0.5)]">
+                        <ArrowUpRight size={18} className="text-white" />
+                      </div>
+                    </div>
                   </div>
-                  <CardContent className="p-6">
-                    <h3 className="text-lg font-heading font-bold text-primary group-hover:text-primary-bright transition-colors">
+                  <div className="p-6">
+                    <h3 className="text-lg font-heading font-black text-primary-dark group-hover:text-primary transition-colors uppercase tracking-wide">
                       {member.name}
                     </h3>
-                    <p className="text-foreground-muted text-sm mt-1">{member.role}</p>
-                  </CardContent>
-                </Card>
+                    <p className="text-primary-dark/60 text-xs font-black uppercase tracking-widest mt-1">{member.role}</p>
+                  </div>
+                </div>
+              </AnimatedSection>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ═══ GALLERY ═══ */}
+      <section className="py-24 md:py-32 bg-primary-dark border-b-2 border-black relative overflow-hidden">
+        <div className="absolute inset-0" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px)', backgroundSize: '80px 80px' }} />
+        <div className="container-wide relative z-10">
+          <AnimatedSection>
+            <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-6 mb-12">
+              <div>
+                <div className="inline-block bg-white text-primary-dark font-black text-xs uppercase tracking-widest px-4 py-2 mb-6 rounded-none shadow-[4px_4px_0px_rgba(255,255,255,0.2)] border-2 border-white/30">
+                  Behind the Scenes
+                </div>
+                <h2 className="text-4xl md:text-5xl font-heading font-black text-white tracking-tight">
+                  We Live What<br /><span className="text-[#4DA8DB]">We Preach</span>
+                </h2>
+              </div>
+              <p className="text-white/50 font-bold max-w-sm">Moments from our workshops, events, and team sessions.</p>
+            </div>
+          </AnimatedSection>
+
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            {galleryImages.map((img, i) => (
+              <AnimatedSection key={i} delay={i * 0.07}>
+                <div className="group relative border-2 border-white/10 overflow-hidden shadow-[4px_4px_0px_rgba(0,0,0,0.5)] hover:border-[#4DA8DB] hover:shadow-[8px_8px_0px_rgba(0,0,0,0.8)] transition-all duration-300 hover:-translate-y-1 aspect-[4/3]">
+                  <Image
+                    src={img}
+                    alt={`Sug Creative event ${i + 1}`}
+                    fill
+                    className="object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-110"
+                    sizes="(max-width: 768px) 50vw, 33vw"
+                  />
+                  <div className="absolute inset-0 bg-primary-dark/40 group-hover:bg-primary-dark/10 transition-colors" />
+                </div>
               </AnimatedSection>
             ))}
           </div>
@@ -258,25 +412,32 @@ export default function AboutPage() {
       </section>
 
       {/* ═══ CTA ═══ */}
-      <section className="py-24 bg-primary relative overflow-hidden">
+      <section className="py-24 md:py-32 bg-primary-dark relative overflow-hidden">
         <div className="absolute inset-0" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px)', backgroundSize: '80px 80px' }} />
         <div className="container-wide relative z-10">
           <AnimatedSection>
-            <div className="flex flex-col md:flex-row items-center justify-between gap-8">
-              <div>
-                <h2 className="text-3xl lg:text-4xl font-heading font-bold text-white mb-3">
-                  Ready to Join the Sug Fam?
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-10">
+              <div className="max-w-2xl">
+                <div className="inline-block bg-white text-primary-dark font-black text-xs uppercase tracking-widest px-4 py-2 mb-6 rounded-none shadow-[4px_4px_0px_rgba(255,255,255,0.2)] border-2 border-white/30">
+                  Join the Sug Family
+                </div>
+                <h2 className="text-4xl md:text-5xl font-heading font-black text-white mb-4 leading-tight">
+                  Ready to Write Your <br />
+                  <span className="text-[#4DA8DB]">Success Story?</span>
                 </h2>
-                <p className="text-white/50 text-lg">
+                <p className="text-white/50 text-lg font-bold">
                   Let&apos;s create something extraordinary together.
                 </p>
               </div>
-              <Button asChild size="lg" className="rounded-sm bg-white text-primary hover:bg-primary-ghost uppercase tracking-wider text-sm font-semibold px-8 shrink-0">
-                <Link href="/contact" className="group flex items-center gap-3">
-                  Get In Touch
-                  <ArrowUpRight size={18} className="transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
+              <div className="shrink-0">
+                <Link href="/contact" className="group relative inline-flex items-center justify-center bg-white text-primary-dark px-10 py-6 font-black uppercase tracking-widest text-sm hover:text-white border-2 border-white transition-all duration-300 rounded-none overflow-hidden hover:shadow-[10px_10px_0px_rgba(255,255,255,0.3)]">
+                  <span className="relative z-10 flex items-center gap-3">
+                    Get In Touch
+                    <ArrowUpRight size={20} className="transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
+                  </span>
+                  <div className="absolute inset-0 bg-primary translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />
                 </Link>
-              </Button>
+              </div>
             </div>
           </AnimatedSection>
         </div>

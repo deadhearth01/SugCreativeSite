@@ -54,7 +54,7 @@ export default function StudentDashboard() {
         .eq('student_id', user.id)
         .eq('status', 'active')
         .limit(5)
-      setEnrolledCourses((enrollments as EnrolledCourse[]) || [])
+      setEnrolledCourses((enrollments as unknown as EnrolledCourse[]) || [])
 
       // Fetch upcoming meetings
       const now = new Date().toISOString()
@@ -74,7 +74,7 @@ export default function StudentDashboard() {
           .eq('user_id', user.id)
           .in('meeting_id', meetingIds)
         const participantSet = new Set((participantRows || []).map((p: { meeting_id: string }) => p.meeting_id))
-        setUpcomingMeetings((meetingsData as UpcomingMeeting[]).filter((m) => participantSet.has(m.id)))
+        setUpcomingMeetings((meetingsData as unknown as UpcomingMeeting[]).filter((m) => participantSet.has(m.id)))
       }
 
       // Fetch certificate count

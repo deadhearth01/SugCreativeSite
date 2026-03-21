@@ -79,13 +79,13 @@ export default function InternDashboard() {
           .eq('user_id', user.id),
       ])
 
-      const allTasks = (tasksRes.data as Task[]) || []
+      const allTasks = (tasksRes.data as unknown as Task[]) || []
       setRecentTasks(allTasks)
       setPendingTasksCount(allTasks.filter((t) => t.status === 'pending' || t.status === 'in_progress').length)
       setReportsCount(reportsRes.count || 0)
       setAttendanceCount(attendanceRes.count || 0)
-      setMaterials((materialsRes.data as LearningMaterial[]) || [])
-      setProgress((progressRes.data as LearningProgress[]) || [])
+      setMaterials((materialsRes.data as unknown as LearningMaterial[]) || [])
+      setProgress((progressRes.data as unknown as LearningProgress[]) || [])
 
       setLoading(false)
     }

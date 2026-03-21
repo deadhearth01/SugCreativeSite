@@ -57,7 +57,7 @@ export default function InternSupportPage() {
       .eq('created_by', user.id)
       .order('created_at', { ascending: false })
 
-    setTickets((data as Ticket[]) || [])
+    setTickets((data as unknown as Ticket[]) || [])
     setLoading(false)
   }
 
@@ -74,7 +74,7 @@ export default function InternSupportPage() {
       .eq('ticket_id', ticketId)
       .order('created_at')
 
-    setReplies((data as TicketReply[]) || [])
+    setReplies((data as unknown as TicketReply[]) || [])
     setRepliesLoading(false)
   }
 

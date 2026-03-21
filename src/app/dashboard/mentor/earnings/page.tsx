@@ -34,7 +34,7 @@ export default function MentorEarningsPage() {
         .eq('mentor_id', user.id)
         .order('created_at', { ascending: false })
 
-      if (data) setSessions(data as Session[])
+      if (data) setSessions(data as unknown as Session[])
       setLoading(false)
     }
     load()

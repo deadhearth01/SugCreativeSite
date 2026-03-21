@@ -43,7 +43,7 @@ export default function ClientTicketsPage() {
       .eq('created_by', user.id)
       .order('created_at', { ascending: false })
 
-    if (data) setTickets(data as Ticket[])
+    if (data) setTickets(data as unknown as Ticket[])
     setLoading(false)
   }, [])
 

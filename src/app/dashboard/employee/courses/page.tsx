@@ -64,8 +64,8 @@ export default function EmployeeCoursesPage() {
         .eq('status', 'active'),
     ])
 
-    const myEnrollments = (enrollmentsRes.data as Enrollment[]) || []
-    const allCourses = (coursesRes.data as Course[]) || []
+    const myEnrollments = (enrollmentsRes.data as unknown as Enrollment[]) || []
+    const allCourses = (coursesRes.data as unknown as Course[]) || []
     const enrolledCourseIds = new Set(myEnrollments.map((e) => e.course_id))
 
     setEnrollments(myEnrollments)

@@ -74,7 +74,7 @@ export default function StudentSupportPage() {
       .eq('ticket_id', ticketId)
       .order('created_at')
 
-    setReplies((data as TicketReply[]) || [])
+    setReplies((data as unknown as TicketReply[]) || [])
     setRepliesLoading(false)
   }
 

@@ -49,14 +49,14 @@ export default function StudentCoursesPage() {
         .from('enrollments')
         .select('id, status, progress, course_id, courses(id, title, category, total_lessons, instructor_name)')
         .eq('student_id', user.id)
-      setEnrollments((enrollData as Enrollment[]) || [])
+      setEnrollments((enrollData as unknown as Enrollment[]) || [])
 
       // Fetch all available courses
       const { data: coursesData } = await supabase
         .from('courses')
         .select('id, title, category, total_lessons, instructor_name, description')
         .eq('status', 'published')
-      setAvailableCourses((coursesData as Course[]) || [])
+      setAvailableCourses((coursesData as unknown as Course[]) || [])
 
       setLoading(false)
     }
@@ -78,7 +78,7 @@ export default function StudentCoursesPage() {
           .from('enrollments')
           .select('id, status, progress, course_id, courses(id, title, category, total_lessons, instructor_name)')
           .eq('student_id', user.id)
-        setEnrollments((enrollData as Enrollment[]) || [])
+        setEnrollments((enrollData as unknown as Enrollment[]) || [])
         setTab('enrolled')
       }
     } finally {

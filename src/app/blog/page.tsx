@@ -1,26 +1,27 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { gsap } from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import Link from 'next/link'
 import Image from 'next/image'
-import { ArrowRight, Clock, User, Tag } from 'lucide-react'
+import { ArrowUpRight, Clock, User, Tag, ArrowRight } from 'lucide-react'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import AnimatedSection from '@/components/AnimatedSection'
-import { Card, CardContent } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
+
+gsap.registerPlugin(ScrollTrigger)
 
 const blogPosts = [
   {
     title: '10 Strategies to Scale Your Business in 2026',
-    excerpt: 'Discover the key strategies that successful businesses are using to scale rapidly in the current market landscape.',
+    excerpt: 'Discover the key strategies that successful businesses are using to scale rapidly in the current market landscape and beyond.',
     category: 'Business Insights',
     author: 'Sujith Kumar',
     date: 'Feb 20, 2026',
     readTime: '8 min read',
     image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=500&fit=crop',
+    featured: true,
   },
   {
     title: 'The Complete Guide to Career Switching in Tech',
@@ -65,11 +66,11 @@ const blogPosts = [
     author: 'Meera Nair',
     date: 'Jan 20, 2026',
     readTime: '15 min read',
-    image: 'https://images.unsplash.com/photo-1553729459-uj68e0ef7bf5?w=800&h=500&fit=crop',
+    image: 'https://images.unsplash.com/photo-1553729459-abe7fe5a8b81?w=800&h=500&fit=crop',
   },
   {
     title: 'Resume Mistakes That Are Costing You Interviews',
-    excerpt: 'Common resume errors that professionals make and how to fix them for better results.',
+    excerpt: 'Common resume errors that professionals make and how to fix them for better results in your job search.',
     category: 'Career Tips',
     author: 'Vikram Desai',
     date: 'Jan 15, 2026',
@@ -98,13 +99,35 @@ const blogPosts = [
 
 const categories = ['All', 'Career Tips', 'Startup Guidance', 'Business Insights']
 
+const categoryColors: Record<string, string> = {
+  'Business Insights': 'bg-primary-dark text-white border-primary-dark',
+  'Career Tips': 'bg-[#4DA8DB] text-white border-[#4DA8DB]',
+  'Startup Guidance': 'bg-white text-primary-dark border-primary-dark',
+}
+
 export default function BlogPage() {
-  const heroRef = useRef<HTMLHeadingElement>(null)
+  const heroRef = useRef<HTMLDivElement>(null)
+  const [activeCategory, setActiveCategory] = useState('All')
+
+  const filtered = activeCategory === 'All'
+    ? blogPosts
+    : blogPosts.filter(p => p.category === activeCategory)
+
+  const featuredPost = filtered[0]
+  const gridPosts = filtered.slice(1)
 
   useEffect(() => {
     if (heroRef.current) {
-      gsap.from(heroRef.current, { y: 60, opacity: 0, duration: 1, ease: 'power3.out', delay: 0.3 })
+      gsap.set(heroRef.current.querySelectorAll('.hero-animate'), { y: 40, opacity: 0 })
+      gsap.to(heroRef.current.querySelectorAll('.hero-animate'), {
+        y: 0, opacity: 1,
+        duration: 0.8,
+        stagger: 0.12,
+        ease: 'power3.out',
+        delay: 0.4,
+      })
     }
+    return () => { ScrollTrigger.getAll().forEach(t => t.kill()) }
   }, [])
 
   return (
@@ -112,108 +135,202 @@ export default function BlogPage() {
       <Navbar />
 
       {/* ═══ HERO ═══ */}
-      <section className="pt-32 pb-20 bg-white">
-        <div className="container-wide">
-          <div className="max-w-4xl">
-            <Badge variant="secondary" className="mb-4 rounded-sm bg-primary-ghost text-primary-bright font-semibold uppercase tracking-widest text-xs px-3 py-1">
-              Blog & Resources
-            </Badge>
-            <h1 ref={heroRef} className="text-4xl md:text-5xl lg:text-[3.25rem] font-heading font-bold text-primary leading-tight mb-6">
-              Insights to{' '}
-              <span className="bg-gradient-to-r from-primary via-primary-light to-primary-bright bg-clip-text text-transparent">Fuel Your Growth</span>
-            </h1>
-            <p className="text-lg text-foreground-muted max-w-2xl leading-relaxed">
-              Expert articles, guides, and actionable tips on business strategy, 
-              career development, and startup building.
-            </p>
+      <section className="relative pt-32 pb-20 bg-[#fdfbf9] border-b-2 border-black/10 overflow-hidden">
+        <div className="absolute inset-0" style={{ backgroundImage: 'linear-gradient(rgba(0,0,0,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.03) 1px, transparent 1px)', backgroundSize: '60px 60px' }} />
+
+        <div className="container-wide relative z-10" ref={heroRef}>
+          <div className="flex flex-col lg:flex-row items-end justify-between gap-10">
+            <div className="max-w-3xl">
+              <div className="hero-animate inline-flex items-center gap-3 bg-white text-primary font-black text-xs uppercase tracking-widest px-4 py-2 mb-6 rounded-none shadow-[4px_4px_0px_rgba(0,0,0,1)] border-2 border-primary-dark">
+                <div className="w-2 h-2 bg-green-500 rounded-none animate-pulse" />
+                Blog & Insights
+              </div>
+              <h1 className="hero-animate text-5xl sm:text-6xl md:text-7xl font-heading font-black text-primary-dark leading-[1.05] tracking-tight mb-6">
+                Insights to<br />
+                <span className="text-[#4DA8DB]">Fuel Your Growth</span>
+              </h1>
+              <p className="hero-animate text-lg md:text-xl text-primary-dark/70 font-bold leading-relaxed border-l-4 border-primary pl-5">
+                Expert articles, guides, and actionable tips on business strategy,
+                career development, and startup building — written by practitioners.
+              </p>
+            </div>
+            <div className="hero-animate shrink-0">
+              <div className="text-right">
+                <div className="text-5xl font-heading font-black text-primary-dark">{blogPosts.length}</div>
+                <div className="text-xs font-black uppercase tracking-widest text-primary-dark/50">Articles Published</div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
       {/* ═══ CATEGORY FILTER ═══ */}
-      <section className="bg-white border-b border-border sticky top-[72px] z-30">
+      <section className="bg-white border-b-2 border-black/10 sticky top-[68px] z-30">
         <div className="container-wide">
-          <div className="flex gap-1 py-4 overflow-x-auto">
+          <div className="flex gap-2 py-4 overflow-x-auto">
             {categories.map((cat) => (
-              <Button
+              <button
                 key={cat}
-                variant={cat === 'All' ? 'default' : 'ghost'}
-                size="sm"
-                className={`rounded-sm whitespace-nowrap text-sm font-medium ${
-                  cat === 'All'
-                    ? 'bg-primary text-white hover:bg-primary-deep'
-                    : 'text-foreground-muted hover:bg-off-white hover:text-primary'
+                onClick={() => setActiveCategory(cat)}
+                className={`whitespace-nowrap font-black text-xs uppercase tracking-widest px-6 py-3 border-2 rounded-none transition-all duration-200 ${
+                  activeCategory === cat
+                    ? 'bg-primary-dark text-white border-primary-dark shadow-[3px_3px_0px_rgba(0,0,0,1)]'
+                    : 'bg-white text-primary-dark border-primary-dark/30 hover:border-primary-dark hover:shadow-[3px_3px_0px_rgba(0,0,0,0.5)]'
                 }`}
               >
                 {cat}
-              </Button>
+              </button>
             ))}
           </div>
         </div>
       </section>
 
       {/* ═══ FEATURED POST ═══ */}
-      <section className="py-16 bg-off-white">
-        <div className="container-wide">
-          <AnimatedSection>
-            <Card className="rounded-sm shadow-none border-border overflow-hidden">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">
-                <div className="relative h-64 lg:h-auto lg:min-h-[380px]">
-                  <Image src={blogPosts[0].image} alt={blogPosts[0].title} fill className="object-cover" sizes="(max-width: 1024px) 100vw, 50vw" />
-                </div>
-                <CardContent className="p-10 flex flex-col justify-center">
-                  <Badge variant="secondary" className="rounded-sm bg-primary-ghost text-primary-bright font-semibold uppercase tracking-wider text-xs w-fit mb-3 px-3 py-1">
-                    {blogPosts[0].category}
-                  </Badge>
-                  <h2 className="text-2xl lg:text-3xl font-heading font-bold text-primary mb-4">{blogPosts[0].title}</h2>
-                  <p className="text-foreground-muted leading-relaxed mb-6">{blogPosts[0].excerpt}</p>
-                  <div className="flex items-center gap-4 text-sm text-foreground-subtle mb-6">
-                    <span className="flex items-center gap-1"><User size={14} />{blogPosts[0].author}</span>
-                    <span className="flex items-center gap-1"><Clock size={14} />{blogPosts[0].readTime}</span>
-                    <span>{blogPosts[0].date}</span>
+      {featuredPost && (
+        <section className="py-16 md:py-24 bg-gray-50 border-b-2 border-black/10">
+          <div className="container-wide">
+            <AnimatedSection>
+              <Link href="#" className="group block">
+                <div className="flex flex-col lg:flex-row border-2 border-primary-dark rounded-none shadow-[12px_12px_0px_rgba(0,0,0,1)] hover:-translate-y-1 hover:shadow-[16px_16px_0px_rgba(0,0,0,1)] transition-all duration-300 overflow-hidden bg-white">
+                  {/* Image */}
+                  <div className="relative lg:w-[55%] h-64 lg:h-auto min-h-[380px] overflow-hidden border-b-2 lg:border-b-0 lg:border-r-2 border-primary-dark">
+                    <Image
+                      src={featuredPost.image}
+                      alt={featuredPost.title}
+                      fill
+                      className="object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105"
+                      sizes="(max-width: 1024px) 100vw, 55vw"
+                      priority
+                    />
+                    <div className="absolute inset-0 bg-primary-dark/20 group-hover:opacity-0 transition-opacity" />
+                    {/* Featured badge */}
+                    <div className="absolute top-6 left-6 bg-primary-dark text-white font-black text-[10px] uppercase tracking-widest px-4 py-2 border-2 border-white shadow-[3px_3px_0px_rgba(255,255,255,0.3)]">
+                      Featured Article
+                    </div>
                   </div>
-                  <Link href="#" className="inline-flex items-center gap-2 text-primary-bright font-semibold hover:gap-3 transition-all">
-                    Read Article <ArrowRight size={16} />
+
+                  {/* Content */}
+                  <div className="lg:w-[45%] p-10 md:p-12 flex flex-col justify-center">
+                    <div className={`inline-block font-black text-[10px] uppercase tracking-widest px-4 py-2 mb-6 border-2 w-fit shadow-[3px_3px_0px_rgba(0,0,0,0.5)] ${categoryColors[featuredPost.category] || 'bg-primary-dark text-white'}`}>
+                      {featuredPost.category}
+                    </div>
+                    <h2 className="text-2xl md:text-3xl font-heading font-black text-primary-dark mb-4 leading-tight group-hover:text-primary transition-colors">
+                      {featuredPost.title}
+                    </h2>
+                    <p className="text-primary-dark/70 font-bold leading-relaxed mb-6">
+                      {featuredPost.excerpt}
+                    </p>
+                    <div className="flex flex-wrap items-center gap-4 text-xs font-bold text-primary-dark/50 mb-8 border-t-2 border-black/5 pt-5">
+                      <span className="flex items-center gap-1.5"><User size={13} />{featuredPost.author}</span>
+                      <span className="flex items-center gap-1.5"><Clock size={13} />{featuredPost.readTime}</span>
+                      <span>{featuredPost.date}</span>
+                    </div>
+                    <div className="inline-flex items-center gap-2 font-black text-xs uppercase tracking-widest text-primary-dark border-b-2 border-primary-dark group-hover:text-[#4DA8DB] group-hover:border-[#4DA8DB] transition-colors w-fit pb-1">
+                      Read Full Article <ArrowRight size={14} />
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            </AnimatedSection>
+          </div>
+        </section>
+      )}
+
+      {/* ═══ BLOG GRID ═══ */}
+      <section className="py-16 md:py-24 bg-white">
+        <div className="container-wide">
+          {gridPosts.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {gridPosts.map((post, i) => (
+                <AnimatedSection key={post.title} delay={i * 0.08}>
+                  <Link href="#" className="group block h-full">
+                    <div className="border-2 border-primary-dark rounded-none shadow-[6px_6px_0px_rgba(0,0,0,1)] hover:-translate-y-2 hover:shadow-[10px_10px_0px_rgba(0,0,0,1)] transition-all duration-300 overflow-hidden bg-white h-full flex flex-col">
+                      {/* Image */}
+                      <div className="relative h-52 overflow-hidden border-b-2 border-primary-dark shrink-0">
+                        <Image
+                          src={post.image}
+                          alt={post.title}
+                          fill
+                          className="object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-110"
+                          sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        />
+                        <div className="absolute inset-0 bg-primary-dark/20 group-hover:opacity-0 transition-opacity" />
+                        {/* Category overlay */}
+                        <div className="absolute top-4 left-4">
+                          <span className={`inline-block font-black text-[10px] uppercase tracking-widest px-3 py-1.5 border-2 shadow-[2px_2px_0px_rgba(0,0,0,0.5)] ${categoryColors[post.category] || 'bg-primary-dark text-white'}`}>
+                            {post.category}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Content */}
+                      <div className="p-6 flex flex-col flex-1">
+                        <h3 className="text-lg font-heading font-black text-primary-dark mb-3 group-hover:text-primary transition-colors leading-tight flex-1">
+                          {post.title}
+                        </h3>
+                        <p className="text-primary-dark/60 text-sm font-bold leading-relaxed mb-5">
+                          {post.excerpt}
+                        </p>
+                        <div className="flex items-center justify-between text-xs font-bold text-primary-dark/40 pt-4 border-t-2 border-black/5">
+                          <span className="flex items-center gap-1.5"><User size={11} />{post.author}</span>
+                          <span className="flex items-center gap-1.5"><Clock size={11} />{post.readTime}</span>
+                        </div>
+                      </div>
+
+                      {/* Footer CTA */}
+                      <div className="px-6 py-4 border-t-2 border-primary-dark/10 flex items-center justify-between bg-gray-50/80 group-hover:bg-primary-dark transition-colors duration-300">
+                        <span className="text-[10px] font-black uppercase tracking-widest text-primary-dark/40 group-hover:text-white/50 transition-colors">{post.date}</span>
+                        <ArrowUpRight size={16} className="text-primary-dark/30 group-hover:text-[#4DA8DB] transition-colors" />
+                      </div>
+                    </div>
                   </Link>
-                </CardContent>
-              </div>
-            </Card>
-          </AnimatedSection>
+                </AnimatedSection>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-20">
+              <div className="text-primary-dark/30 font-black text-xl uppercase tracking-widest">No articles in this category yet</div>
+            </div>
+          )}
         </div>
       </section>
 
-      {/* ═══ BLOG GRID ═══ */}
-      <section className="section-padding bg-white">
-        <div className="container-wide">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {blogPosts.slice(1).map((post, i) => (
-              <AnimatedSection key={post.title} delay={i * 0.08}>
-                <Link href="#" className="block group">
-                  <Card className="rounded-sm shadow-none border-border hover-lift h-full flex flex-col overflow-hidden card-shine">
-                    <div className="relative h-48 overflow-hidden">
-                      <Image src={post.image} alt={post.title} fill className="object-cover transition-transform duration-500 group-hover:scale-105" sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw" />
-                    </div>
-                    <CardContent className="p-6 flex-1 flex flex-col">
-                      <div className="flex items-center gap-2 mb-3">
-                        <Tag size={12} className="text-primary-bright" />
-                        <span className="text-xs font-semibold text-primary-bright">{post.category}</span>
-                      </div>
-                      <h3 className="text-lg font-heading font-bold text-primary mb-2 group-hover:text-primary-bright transition-colors">
-                        {post.title}
-                      </h3>
-                      <p className="text-foreground-muted text-sm leading-relaxed mb-4 flex-1">
-                        {post.excerpt}
-                      </p>
-                      <div className="flex items-center justify-between text-xs text-foreground-subtle pt-4 border-t border-border-light">
-                        <span>{post.author}</span>
-                        <span className="flex items-center gap-1"><Clock size={12} />{post.readTime}</span>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </Link>
-              </AnimatedSection>
-            ))}
-          </div>
+      {/* ═══ NEWSLETTER ═══ */}
+      <section className="py-24 bg-primary-dark relative overflow-hidden border-t-2 border-black">
+        <div className="absolute inset-0" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px)', backgroundSize: '80px 80px' }} />
+        <div className="container-wide relative z-10">
+          <AnimatedSection>
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-10">
+              <div className="max-w-xl">
+                <div className="inline-block bg-white text-primary-dark font-black text-xs uppercase tracking-widest px-4 py-2 mb-6 rounded-none shadow-[4px_4px_0px_rgba(255,255,255,0.2)] border-2 border-white/30">
+                  Stay Ahead
+                </div>
+                <h2 className="text-4xl md:text-5xl font-heading font-black text-white mb-4 leading-tight">
+                  Get Weekly<br /><span className="text-[#4DA8DB]">Growth Insights</span>
+                </h2>
+                <p className="text-white/50 font-bold">
+                  Join 5,000+ professionals who get our weekly insights on business, career, and startups.
+                </p>
+              </div>
+              <div className="w-full md:w-auto md:min-w-[420px]">
+                <form className="flex" onSubmit={(e) => e.preventDefault()}>
+                  <input
+                    type="email"
+                    placeholder="Enter your email"
+                    className="flex-1 bg-white/5 border-2 border-white/20 text-white placeholder:text-white/40 px-5 py-4 focus:outline-none focus:border-white focus:bg-white/10 transition-all rounded-none font-bold text-sm"
+                  />
+                  <button
+                    type="submit"
+                    className="bg-white text-primary-dark px-6 py-4 border-2 border-white hover:bg-[#4DA8DB] hover:border-[#4DA8DB] hover:text-white transition-all font-black text-xs uppercase tracking-widest flex items-center gap-2 shadow-[4px_4px_0px_rgba(255,255,255,0.1)] active:shadow-none active:translate-x-1 active:translate-y-1"
+                  >
+                    Subscribe
+                    <ArrowUpRight size={16} />
+                  </button>
+                </form>
+                <p className="text-white/30 text-xs mt-3 font-bold">No spam. Unsubscribe anytime.</p>
+              </div>
+            </div>
+          </AnimatedSection>
         </div>
       </section>
 

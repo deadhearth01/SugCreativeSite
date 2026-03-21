@@ -33,7 +33,7 @@ export default function MentorStudentsPage() {
         // Deduplicate by student_id and count sessions
         const map = new Map<string, Student>()
         for (const row of data) {
-          const s = row.student as { id: string; full_name: string; email: string; avatar_url: string | null; created_at: string } | null
+          const s = row.student as unknown as { id: string; full_name: string; email: string; avatar_url: string | null; created_at: string } | null
           if (!s) continue
           if (map.has(s.id)) {
             map.get(s.id)!.sessionCount++

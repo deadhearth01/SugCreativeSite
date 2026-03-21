@@ -191,22 +191,32 @@ export default function TestimonialsPage() {
       </section>
 
       {/* ═══ CTA ═══ */}
-      <section className="py-24 bg-primary-dark relative overflow-hidden">
-        <div className="absolute inset-0" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px)', backgroundSize: '80px 80px' }} />
-        <div className="container-wide text-center relative z-10">
+      <section className="py-24 md:py-32 bg-primary-dark relative overflow-hidden">
+        <div className="absolute inset-0" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px)', backgroundSize: '80px 80px' }} />
+        <div className="container-wide relative z-10">
           <AnimatedSection>
-            <h2 className="text-3xl lg:text-[2.75rem] font-heading font-bold text-white mb-6">
-              Your Success Story Starts Here
-            </h2>
-            <p className="text-white/40 text-lg mb-10 max-w-xl mx-auto">
-              Join 3000+ professionals, businesses, and startups who chose to grow with Sug Creative.
-            </p>
-            <Button asChild size="lg" className="rounded-sm bg-white text-primary hover:bg-primary-ghost uppercase tracking-wider text-sm font-semibold px-8">
-              <Link href="/contact" className="group inline-flex items-center gap-3">
-                Start Your Journey
-                <ArrowUpRight size={18} className="transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
-              </Link>
-            </Button>
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-10">
+              <div className="max-w-2xl">
+                <div className="inline-block bg-white text-primary-dark font-black text-xs uppercase tracking-widest px-4 py-2 mb-6 rounded-none shadow-[4px_4px_0px_rgba(255,255,255,0.2)] border-2 border-white/30">
+                  Your Turn
+                </div>
+                <h2 className="text-4xl md:text-5xl font-heading font-black text-white mb-4 leading-tight">
+                  Your Success Story<br /><span className="text-[#4DA8DB]">Starts Here</span>
+                </h2>
+                <p className="text-white/50 text-lg font-bold">
+                  Join 3000+ professionals, businesses, and startups who chose to grow with Sug Creative.
+                </p>
+              </div>
+              <div className="shrink-0">
+                <Link href="/contact" className="group relative inline-flex items-center justify-center bg-white text-primary-dark px-10 py-6 font-black uppercase tracking-widest text-sm hover:text-white border-2 border-white transition-all duration-300 rounded-none overflow-hidden hover:shadow-[10px_10px_0px_rgba(255,255,255,0.3)]">
+                  <span className="relative z-10 flex items-center gap-3">
+                    Start Your Journey
+                    <ArrowUpRight size={20} className="transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
+                  </span>
+                  <div className="absolute inset-0 bg-primary translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />
+                </Link>
+              </div>
+            </div>
           </AnimatedSection>
         </div>
       </section>

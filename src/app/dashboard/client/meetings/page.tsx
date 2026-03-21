@@ -58,7 +58,7 @@ export default function ClientMeetingsPage() {
       .in('id', meetingIds)
       .order('scheduled_at', { ascending: true })
 
-    if (data) setMeetings(data as Meeting[])
+    if (data) setMeetings(data as unknown as Meeting[])
     setLoading(false)
   }, [])
 

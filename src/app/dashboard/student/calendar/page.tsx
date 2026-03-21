@@ -45,7 +45,7 @@ export default function StudentCalendarPage() {
         .or('target_roles.cs.{student},target_roles.cs.{all}')
         .order('start_at')
 
-      setEvents((data as CalendarEvent[]) || [])
+      setEvents((data as unknown as CalendarEvent[]) || [])
       setLoading(false)
     }
     fetchEvents()

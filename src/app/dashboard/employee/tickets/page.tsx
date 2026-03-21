@@ -68,7 +68,7 @@ export default function EmployeeTicketsPage() {
       .or(`created_by.eq.${user.id},assigned_to.eq.${user.id}`)
       .order('created_at', { ascending: false })
 
-    setTickets((data as Ticket[]) || [])
+    setTickets((data as unknown as Ticket[]) || [])
     setLoading(false)
   }
 
@@ -82,7 +82,7 @@ export default function EmployeeTicketsPage() {
       .select('id, message, created_at, user_id, author:user_id(full_name)')
       .eq('ticket_id', ticketId)
       .order('created_at')
-    setReplies((data as TicketReply[]) || [])
+    setReplies((data as unknown as TicketReply[]) || [])
     setRepliesLoading(false)
   }
 

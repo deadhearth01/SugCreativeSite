@@ -30,7 +30,7 @@ export default function CertificatesPage() {
         .eq('student_id', user.id)
         .order('issued_at', { ascending: false })
 
-      setCertificates((data as Certificate[]) || [])
+      setCertificates((data as unknown as Certificate[]) || [])
       setLoading(false)
     }
     fetchCertificates()

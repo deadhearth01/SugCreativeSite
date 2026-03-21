@@ -1,11 +1,14 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useLayoutEffect, useRef } from 'react'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowUpRight } from 'lucide-react'
 import { gsap } from 'gsap'
 import StaggeredMenu from './StaggeredMenu'
+
+// SSR-safe layout effect
+const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect
 
 const navLinks = [
   { href: '/services', label: 'Services' },
@@ -34,10 +37,9 @@ const socialItems = [
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const navRef = useRef<HTMLElement>(null)
-  
+
   const pathname = usePathname();
-  // We can make the toggler dark or light depending on route.
-  const isDarkBg = false // Removed dark bg logic for light hero section
+  const isDarkBg = false
   const isLightHero = pathname === '/';
 
   useEffect(() => {
@@ -47,17 +49,20 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  useEffect(() => {
+  // Set initial position before paint to prevent flash
+  useIsomorphicLayoutEffect(() => {
     if (navRef.current) {
-      gsap.from(navRef.current, {
-        y: -100,
-        opacity: 0,
-        duration: 1,
-        ease: 'power3.out',
-        delay: 0.1,
-      })
+      gsap.set(navRef.current, { y: -80, autoAlpha: 0 })
     }
-  }, [])
+  }, [pathname])
+
+  // Animate in after paint
+  useEffect(() => {
+    const el = navRef.current
+    if (!el) return
+    gsap.killTweensOf(el)
+    gsap.to(el, { y: 0, autoAlpha: 1, duration: 0.75, ease: 'power3.out', delay: 0.1 })
+  }, [pathname])
 
   return (
     <>
