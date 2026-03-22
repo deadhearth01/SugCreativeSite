@@ -1,8 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { CreditCard, TrendingUp, ArrowDownRight, Loader2, Plus, X, Search } from 'lucide-react'
-import { PageHeader, StatCard, DashboardPanel, StatusBadge } from '@/components/dashboard/DashboardUI'
+import { CreditCard, TrendingUp, ArrowDownRight, Loader2, Plus, X, Search, ArrowUpRight } from 'lucide-react'
+import { StatusBadge } from '@/components/dashboard/DashboardUI'
 import { createClient } from '@/lib/supabase/client'
 
 type Payment = {
@@ -25,7 +25,7 @@ const typeLabel = (t: string) => t.replace(/_/g, ' ').replace(/\b\w/g, c => c.to
 function Toast({ message, type, onClose }: { message: string; type: 'success' | 'error'; onClose: () => void }) {
   useEffect(() => { const t = setTimeout(onClose, 4000); return () => clearTimeout(t) }, [onClose])
   return (
-    <div className={`fixed bottom-6 right-6 z-50 flex items-center gap-3 px-5 py-3 rounded-xl shadow-lg text-sm font-semibold text-white ${type === 'success' ? 'bg-emerald-600' : 'bg-red-500'}`}>
+    <div className={`fixed bottom-6 right-6 z-50 flex items-center gap-3 px-5 py-3 shadow-[4px_4px_0px_rgba(0,0,0,1)] text-sm font-bold text-white border-2 border-black ${type === 'success' ? 'bg-emerald-600' : 'bg-red-600'}`}>
       {message}
       <button onClick={onClose}><X size={14} /></button>
     </div>
@@ -49,7 +49,7 @@ export default function PaymentsPage() {
       supabase.from('payments').select('*, user:user_id(full_name, email, role)').order('created_at', { ascending: false }),
       supabase.from('profiles').select('id, full_name, email, role').order('full_name'),
     ])
-    setPayments(paymentsRes.data || [])
+    setPayments((paymentsRes.data || []) as unknown as Payment[])
     setUsers(usersRes.data || [])
     setLoading(false)
   }
@@ -68,95 +68,193 @@ export default function PaymentsPage() {
   const refunded = payments.filter(p => p.status === 'refunded').reduce((s, p) => s + Number(p.amount), 0)
 
   const handleCreate = async () => {
-    if (!form.user_id || !form.amount || !form.payment_type) { setToast({ message: 'User, amount, and type are required', type: 'error' }); return }
+    if (!form.user_id || !form.amount || !form.payment_type) {
+      setToast({ message: 'User, amount, and type are required', type: 'error' })
+      return
+    }
     setSaving(true)
     try {
-      const res = await fetch('/api/payments', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...form, amount: parseFloat(form.amount) }) })
-      if (!res.ok) { const { error } = await res.json(); setToast({ message: error || 'Failed', type: 'error' }); return }
+      const res = await fetch('/api/payments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...form, amount: parseFloat(form.amount) }),
+      })
+      if (!res.ok) {
+        const { error } = await res.json()
+        setToast({ message: error || 'Failed', type: 'error' })
+        return
+      }
       setToast({ message: 'Payment record created', type: 'success' })
       setShowModal(false)
+      setForm({ user_id: '', amount: '', payment_type: 'course_fee', description: '', status: 'pending' })
       loadData()
-    } finally { setSaving(false) }
+    } finally {
+      setSaving(false)
+    }
   }
 
   const handleStatusUpdate = async (id: string, status: string) => {
-    const res = await fetch(`/api/payments/${id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status }) })
-    if (res.ok) { setToast({ message: `Payment marked as ${status}`, type: 'success' }); loadData() }
-    else setToast({ message: 'Failed to update', type: 'error' })
+    const res = await fetch(`/api/payments/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status }),
+    })
+    if (res.ok) {
+      setToast({ message: `Payment marked as ${status}`, type: 'success' })
+      loadData()
+    } else {
+      setToast({ message: 'Failed to update', type: 'error' })
+    }
   }
 
   const fmt = (v: number) => `₹${v.toLocaleString('en-IN')}`
 
-  if (loading) return <div className="flex items-center justify-center py-32"><Loader2 size={28} className="animate-spin text-primary-bright" /></div>
+  const statusColors: Record<string, string> = {
+    all: 'bg-[#022A4A] text-white border-black shadow-[3px_3px_0px_rgba(0,0,0,1)]',
+    pending: 'bg-amber-500 text-white border-black shadow-[3px_3px_0px_rgba(0,0,0,1)]',
+    paid: 'bg-emerald-600 text-white border-black shadow-[3px_3px_0px_rgba(0,0,0,1)]',
+    failed: 'bg-red-600 text-white border-black shadow-[3px_3px_0px_rgba(0,0,0,1)]',
+    refunded: 'bg-purple-600 text-white border-black shadow-[3px_3px_0px_rgba(0,0,0,1)]',
+  }
+
+  if (loading) return (
+    <div className="flex items-center justify-center py-32">
+      <Loader2 size={28} className="animate-spin text-[#045184]" />
+    </div>
+  )
 
   return (
     <div className="space-y-6">
-      <PageHeader
-        title="Payments"
-        description="Track all transactions & revenue"
-        action={
-          <button onClick={() => setShowModal(true)} className="bg-primary text-white px-5 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 hover:bg-primary/90 transition-colors">
-            <Plus size={16} /> Add Payment
-          </button>
-        }
-      />
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+        <div>
+          <div className="inline-flex items-center gap-2 bg-[#045184] text-white text-[10px] font-black uppercase tracking-widest px-3 py-1.5 border-2 border-[#022A4A] shadow-[3px_3px_0px_rgba(0,0,0,1)] mb-3">
+            <CreditCard size={12} />
+            Transactions
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-black text-[#022A4A] uppercase tracking-tight leading-none">Payments</h1>
+          <p className="text-sm text-foreground/50 font-semibold mt-1">Track all transactions &amp; revenue</p>
+        </div>
+        <button
+          onClick={() => setShowModal(true)}
+          className="flex items-center gap-2 bg-[#022A4A] text-white text-xs font-black uppercase tracking-widest px-5 py-3 border-2 border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all flex-shrink-0"
+        >
+          <Plus size={15} />
+          Add Payment
+        </button>
+      </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard label="Total Revenue" value={fmt(totalRevenue)} change="All time paid" trend="up" icon={CreditCard} color="navy" />
-        <StatCard label="Pending" value={fmt(pendingAmount)} change={`${pending.length} transactions`} icon={ArrowDownRight} color="sky" />
-        <StatCard label="Refunded" value={fmt(refunded)} icon={TrendingUp} color="mint" />
-        <StatCard label="Total Transactions" value={String(payments.length)} icon={CreditCard} color="teal" />
+      {/* Summary Cards */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {[
+          { label: 'Total Revenue', value: fmt(totalRevenue), sub: 'All time paid', icon: CreditCard, color: 'bg-[#045184]' },
+          { label: 'Pending', value: fmt(pendingAmount), sub: `${pending.length} transactions`, icon: ArrowDownRight, color: 'bg-amber-500' },
+          { label: 'Refunded', value: fmt(refunded), sub: 'Total refunds', icon: TrendingUp, color: 'bg-purple-600' },
+          { label: 'All Transactions', value: String(payments.length), sub: 'Total records', icon: CreditCard, color: 'bg-[#022A4A]' },
+        ].map((card) => (
+          <div key={card.label} className="bg-white border-2 border-black shadow-[6px_6px_0px_rgba(0,0,0,1)] p-4 sm:p-5">
+            <div className="flex items-center gap-2 mb-3">
+              <div className={`w-8 h-8 ${card.color} border-2 border-black flex items-center justify-center shadow-[2px_2px_0px_rgba(0,0,0,1)]`}>
+                <card.icon size={15} className="text-white" />
+              </div>
+              <span className="text-[10px] font-black uppercase tracking-widest text-foreground/50 leading-tight">{card.label}</span>
+            </div>
+            <div className="text-xl sm:text-2xl font-black text-[#022A4A]">{card.value}</div>
+            <div className="text-xs font-semibold text-foreground/40 mt-0.5">{card.sub}</div>
+          </div>
+        ))}
       </div>
 
       {/* Filters */}
-      <div className="bg-white border border-border rounded-xl p-4 flex flex-col sm:flex-row gap-3">
+      <div className="bg-white border-2 border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] p-4 flex flex-col sm:flex-row gap-3">
         <div className="flex-1 relative">
-          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-foreground/40" />
-          <input type="text" placeholder="Search by user or invoice..." value={search} onChange={e => setSearch(e.target.value)} className="w-full pl-10 pr-4 py-2 border border-border rounded-lg text-sm focus:outline-none focus:border-primary-bright" />
+          <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-foreground/40" />
+          <input
+            type="text"
+            placeholder="Search by user or invoice..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            className="w-full pl-9 pr-4 py-2.5 border-2 border-black/15 text-sm font-semibold focus:outline-none focus:border-[#045184] focus:shadow-[3px_3px_0px_rgba(4,81,132,0.2)]"
+          />
         </div>
         <div className="flex gap-2 flex-wrap">
           {['all', 'pending', 'paid', 'failed', 'refunded'].map(s => (
-            <button key={s} onClick={() => setFilterStatus(s)} className={`px-3 py-1.5 rounded-lg text-xs font-semibold capitalize transition-colors ${filterStatus === s ? 'bg-primary text-white' : 'bg-off-white text-foreground/60 hover:text-primary'}`}>
+            <button
+              key={s}
+              onClick={() => setFilterStatus(s)}
+              className={`px-3 py-2 text-[10px] font-black uppercase tracking-widest border-2 transition-all capitalize ${
+                filterStatus === s
+                  ? statusColors[s]
+                  : 'bg-white border-black/20 text-foreground/50 hover:border-black hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+              }`}
+            >
               {s}
             </button>
           ))}
         </div>
       </div>
 
-      <DashboardPanel title={`Transactions (${filtered.length})`}>
+      {/* Transactions Table */}
+      <div className="bg-white border-2 border-black shadow-[6px_6px_0px_rgba(0,0,0,1)]">
+        <div className="px-5 py-4 border-b-2 border-black bg-[#022A4A]">
+          <h2 className="text-sm font-black uppercase tracking-widest text-white">
+            Transactions <span className="text-white/40">({filtered.length})</span>
+          </h2>
+        </div>
         {filtered.length === 0 ? (
-          <p className="text-sm text-foreground/40 py-8 text-center">No transactions found</p>
+          <p className="text-sm text-foreground/40 py-12 text-center font-semibold">No transactions found</p>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-border">
+                <tr className="border-b-2 border-black bg-[#F4F6FA]">
                   {['Invoice', 'User', 'Type', 'Amount', 'Status', 'Date', 'Actions'].map(h => (
-                    <th key={h} className="text-left py-3 px-4 text-xs font-semibold text-foreground/50 uppercase tracking-wide">{h}</th>
+                    <th key={h} className="text-left py-3 px-4 text-[10px] font-black text-foreground/50 uppercase tracking-widest whitespace-nowrap">{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
-                {filtered.map(p => (
-                  <tr key={p.id} className="border-b border-border/50 hover:bg-off-white/50">
-                    <td className="py-3 px-4 font-mono text-xs text-foreground/60">{p.invoice_number || '—'}</td>
+                {filtered.map((p, i) => (
+                  <tr key={p.id} className={`border-b border-black/8 hover:bg-[#F4F6FA] ${i % 2 === 0 ? '' : 'bg-[#FAFBFC]'}`}>
+                    <td className="py-3 px-4 font-mono text-xs text-foreground/50 font-semibold">{p.invoice_number || '—'}</td>
                     <td className="py-3 px-4">
-                      <div className="font-medium text-primary">{p.user?.full_name || 'Unknown'}</div>
+                      <div className="font-bold text-[#022A4A]">{p.user?.full_name || 'Unknown'}</div>
                       <div className="text-xs text-foreground/40">{p.user?.email}</div>
                     </td>
-                    <td className="py-3 px-4"><span className="text-xs bg-off-white px-2 py-1 rounded-md font-medium">{typeLabel(p.payment_type)}</span></td>
-                    <td className="py-3 px-4 font-semibold text-primary">{fmt(Number(p.amount))}</td>
+                    <td className="py-3 px-4">
+                      <span className="text-[10px] bg-[#022A4A]/8 text-[#022A4A] px-2 py-1 font-black uppercase tracking-wide border border-[#022A4A]/20 whitespace-nowrap">
+                        {typeLabel(p.payment_type)}
+                      </span>
+                    </td>
+                    <td className="py-3 px-4 font-black text-[#022A4A] whitespace-nowrap">{fmt(Number(p.amount))}</td>
                     <td className="py-3 px-4"><StatusBadge status={p.status} /></td>
-                    <td className="py-3 px-4 text-foreground/50 text-xs">{new Date(p.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</td>
+                    <td className="py-3 px-4 text-foreground/50 text-xs font-semibold whitespace-nowrap">
+                      {new Date(p.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+                    </td>
                     <td className="py-3 px-4">
                       {p.status === 'pending' && (
                         <div className="flex gap-1">
-                          <button onClick={() => handleStatusUpdate(p.id, 'paid')} className="text-xs px-2 py-1 bg-emerald-100 text-emerald-700 rounded font-semibold hover:bg-emerald-200 transition-colors">Mark Paid</button>
-                          <button onClick={() => handleStatusUpdate(p.id, 'failed')} className="text-xs px-2 py-1 bg-red-100 text-red-700 rounded font-semibold hover:bg-red-200 transition-colors">Fail</button>
+                          <button
+                            onClick={() => handleStatusUpdate(p.id, 'paid')}
+                            className="text-[10px] px-2 py-1 bg-emerald-600 text-white font-black uppercase tracking-wide hover:bg-emerald-700 transition-colors border border-emerald-800"
+                          >
+                            Paid
+                          </button>
+                          <button
+                            onClick={() => handleStatusUpdate(p.id, 'failed')}
+                            className="text-[10px] px-2 py-1 bg-red-600 text-white font-black uppercase tracking-wide hover:bg-red-700 transition-colors border border-red-800"
+                          >
+                            Fail
+                          </button>
                         </div>
                       )}
                       {p.status === 'paid' && (
-                        <button onClick={() => handleStatusUpdate(p.id, 'refunded')} className="text-xs px-2 py-1 bg-orange-100 text-orange-700 rounded font-semibold hover:bg-orange-200 transition-colors">Refund</button>
+                        <button
+                          onClick={() => handleStatusUpdate(p.id, 'refunded')}
+                          className="text-[10px] px-2 py-1 bg-purple-600 text-white font-black uppercase tracking-wide hover:bg-purple-700 transition-colors border border-purple-800"
+                        >
+                          Refund
+                        </button>
                       )}
                     </td>
                   </tr>
@@ -165,51 +263,100 @@ export default function PaymentsPage() {
             </table>
           </div>
         )}
-      </DashboardPanel>
+      </div>
 
       {/* Create Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl w-full max-w-md shadow-xl">
-            <div className="flex items-center justify-between p-6 border-b border-border">
-              <h2 className="text-lg font-bold text-primary">Add Payment Record</h2>
-              <button onClick={() => setShowModal(false)}><X size={20} className="text-foreground/40" /></button>
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+          <div className="bg-white w-full max-w-md border-2 border-black shadow-[8px_8px_0px_rgba(0,0,0,1)]">
+            <div className="flex items-center justify-between px-6 py-4 border-b-2 border-black bg-[#022A4A]">
+              <h2 className="text-sm font-black uppercase tracking-widest text-white">Add Payment Record</h2>
+              <button onClick={() => setShowModal(false)} className="text-white/60 hover:text-white">
+                <X size={18} />
+              </button>
             </div>
             <div className="p-6 space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-foreground/60 mb-1.5 uppercase tracking-wide">User *</label>
-                <select value={form.user_id} onChange={e => setForm(f => ({ ...f, user_id: e.target.value }))} className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary-bright">
+                <label className="block text-[10px] font-black text-foreground/60 mb-1.5 uppercase tracking-widest">User *</label>
+                <select
+                  value={form.user_id}
+                  onChange={e => setForm(f => ({ ...f, user_id: e.target.value }))}
+                  className="w-full border-2 border-black/20 px-3 py-2.5 text-sm font-semibold focus:outline-none focus:border-[#045184]"
+                >
                   <option value="">Select user...</option>
-                  {users.map(u => <option key={u.id} value={u.id}>{u.full_name} ({u.email})</option>)}
+                  {users.map(u => (
+                    <option key={u.id} value={u.id}>{u.full_name} ({u.email})</option>
+                  ))}
                 </select>
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-foreground/60 mb-1.5 uppercase tracking-wide">Amount (₹) *</label>
-                  <input type="number" value={form.amount} onChange={e => setForm(f => ({ ...f, amount: e.target.value }))} className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary-bright" min="0" />
+                  <label className="block text-[10px] font-black text-foreground/60 mb-1.5 uppercase tracking-widest">Amount (₹) *</label>
+                  <input
+                    type="number"
+                    value={form.amount}
+                    onChange={e => setForm(f => ({ ...f, amount: e.target.value }))}
+                    className="w-full border-2 border-black/20 px-3 py-2.5 text-sm font-semibold focus:outline-none focus:border-[#045184]"
+                    min="0"
+                    placeholder="0"
+                  />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-foreground/60 mb-1.5 uppercase tracking-wide">Type *</label>
-                  <select value={form.payment_type} onChange={e => setForm(f => ({ ...f, payment_type: e.target.value }))} className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary-bright">
+                  <label className="block text-[10px] font-black text-foreground/60 mb-1.5 uppercase tracking-widest">Type *</label>
+                  <select
+                    value={form.payment_type}
+                    onChange={e => setForm(f => ({ ...f, payment_type: e.target.value }))}
+                    className="w-full border-2 border-black/20 px-3 py-2.5 text-sm font-semibold focus:outline-none focus:border-[#045184]"
+                  >
                     {PAYMENT_TYPES.map(t => <option key={t} value={t}>{typeLabel(t)}</option>)}
                   </select>
                 </div>
               </div>
               <div>
-                <label className="block text-xs font-semibold text-foreground/60 mb-1.5 uppercase tracking-wide">Description</label>
-                <input type="text" value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary-bright" placeholder="Optional description" />
+                <label className="block text-[10px] font-black text-foreground/60 mb-1.5 uppercase tracking-widest">Description</label>
+                <input
+                  type="text"
+                  value={form.description}
+                  onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
+                  className="w-full border-2 border-black/20 px-3 py-2.5 text-sm font-semibold focus:outline-none focus:border-[#045184]"
+                  placeholder="Optional description"
+                />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-foreground/60 mb-1.5 uppercase tracking-wide">Initial Status</label>
-                <select value={form.status} onChange={e => setForm(f => ({ ...f, status: e.target.value }))} className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary-bright">
-                  <option value="pending">Pending</option>
-                  <option value="paid">Paid</option>
-                </select>
+                <label className="block text-[10px] font-black text-foreground/60 mb-1.5 uppercase tracking-widest">Initial Status</label>
+                <div className="grid grid-cols-2 gap-2">
+                  {[{ val: 'pending', label: 'Pending' }, { val: 'paid', label: 'Paid' }].map(opt => (
+                    <button
+                      key={opt.val}
+                      type="button"
+                      onClick={() => setForm(f => ({ ...f, status: opt.val }))}
+                      className={`py-2.5 text-xs font-black uppercase tracking-widest border-2 transition-all ${
+                        form.status === opt.val
+                          ? opt.val === 'paid'
+                            ? 'bg-emerald-600 text-white border-emerald-800 shadow-[3px_3px_0px_rgba(0,0,0,1)]'
+                            : 'bg-amber-500 text-white border-amber-700 shadow-[3px_3px_0px_rgba(0,0,0,1)]'
+                          : 'border-black/20 text-foreground/50 hover:border-black'
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
-            <div className="flex gap-3 p-6 border-t border-border">
-              <button onClick={() => setShowModal(false)} className="flex-1 py-2.5 rounded-lg text-sm font-semibold border border-border text-foreground/60 hover:bg-off-white transition-colors">Cancel</button>
-              <button onClick={handleCreate} disabled={saving} className="flex-1 py-2.5 rounded-lg text-sm font-semibold bg-primary text-white hover:bg-primary/90 transition-colors disabled:opacity-50">
+            <div className="flex gap-3 px-6 pb-6">
+              <button
+                onClick={() => setShowModal(false)}
+                className="flex-1 py-2.5 text-xs font-black uppercase tracking-widest border-2 border-black/20 text-foreground/60 hover:border-black transition-all"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleCreate}
+                disabled={saving}
+                className="flex-1 py-2.5 text-xs font-black uppercase tracking-widest bg-[#022A4A] text-white border-2 border-black shadow-[3px_3px_0px_rgba(0,0,0,1)] hover:shadow-[1px_1px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                {saving ? <Loader2 size={14} className="animate-spin" /> : <ArrowUpRight size={14} />}
                 {saving ? 'Creating...' : 'Create Record'}
               </button>
             </div>

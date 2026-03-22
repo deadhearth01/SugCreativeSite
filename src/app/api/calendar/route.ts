@@ -1,6 +1,8 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
 
+const ALL_ROLES = ['admin', 'student', 'client', 'mentor', 'employee', 'intern']
+
 // GET — List calendar events (filtered by user's role)
 export async function GET(_req: NextRequest) {
   try {
@@ -11,11 +13,11 @@ export async function GET(_req: NextRequest) {
     const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single()
     const userRole = profile?.role || 'student'
 
-    // Get events targeted at this role or all roles
+    // Get events where target_roles contains the user's role
     const { data, error } = await supabase
       .from('calendar_events')
       .select(`*, created_by_profile:created_by(full_name)`)
-      .or(`target_roles.cs.{${userRole}},target_roles.cs.{all}`)
+      .contains('target_roles', [userRole])
       .order('start_time', { ascending: true })
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
@@ -43,6 +45,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Title and start time are required' }, { status: 400 })
     }
 
+    // If target_roles is empty, not provided, or contains 'all', broadcast to all roles
+    let resolvedRoles: string[]
+    if (!target_roles || target_roles.length === 0 || target_roles.includes('all')) {
+      resolvedRoles = ALL_ROLES
+    } else {
+      resolvedRoles = target_roles.filter((r: string) => ALL_ROLES.includes(r))
+    }
+
     const { data, error } = await supabase
       .from('calendar_events')
       .insert({
@@ -54,7 +64,7 @@ export async function POST(req: NextRequest) {
         all_day: all_day || false,
         location,
         color: color || '#0A2472',
-        target_roles: target_roles || ['all'],
+        target_roles: resolvedRoles,
         created_by: user.id,
       })
       .select()

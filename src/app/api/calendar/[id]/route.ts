@@ -1,6 +1,8 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
 
+const ALL_ROLES = ['admin', 'student', 'client', 'mentor', 'employee', 'intern']
+
 // PATCH — Update calendar event (admin only)
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -13,6 +15,16 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     if (profile?.role !== 'admin') return NextResponse.json({ error: 'Admin only' }, { status: 403 })
 
     const body = await req.json()
+
+    // Resolve target_roles if present — 'all' is not a valid enum value
+    if (body.target_roles) {
+      if (body.target_roles.includes('all') || body.target_roles.length === 0) {
+        body.target_roles = ALL_ROLES
+      } else {
+        body.target_roles = body.target_roles.filter((r: string) => ALL_ROLES.includes(r))
+      }
+    }
+
     const { data, error } = await supabase
       .from('calendar_events')
       .update({ ...body, updated_at: new Date().toISOString() })

@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import {
   LayoutDashboard,
@@ -25,6 +24,7 @@ import {
   Menu,
   X,
   LogOut,
+  ChevronLeft,
   ChevronRight,
   Wallet,
 } from 'lucide-react'
@@ -46,8 +46,6 @@ const roleNavItems: Record<string, NavItem[]> = {
     { label: 'Budget & Finances', href: '/dashboard/admin/budget', icon: Wallet },
     { label: 'Payments', href: '/dashboard/admin/payments', icon: CreditCard },
     { label: 'Announcements', href: '/dashboard/admin/announcements', icon: Megaphone },
-    { label: 'Support & Tickets', href: '/dashboard/admin/tickets', icon: LifeBuoy },
-    { label: 'Settings', href: '/dashboard/admin/settings', icon: Settings },
   ],
   student: [
     { label: 'Dashboard', href: '/dashboard/student', icon: LayoutDashboard },
@@ -56,8 +54,6 @@ const roleNavItems: Record<string, NavItem[]> = {
     { label: 'Meetings', href: '/dashboard/student/meetings', icon: Video },
     { label: 'SUG Calendar', href: '/dashboard/student/calendar', icon: Calendar },
     { label: 'Certificates', href: '/dashboard/student/certificates', icon: ClipboardList },
-    { label: 'Support', href: '/dashboard/student/support', icon: LifeBuoy },
-    { label: 'Settings', href: '/dashboard/student/settings', icon: Settings },
   ],
   client: [
     { label: 'Dashboard', href: '/dashboard/client', icon: LayoutDashboard },
@@ -65,8 +61,6 @@ const roleNavItems: Record<string, NavItem[]> = {
     { label: 'Invoices & Payments', href: '/dashboard/client/payments', icon: Receipt },
     { label: 'Meetings', href: '/dashboard/client/meetings', icon: Video },
     { label: 'Reports', href: '/dashboard/client/reports', icon: BarChart3 },
-    { label: 'Support & Tickets', href: '/dashboard/client/tickets', icon: LifeBuoy },
-    { label: 'Settings', href: '/dashboard/client/settings', icon: Settings },
   ],
   mentor: [
     { label: 'Dashboard', href: '/dashboard/mentor', icon: LayoutDashboard },
@@ -76,18 +70,15 @@ const roleNavItems: Record<string, NavItem[]> = {
     { label: 'Calendar', href: '/dashboard/mentor/calendar', icon: Calendar },
     { label: 'Resources', href: '/dashboard/mentor/resources', icon: BookOpen },
     { label: 'Earnings', href: '/dashboard/mentor/earnings', icon: CreditCard },
-    { label: 'Settings', href: '/dashboard/mentor/settings', icon: Settings },
   ],
   employee: [
     { label: 'Dashboard', href: '/dashboard/employee', icon: LayoutDashboard },
     { label: 'My Tasks', href: '/dashboard/employee/tasks', icon: ClipboardList },
-    { label: 'Support Tickets', href: '/dashboard/employee/tickets', icon: LifeBuoy },
     { label: 'Courses', href: '/dashboard/employee/courses', icon: BookOpen },
     { label: 'Calendar', href: '/dashboard/employee/calendar', icon: Calendar },
     { label: 'Meetings', href: '/dashboard/employee/meetings', icon: Video },
     { label: 'Announcements', href: '/dashboard/employee/announcements', icon: Megaphone },
     { label: 'Attendance', href: '/dashboard/employee/attendance', icon: Clock },
-    { label: 'Settings', href: '/dashboard/employee/settings', icon: Settings },
   ],
   intern: [
     { label: 'Dashboard', href: '/dashboard/intern', icon: LayoutDashboard },
@@ -97,6 +88,30 @@ const roleNavItems: Record<string, NavItem[]> = {
     { label: 'Meetings', href: '/dashboard/intern/meetings', icon: Video },
     { label: 'Learning', href: '/dashboard/intern/learning', icon: BookOpen },
     { label: 'Attendance', href: '/dashboard/intern/attendance', icon: Clock },
+  ],
+}
+
+const roleBottomItems: Record<string, NavItem[]> = {
+  admin: [
+    { label: 'Support & Tickets', href: '/dashboard/admin/tickets', icon: LifeBuoy },
+    { label: 'Settings', href: '/dashboard/admin/settings', icon: Settings },
+  ],
+  student: [
+    { label: 'Support', href: '/dashboard/student/support', icon: LifeBuoy },
+    { label: 'Settings', href: '/dashboard/student/settings', icon: Settings },
+  ],
+  client: [
+    { label: 'Support & Tickets', href: '/dashboard/client/tickets', icon: LifeBuoy },
+    { label: 'Settings', href: '/dashboard/client/settings', icon: Settings },
+  ],
+  mentor: [
+    { label: 'Settings', href: '/dashboard/mentor/settings', icon: Settings },
+  ],
+  employee: [
+    { label: 'Support Tickets', href: '/dashboard/employee/tickets', icon: LifeBuoy },
+    { label: 'Settings', href: '/dashboard/employee/settings', icon: Settings },
+  ],
+  intern: [
     { label: 'Support', href: '/dashboard/intern/support', icon: LifeBuoy },
     { label: 'Settings', href: '/dashboard/intern/settings', icon: Settings },
   ],
@@ -117,14 +132,42 @@ type UserProfile = {
   avatar_url: string | null
 }
 
+function NavLink({ item, collapsed, isActive, onClick }: {
+  item: NavItem
+  collapsed: boolean
+  isActive: boolean
+  onClick?: () => void
+}) {
+  return (
+    <Link
+      href={item.href}
+      onClick={onClick}
+      title={collapsed ? item.label : undefined}
+      className={`flex items-center gap-3 px-3 py-2.5 text-sm font-semibold transition-all duration-200 group relative ${
+        collapsed ? 'justify-center' : ''
+      } ${
+        isActive
+          ? 'bg-white/15 text-white border-l-2 border-white'
+          : 'text-white/55 hover:text-white hover:bg-white/8'
+      }`}
+    >
+      <item.icon size={18} className="flex-shrink-0" />
+      {!collapsed && <span className="truncate">{item.label}</span>}
+      {!collapsed && isActive && <ChevronRight size={12} className="ml-auto flex-shrink-0" />}
+    </Link>
+  )
+}
+
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
 
-  // Extract role from pathname
   const role = pathname.split('/')[2] || 'admin'
   const navItems = roleNavItems[role] || roleNavItems.admin
+  const bottomItems = roleBottomItems[role] || []
+  const allItems = [...navItems, ...bottomItems]
 
   useEffect(() => {
     const supabase = createClient()
@@ -143,12 +186,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   const getInitials = (name: string | null) => {
     if (!name) return 'U'
-    return name
-      .split(' ')
-      .map((n) => n[0])
-      .join('')
-      .toUpperCase()
-      .slice(0, 2)
+    return name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2)
   }
 
   const handleLogout = async () => {
@@ -157,104 +195,144 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     window.location.href = '/login'
   }
 
+  const SidebarContent = ({ mobile = false }: { mobile?: boolean }) => (
+    <>
+      {/* Logo */}
+      <div className={`border-b border-white/10 flex items-center ${sidebarCollapsed && !mobile ? 'justify-center p-4' : 'justify-between p-5'}`}>
+        {(!sidebarCollapsed || mobile) ? (
+          <Link href="/" className="flex items-center gap-2.5 min-w-0">
+            <div className="w-8 h-8 bg-white flex items-center justify-center flex-shrink-0">
+              <span className="font-black text-primary text-xs tracking-tight">SC</span>
+            </div>
+            <div className="min-w-0">
+              <span className="text-white text-sm font-black tracking-tight block truncate">SUG CREATIVE</span>
+              <span className="text-white/40 text-[10px] font-bold uppercase tracking-widest">{roleLabels[role]} Portal</span>
+            </div>
+          </Link>
+        ) : (
+          <Link href="/" className="w-8 h-8 bg-white flex items-center justify-center">
+            <span className="font-black text-primary text-xs tracking-tight">SC</span>
+          </Link>
+        )}
+        {mobile ? (
+          <button onClick={() => setSidebarOpen(false)} className="text-white/50 hover:text-white p-1">
+            <X size={18} />
+          </button>
+        ) : (
+          <button
+            onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+            className={`text-white/40 hover:text-white hover:bg-white/10 p-1.5 transition-colors flex-shrink-0 ${sidebarCollapsed ? 'ml-0' : 'ml-1'}`}
+            title={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          >
+            {sidebarCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+          </button>
+        )}
+      </div>
+
+      {/* Main Navigation */}
+      <nav className="flex-1 overflow-y-auto py-3 px-2 space-y-0.5">
+        {navItems.map((item) => (
+          <NavLink
+            key={item.href}
+            item={item}
+            collapsed={sidebarCollapsed && !mobile}
+            isActive={pathname === item.href}
+            onClick={mobile ? () => setSidebarOpen(false) : undefined}
+          />
+        ))}
+      </nav>
+
+      {/* Bottom Items (Support + Settings) */}
+      <div className="border-t border-white/10 px-2 py-3 space-y-0.5">
+        {bottomItems.map((item) => (
+          <NavLink
+            key={item.href}
+            item={item}
+            collapsed={sidebarCollapsed && !mobile}
+            isActive={pathname === item.href}
+            onClick={mobile ? () => setSidebarOpen(false) : undefined}
+          />
+        ))}
+      </div>
+
+      {/* Sign Out */}
+      <div className="px-2 pb-3 border-t border-white/10 pt-2">
+        <button
+          onClick={handleLogout}
+          title={sidebarCollapsed && !mobile ? 'Sign Out' : undefined}
+          className={`flex items-center gap-3 px-3 py-2.5 text-sm font-semibold text-white/40 hover:text-white hover:bg-white/8 transition-colors w-full ${sidebarCollapsed && !mobile ? 'justify-center' : ''}`}
+        >
+          <LogOut size={18} className="flex-shrink-0" />
+          {(!sidebarCollapsed || mobile) && <span>Sign Out</span>}
+        </button>
+      </div>
+    </>
+  )
+
   return (
-    <div className="min-h-screen bg-off-white flex">
-      {/* Sidebar */}
+    <div className="min-h-screen bg-[#F4F6FA] flex">
+      {/* Desktop Sidebar */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-64 bg-primary flex flex-col transition-transform duration-300 lg:translate-x-0 rounded-r-2xl ${
-          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        className={`fixed inset-y-0 left-0 z-50 bg-[#022A4A] flex flex-col transition-all duration-300 hidden lg:flex ${
+          sidebarCollapsed ? 'w-16' : 'w-64'
         }`}
       >
-        {/* Logo */}
-        <div className="p-6 border-b border-white/10">
-          <Link href="/" className="flex items-center gap-3">
-            <Image src="/logo.png" alt="Sug Creative" width={32} height={32} />
-            <span className="text-white text-lg font-heading font-bold">Sug Creative</span>
-          </Link>
-          <div className="mt-3 px-3 py-1.5 bg-primary-bright/20 rounded-lg w-fit">
-            <span className="text-primary-soft text-xs font-semibold uppercase tracking-wider">
-              {roleLabels[role]} Portal
-            </span>
-          </div>
-        </div>
-
-        {/* Navigation */}
-        <nav className="flex-1 overflow-y-auto py-4 px-3">
-          <ul className="space-y-1">
-            {navItems.map((item) => {
-              const isActive = pathname === item.href
-              return (
-                <li key={item.href}>
-                  <Link
-                    href={item.href}
-                    onClick={() => setSidebarOpen(false)}
-                    className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
-                      isActive
-                        ? 'bg-primary-bright text-white'
-                        : 'text-white/60 hover:text-white hover:bg-white/5'
-                    }`}
-                  >
-                    <item.icon size={18} />
-                    {item.label}
-                    {isActive && <ChevronRight size={14} className="ml-auto" />}
-                  </Link>
-                </li>
-              )
-            })}
-          </ul>
-        </nav>
-
-        {/* Footer */}
-        <div className="p-4 border-t border-white/10">
-          <button
-            onClick={handleLogout}
-            className="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-white/50 hover:text-white hover:bg-white/5 transition-colors w-full"
-          >
-            <LogOut size={18} />
-            Sign Out
-          </button>
-        </div>
+        <SidebarContent />
       </aside>
 
-      {/* Overlay for mobile */}
+      {/* Mobile Sidebar Overlay */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          className="fixed inset-0 bg-black/60 z-40 lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
 
+      {/* Mobile Sidebar Drawer */}
+      <aside
+        className={`fixed inset-y-0 left-0 z-50 w-64 bg-[#022A4A] flex flex-col transition-transform duration-300 lg:hidden ${
+          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
+      >
+        <SidebarContent mobile />
+      </aside>
+
       {/* Main Content */}
-      <div className="flex-1 lg:ml-64">
-        {/* Top bar */}
-        <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-md border-b border-border h-16 flex items-center px-6">
+      <div
+        className={`flex-1 min-w-0 transition-all duration-300 ${
+          sidebarCollapsed ? 'lg:ml-16' : 'lg:ml-64'
+        }`}
+      >
+        {/* Top Bar */}
+        <header className="sticky top-0 z-30 bg-white border-b border-black/8 h-16 flex items-center px-4 sm:px-6 gap-3">
           <button
             onClick={() => setSidebarOpen(true)}
-            className="lg:hidden text-primary mr-4"
+            className="lg:hidden text-[#022A4A] hover:bg-black/5 p-2 transition-colors"
+            aria-label="Open menu"
           >
-            <Menu size={24} />
+            <Menu size={22} />
           </button>
 
-          <div className="flex-1">
-            <h1 className="text-lg font-heading font-bold text-primary capitalize">
-              {navItems.find(item => item.href === pathname)?.label || 'Dashboard'}
+          <div className="flex-1 min-w-0">
+            <h1 className="text-base font-black text-[#022A4A] uppercase tracking-wide truncate">
+              {allItems.find(item => item.href === pathname)?.label || 'Dashboard'}
             </h1>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 flex-shrink-0">
             {userProfile?.full_name && (
-              <span className="text-sm text-foreground/60 font-medium hidden sm:block">
+              <span className="text-sm text-foreground/50 font-semibold hidden sm:block truncate max-w-32">
                 {userProfile.full_name}
               </span>
             )}
-            <div className="w-8 h-8 rounded-xl bg-primary flex items-center justify-center text-white text-xs font-bold">
+            <div className="w-9 h-9 bg-[#045184] flex items-center justify-center text-white text-xs font-black border-2 border-[#022A4A] shadow-[2px_2px_0px_rgba(0,0,0,0.8)]">
               {getInitials(userProfile?.full_name || null)}
             </div>
           </div>
         </header>
 
         {/* Page Content */}
-        <main className="p-6">
+        <main className="p-4 sm:p-6">
           {children}
         </main>
       </div>
