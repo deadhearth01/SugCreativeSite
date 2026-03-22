@@ -3,24 +3,11 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { GraduationCap, FileText, Video, Calendar, Award, ArrowUpRight, Clock, Loader2 } from 'lucide-react'
-import { StatCard, DashboardPanel, DashboardTable, StatusBadge } from '@/components/dashboard/DashboardUI'
+import { StatusBadge } from '@/components/dashboard/DashboardUI'
 import { createClient } from '@/lib/supabase/client'
 
-type EnrolledCourse = {
-  id: string
-  progress: number
-  status: string
-  courses: { title: string; total_lessons?: number } | null
-}
-
-type UpcomingMeeting = {
-  id: string
-  title: string
-  scheduled_at: string
-  meet_link: string | null
-  status: string
-  organizer: { full_name: string } | null
-}
+type EnrolledCourse = { id: string; progress: number; status: string; courses: { title: string; total_lessons?: number } | null }
+type UpcomingMeeting = { id: string; title: string; scheduled_at: string; meet_link: string | null; status: string; organizer: { full_name: string } | null }
 
 export default function StudentDashboard() {
   const [loading, setLoading] = useState(true)
@@ -35,108 +22,56 @@ export default function StudentDashboard() {
       const supabase = createClient()
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) return
-
-      // Fetch profile
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('full_name, hours_studied')
-        .eq('id', user.id)
-        .single()
-      if (profile) {
-        setUserName(profile.full_name || 'Student')
-        setHoursStudied(profile.hours_studied || 0)
-      }
-
-      // Fetch enrolled courses
-      const { data: enrollments } = await supabase
-        .from('enrollments')
-        .select('id, progress, status, courses(title, total_lessons)')
-        .eq('student_id', user.id)
-        .eq('status', 'active')
-        .limit(5)
+      const { data: profile } = await supabase.from('profiles').select('full_name, hours_studied').eq('id', user.id).single()
+      if (profile) { setUserName(profile.full_name || 'Student'); setHoursStudied(profile.hours_studied || 0) }
+      const { data: enrollments } = await supabase.from('enrollments').select('id, progress, status, courses(title, total_lessons)').eq('student_id', user.id).eq('status', 'active').limit(5)
       setEnrolledCourses((enrollments as unknown as EnrolledCourse[]) || [])
-
-      // Fetch upcoming meetings
       const now = new Date().toISOString()
-      const { data: meetingsData } = await supabase
-        .from('meetings')
-        .select('id, title, scheduled_at, meet_link, status, organizer:organizer_id(full_name)')
-        .gte('scheduled_at', now)
-        .order('scheduled_at')
-        .limit(5)
-
+      const { data: meetingsData } = await supabase.from('meetings').select('id, title, scheduled_at, meet_link, status, organizer:organizer_id(full_name)').gte('scheduled_at', now).order('scheduled_at').limit(5)
       if (meetingsData) {
-        // Filter to meetings where student is a participant
         const meetingIds = meetingsData.map((m: { id: string }) => m.id)
-        const { data: participantRows } = await supabase
-          .from('meeting_participants')
-          .select('meeting_id')
-          .eq('user_id', user.id)
-          .in('meeting_id', meetingIds)
+        const { data: participantRows } = await supabase.from('meeting_participants').select('meeting_id').eq('user_id', user.id).in('meeting_id', meetingIds)
         const participantSet = new Set((participantRows || []).map((p: { meeting_id: string }) => p.meeting_id))
-        setUpcomingMeetings((meetingsData as unknown as UpcomingMeeting[]).filter((m) => participantSet.has(m.id)))
+        setUpcomingMeetings((meetingsData as unknown as UpcomingMeeting[]).filter(m => participantSet.has(m.id)))
       }
-
-      // Fetch certificate count
-      const { count } = await supabase
-        .from('certificates')
-        .select('id', { count: 'exact', head: true })
-        .eq('student_id', user.id)
+      const { count } = await supabase.from('certificates').select('id', { count: 'exact', head: true }).eq('student_id', user.id)
       setCertCount(count || 0)
-
       setLoading(false)
     }
     fetchData()
   }, [])
 
-  const completedCount = enrolledCourses.filter((e) => e.status === 'completed').length
+  const completedCount = enrolledCourses.filter(e => e.status === 'completed').length
 
-  const courseRows = enrolledCourses.map((e) => [
-    <span key="title" className="font-medium text-primary">{e.courses?.title || '—'}</span>,
-    <span key="prog">{e.progress ?? 0}%</span>,
-    <StatusBadge key="status" status={e.status} />,
-    <span key="rem" className="text-foreground/50 text-xs">
-      {e.progress === 100 ? 'Certificate ready' : `${Math.max(0, (e.courses?.total_lessons || 0) - Math.round(((e.progress || 0) / 100) * (e.courses?.total_lessons || 0)))} lessons left`}
-    </span>,
-  ])
-
-  const meetingRows = upcomingMeetings.map((m) => [
-    <span key="title" className="font-medium text-primary">{m.title}</span>,
-    <span key="org" className="text-foreground/60">{(m.organizer as { full_name: string } | null)?.full_name || '—'}</span>,
-    <span key="date" className="text-foreground/60 text-xs">{new Date(m.scheduled_at).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>,
-    <StatusBadge key="status" status={m.status || 'Scheduled'} />,
-  ])
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center py-32">
-        <Loader2 size={28} className="animate-spin text-primary-bright" />
-      </div>
-    )
-  }
+  if (loading) return <div className="flex items-center justify-center py-32"><Loader2 size={28} className="animate-spin text-[#045184]" /></div>
 
   return (
-    <div className="space-y-8">
-      {/* Welcome */}
-      <div className="bg-gradient-to-r from-navy to-teal p-6 rounded-xl text-white">
-        <h2 className="text-xl font-heading font-bold">Welcome back, {userName}!</h2>
-        <p className="text-white/70 text-sm mt-1">
-          Continue your learning journey.
-          {enrolledCourses.length > 0
-            ? ` You have ${enrolledCourses.filter((e) => e.status !== 'completed').length} course(s) in progress.`
-            : ' Enroll in a course to get started.'}
+    <div className="space-y-6">
+      <div className="bg-[#022A4A] border-2 border-black shadow-[3px_3px_0px_rgba(0,0,0,0.8)] p-6">
+        <div className="inline-flex items-center gap-2 bg-[#045184] text-white text-[10px] font-black uppercase tracking-widest px-3 py-1.5 border-2 border-white/20 shadow-[2px_2px_0px_rgba(0,0,0,0.5)] mb-3">Student Portal</div>
+        <h2 className="text-xl font-black text-white">Welcome back, {userName}!</h2>
+        <p className="text-white/60 text-sm font-semibold mt-1">
+          {enrolledCourses.length > 0 ? `${enrolledCourses.filter(e => e.status !== 'completed').length} course(s) in progress. Keep learning!` : 'Enroll in a course to get started.'}
         </p>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard label="Enrolled Courses" value={enrolledCourses.length} icon={GraduationCap} color="navy" />
-        <StatCard label="Completed" value={completedCount} change={enrolledCourses.length > 0 ? `${Math.round((completedCount / enrolledCourses.length) * 100)}% completion rate` : undefined} icon={Award} color="teal" />
-        <StatCard label="Upcoming Meetings" value={upcomingMeetings.length} icon={Video} color="sky" />
-        <StatCard label="Hours Studied" value={hoursStudied} icon={Clock} color="mint" />
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {[
+          { label: 'Enrolled Courses', value: String(enrolledCourses.length), icon: GraduationCap, color: 'bg-[#045184]' },
+          { label: 'Completed', value: String(completedCount), icon: Award, color: 'bg-emerald-600' },
+          { label: 'Upcoming Meetings', value: String(upcomingMeetings.length), icon: Video, color: 'bg-purple-600' },
+          { label: 'Hours Studied', value: String(hoursStudied), icon: Clock, color: 'bg-amber-500' },
+        ].map((card) => (
+          <div key={card.label} className="bg-white border-2 border-black shadow-[3px_3px_0px_rgba(0,0,0,0.8)] p-5">
+            <div className="flex items-center gap-2 mb-3">
+              <div className={`w-9 h-9 ${card.color} border-2 border-black flex items-center justify-center shadow-[2px_2px_0px_rgba(0,0,0,0.5)]`}><card.icon size={16} className="text-white" /></div>
+              <span className="text-[10px] font-black uppercase tracking-widest text-foreground/50 leading-tight">{card.label}</span>
+            </div>
+            <div className="text-2xl font-black text-[#022A4A]">{card.value}</div>
+          </div>
+        ))}
       </div>
 
-      {/* Quick Actions */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {[
           { label: 'My Courses', href: '/dashboard/student/courses', icon: GraduationCap },
@@ -144,46 +79,59 @@ export default function StudentDashboard() {
           { label: 'Book Meeting', href: '/dashboard/student/meetings', icon: Video },
           { label: 'Calendar', href: '/dashboard/student/calendar', icon: Calendar },
         ].map((a) => (
-          <Link
-            key={a.label}
-            href={a.href}
-            className="bg-white border border-border rounded-xl p-4 flex items-center gap-3 hover:border-primary-bright hover:shadow-sm transition-all group"
-          >
-            <a.icon size={18} className="text-primary-bright" />
-            <span className="text-sm font-medium text-primary">{a.label}</span>
-            <ArrowUpRight size={14} className="ml-auto text-foreground/30 group-hover:text-primary-bright transition-colors" />
+          <Link key={a.label} href={a.href} className="bg-white border-2 border-black shadow-[2px_2px_0px_rgba(0,0,0,0.7)] p-4 flex items-center gap-3 hover:shadow-[1px_1px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all group">
+            <div className="w-8 h-8 bg-[#022A4A] border border-black flex items-center justify-center flex-shrink-0"><a.icon size={15} className="text-white" /></div>
+            <span className="text-xs font-black uppercase tracking-wide text-[#022A4A]">{a.label}</span>
+            <ArrowUpRight size={13} className="ml-auto text-foreground/30 group-hover:text-[#045184] transition-colors" />
           </Link>
         ))}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <DashboardPanel
-          title="My Courses"
-          action={<Link href="/dashboard/student/courses" className="text-xs text-primary-bright font-semibold hover:underline">View All</Link>}
-        >
-          {courseRows.length > 0 ? (
-            <DashboardTable
-              headers={['Course', 'Progress', 'Status', 'Remaining']}
-              rows={courseRows}
-            />
-          ) : (
-            <p className="text-sm text-foreground/40 py-8 text-center">No enrolled courses yet</p>
+        <div className="bg-white border-2 border-black shadow-[3px_3px_0px_rgba(0,0,0,0.8)]">
+          <div className="flex items-center justify-between px-5 py-4 border-b-2 border-black bg-[#022A4A]">
+            <h3 className="text-sm font-black uppercase tracking-widest text-white">My Courses</h3>
+            <Link href="/dashboard/student/courses" className="text-[10px] font-black uppercase tracking-widest text-white/60 hover:text-white flex items-center gap-1">View All <ArrowUpRight size={12} /></Link>
+          </div>
+          {enrolledCourses.length === 0 ? <p className="text-sm text-foreground/40 py-8 text-center font-semibold">No enrolled courses yet</p> : (
+            <div className="divide-y divide-black/8">
+              {enrolledCourses.map((e, i) => (
+                <div key={i} className="p-4 hover:bg-[#F4F6FA] transition-colors">
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="text-sm font-bold text-[#022A4A] truncate max-w-48">{e.courses?.title || '—'}</p>
+                    <StatusBadge status={e.status} />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="flex-1 h-2 bg-[#F4F6FA] border border-black/10">
+                      <div className="h-full bg-[#045184] transition-all" style={{ width: `${e.progress ?? 0}%` }} />
+                    </div>
+                    <span className="text-xs font-black text-[#045184]">{e.progress ?? 0}%</span>
+                  </div>
+                </div>
+              ))}
+            </div>
           )}
-        </DashboardPanel>
+        </div>
 
-        <DashboardPanel
-          title="Upcoming Meetings"
-          action={<Link href="/dashboard/student/meetings" className="text-xs text-primary-bright font-semibold hover:underline">View All</Link>}
-        >
-          {meetingRows.length > 0 ? (
-            <DashboardTable
-              headers={['Session', 'Mentor', 'Date & Time', 'Status']}
-              rows={meetingRows}
-            />
-          ) : (
-            <p className="text-sm text-foreground/40 py-8 text-center">No upcoming meetings</p>
+        <div className="bg-white border-2 border-black shadow-[3px_3px_0px_rgba(0,0,0,0.8)]">
+          <div className="flex items-center justify-between px-5 py-4 border-b-2 border-black bg-[#022A4A]">
+            <h3 className="text-sm font-black uppercase tracking-widest text-white">Upcoming Meetings</h3>
+            <Link href="/dashboard/student/meetings" className="text-[10px] font-black uppercase tracking-widest text-white/60 hover:text-white flex items-center gap-1">View All <ArrowUpRight size={12} /></Link>
+          </div>
+          {upcomingMeetings.length === 0 ? <p className="text-sm text-foreground/40 py-8 text-center font-semibold">No upcoming meetings</p> : (
+            <table className="w-full text-sm">
+              <thead><tr className="bg-[#F4F6FA] border-b-2 border-black">{['Session', 'Mentor', 'Date & Time', 'Status'].map(h => <th key={h} className="text-left py-3 px-4 text-[10px] font-black text-foreground/50 uppercase tracking-widest">{h}</th>)}</tr></thead>
+              <tbody>{upcomingMeetings.map((m, i) => (
+                <tr key={i} className="border-b border-black/8 hover:bg-[#F4F6FA]">
+                  <td className="py-3 px-4 font-bold text-[#022A4A] text-xs">{m.title}</td>
+                  <td className="py-3 px-4 text-xs text-foreground/60">{(m.organizer as { full_name: string } | null)?.full_name || '—'}</td>
+                  <td className="py-3 px-4 text-xs text-foreground/50">{new Date(m.scheduled_at).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</td>
+                  <td className="py-3 px-4"><StatusBadge status={m.status || 'Scheduled'} /></td>
+                </tr>
+              ))}</tbody>
+            </table>
           )}
-        </DashboardPanel>
+        </div>
       </div>
     </div>
   )

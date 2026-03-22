@@ -9,7 +9,7 @@ type TicketReply = {
   id: string
   message: string
   created_at: string
-  user_id: string
+  author_id: string
   author?: { full_name: string } | null
 }
 
@@ -70,7 +70,7 @@ export default function StudentSupportPage() {
     const supabase = createClient()
     const { data } = await supabase
       .from('ticket_replies')
-      .select('id, message, created_at, user_id, author:user_id(full_name)')
+      .select('id, message, created_at, author_id, author:author_id(full_name)')
       .eq('ticket_id', ticketId)
       .order('created_at')
 
@@ -111,15 +111,12 @@ export default function StudentSupportPage() {
     if (!replyText.trim() || !selectedTicket) return
     setSubmittingReply(true)
     try {
-      const supabase = createClient()
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) return
-
-      const { error } = await supabase
-        .from('ticket_replies')
-        .insert({ ticket_id: selectedTicket.id, message: replyText.trim(), user_id: user.id })
-
-      if (!error) {
+      const res = await fetch(`/api/tickets/${selectedTicket.id}/replies`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: replyText.trim() }),
+      })
+      if (res.ok) {
         setReplyText('')
         await fetchReplies(selectedTicket.id)
       } else {

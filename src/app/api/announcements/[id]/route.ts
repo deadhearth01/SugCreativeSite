@@ -1,6 +1,8 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
 
+const ALL_ROLES = ['admin', 'student', 'client', 'mentor', 'employee', 'intern']
+
 // PATCH — Update announcement (admin only)
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -13,6 +15,16 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     if (profile?.role !== 'admin') return NextResponse.json({ error: 'Admin only' }, { status: 403 })
 
     const body = await req.json()
+    // Expand 'all' in target_roles to avoid invalid enum value
+    if (body.target_roles) {
+      if (body.target_roles.includes('all') || body.target_roles.length === 0) {
+        body.target_roles = ALL_ROLES
+      } else {
+        body.target_roles = body.target_roles.filter((r: string) => ALL_ROLES.includes(r))
+        if (body.target_roles.length === 0) body.target_roles = ALL_ROLES
+      }
+    }
+
     const { data, error } = await supabase
       .from('announcements')
       .update({ ...body, updated_at: new Date().toISOString() })

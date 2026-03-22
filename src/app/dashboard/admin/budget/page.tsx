@@ -143,7 +143,7 @@ export default function BudgetPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-2 bg-[#045184] text-white text-[10px] font-black uppercase tracking-widest px-3 py-1.5 border-2 border-[#022A4A] shadow-[3px_3px_0px_rgba(0,0,0,1)] mb-3">
+          <div className="inline-flex items-center gap-2 bg-[#045184] text-white text-[10px] font-black uppercase tracking-widest px-3 py-1.5 border-2 border-[#022A4A] shadow-[2px_2px_0px_rgba(0,0,0,0.7)] mb-3">
             <Wallet size={12} />
             Finance
           </div>
@@ -152,7 +152,7 @@ export default function BudgetPage() {
         </div>
         <button
           onClick={openCreate}
-          className="flex items-center gap-2 bg-[#022A4A] text-white text-xs font-black uppercase tracking-widest px-5 py-3 border-2 border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all flex-shrink-0"
+          className="flex items-center gap-2 bg-[#022A4A] text-white text-xs font-black uppercase tracking-widest px-5 py-3 border-2 border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all flex-shrink-0"
         >
           <Plus size={15} />
           Add Entry
@@ -161,9 +161,9 @@ export default function BudgetPage() {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-white border-2 border-black shadow-[6px_6px_0px_rgba(0,0,0,1)] p-5">
+        <div className="bg-white border-2 border-black shadow-[3px_3px_0px_rgba(0,0,0,0.8)] p-5">
           <div className="flex items-center gap-2 mb-3">
-            <div className="w-8 h-8 bg-emerald-500 border-2 border-black flex items-center justify-center shadow-[2px_2px_0px_rgba(0,0,0,1)]">
+            <div className="w-8 h-8 bg-emerald-500 border-2 border-black flex items-center justify-center shadow-[2px_2px_0px_rgba(0,0,0,0.5)]">
               <TrendingUp size={16} className="text-white" />
             </div>
             <span className="text-xs font-black uppercase tracking-widest text-foreground/60">Total Income</span>
@@ -171,9 +171,9 @@ export default function BudgetPage() {
           <div className="text-3xl font-black text-emerald-600">{fmt(totalIncome)}</div>
           <div className="text-xs font-semibold text-foreground/40 mt-1">{entries.filter(e => e.is_income).length} entries</div>
         </div>
-        <div className="bg-white border-2 border-black shadow-[6px_6px_0px_rgba(0,0,0,1)] p-5">
+        <div className="bg-white border-2 border-black shadow-[3px_3px_0px_rgba(0,0,0,0.8)] p-5">
           <div className="flex items-center gap-2 mb-3">
-            <div className="w-8 h-8 bg-red-500 border-2 border-black flex items-center justify-center shadow-[2px_2px_0px_rgba(0,0,0,1)]">
+            <div className="w-8 h-8 bg-red-500 border-2 border-black flex items-center justify-center shadow-[2px_2px_0px_rgba(0,0,0,0.5)]">
               <TrendingDown size={16} className="text-white" />
             </div>
             <span className="text-xs font-black uppercase tracking-widest text-foreground/60">Total Expenses</span>
@@ -181,9 +181,9 @@ export default function BudgetPage() {
           <div className="text-3xl font-black text-red-600">{fmt(totalExpense)}</div>
           <div className="text-xs font-semibold text-foreground/40 mt-1">{entries.filter(e => !e.is_income).length} entries</div>
         </div>
-        <div className={`bg-white border-2 border-black shadow-[6px_6px_0px_rgba(0,0,0,1)] p-5`}>
+        <div className={`bg-white border-2 border-black shadow-[3px_3px_0px_rgba(0,0,0,0.8)] p-5`}>
           <div className="flex items-center gap-2 mb-3">
-            <div className={`w-8 h-8 border-2 border-black flex items-center justify-center shadow-[2px_2px_0px_rgba(0,0,0,1)] ${netBalance >= 0 ? 'bg-[#045184]' : 'bg-orange-500'}`}>
+            <div className={`w-8 h-8 border-2 border-black flex items-center justify-center shadow-[2px_2px_0px_rgba(0,0,0,0.5)] ${netBalance >= 0 ? 'bg-[#045184]' : 'bg-orange-500'}`}>
               <Wallet size={16} className="text-white" />
             </div>
             <span className="text-xs font-black uppercase tracking-widest text-foreground/60">Net Balance</span>
@@ -203,8 +203,8 @@ export default function BudgetPage() {
             onClick={() => setFilter(f)}
             className={`px-4 py-2 text-xs font-black uppercase tracking-widest border-2 transition-all ${
               filter === f
-                ? 'bg-[#022A4A] text-white border-black shadow-[3px_3px_0px_rgba(0,0,0,1)]'
-                : 'bg-white border-black/20 text-foreground/60 hover:border-black hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                ? 'bg-[#022A4A] text-white border-black shadow-[2px_2px_0px_rgba(0,0,0,0.7)]'
+                : 'bg-white border-black/20 text-foreground/60 hover:border-black hover:shadow-[2px_2px_0px_rgba(0,0,0,0.5)]'
             }`}
           >
             {f === 'all' ? 'All Entries' : f === 'income' ? 'Income' : 'Expenses'}
@@ -213,7 +213,7 @@ export default function BudgetPage() {
       </div>
 
       {/* Entries Table */}
-      <div className="bg-white border-2 border-black shadow-[6px_6px_0px_rgba(0,0,0,1)]">
+      <div className="bg-white border-2 border-black shadow-[3px_3px_0px_rgba(0,0,0,0.8)]">
         <div className="flex items-center justify-between px-5 py-4 border-b-2 border-black">
           <h2 className="text-sm font-black uppercase tracking-widest text-[#022A4A]">
             {filter === 'all' ? 'All' : filter === 'income' ? 'Income' : 'Expense'} Entries
@@ -337,8 +337,8 @@ export default function BudgetPage() {
                       className={`py-2.5 text-xs font-black uppercase tracking-widest border-2 transition-all ${
                         form.is_income === opt.val
                           ? opt.val
-                            ? 'bg-emerald-600 text-white border-emerald-800 shadow-[3px_3px_0px_rgba(0,0,0,1)]'
-                            : 'bg-red-600 text-white border-red-800 shadow-[3px_3px_0px_rgba(0,0,0,1)]'
+                            ? 'bg-emerald-600 text-white border-emerald-800 shadow-[2px_2px_0px_rgba(0,0,0,0.7)]'
+                            : 'bg-red-600 text-white border-red-800 shadow-[2px_2px_0px_rgba(0,0,0,0.7)]'
                           : 'border-black/20 text-foreground/50 hover:border-black'
                       }`}
                     >
@@ -368,7 +368,7 @@ export default function BudgetPage() {
               <button
                 onClick={handleSave}
                 disabled={saving}
-                className="flex-1 py-2.5 text-xs font-black uppercase tracking-widest bg-[#022A4A] text-white border-2 border-black shadow-[3px_3px_0px_rgba(0,0,0,1)] hover:shadow-[1px_1px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                className="flex-1 py-2.5 text-xs font-black uppercase tracking-widest bg-[#022A4A] text-white border-2 border-black shadow-[2px_2px_0px_rgba(0,0,0,0.7)] hover:shadow-[1px_1px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 {saving ? <Loader2 size={14} className="animate-spin" /> : <ArrowUpRight size={14} />}
                 {saving ? 'Saving...' : (editEntry ? 'Update' : 'Add Entry')}

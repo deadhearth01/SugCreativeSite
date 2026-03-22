@@ -110,11 +110,11 @@ export default function PaymentsPage() {
   const fmt = (v: number) => `₹${v.toLocaleString('en-IN')}`
 
   const statusColors: Record<string, string> = {
-    all: 'bg-[#022A4A] text-white border-black shadow-[3px_3px_0px_rgba(0,0,0,1)]',
-    pending: 'bg-amber-500 text-white border-black shadow-[3px_3px_0px_rgba(0,0,0,1)]',
-    paid: 'bg-emerald-600 text-white border-black shadow-[3px_3px_0px_rgba(0,0,0,1)]',
-    failed: 'bg-red-600 text-white border-black shadow-[3px_3px_0px_rgba(0,0,0,1)]',
-    refunded: 'bg-purple-600 text-white border-black shadow-[3px_3px_0px_rgba(0,0,0,1)]',
+    all: 'bg-[#022A4A] text-white border-black shadow-[2px_2px_0px_rgba(0,0,0,0.7)]',
+    pending: 'bg-amber-500 text-white border-black shadow-[2px_2px_0px_rgba(0,0,0,0.7)]',
+    paid: 'bg-emerald-600 text-white border-black shadow-[2px_2px_0px_rgba(0,0,0,0.7)]',
+    failed: 'bg-red-600 text-white border-black shadow-[2px_2px_0px_rgba(0,0,0,0.7)]',
+    refunded: 'bg-purple-600 text-white border-black shadow-[2px_2px_0px_rgba(0,0,0,0.7)]',
   }
 
   if (loading) return (
@@ -128,7 +128,7 @@ export default function PaymentsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-2 bg-[#045184] text-white text-[10px] font-black uppercase tracking-widest px-3 py-1.5 border-2 border-[#022A4A] shadow-[3px_3px_0px_rgba(0,0,0,1)] mb-3">
+          <div className="inline-flex items-center gap-2 bg-[#045184] text-white text-[10px] font-black uppercase tracking-widest px-3 py-1.5 border-2 border-[#022A4A] shadow-[2px_2px_0px_rgba(0,0,0,0.7)] mb-3">
             <CreditCard size={12} />
             Transactions
           </div>
@@ -137,7 +137,7 @@ export default function PaymentsPage() {
         </div>
         <button
           onClick={() => setShowModal(true)}
-          className="flex items-center gap-2 bg-[#022A4A] text-white text-xs font-black uppercase tracking-widest px-5 py-3 border-2 border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all flex-shrink-0"
+          className="flex items-center gap-2 bg-[#022A4A] text-white text-xs font-black uppercase tracking-widest px-5 py-3 border-2 border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all flex-shrink-0"
         >
           <Plus size={15} />
           Add Payment
@@ -152,9 +152,9 @@ export default function PaymentsPage() {
           { label: 'Refunded', value: fmt(refunded), sub: 'Total refunds', icon: TrendingUp, color: 'bg-purple-600' },
           { label: 'All Transactions', value: String(payments.length), sub: 'Total records', icon: CreditCard, color: 'bg-[#022A4A]' },
         ].map((card) => (
-          <div key={card.label} className="bg-white border-2 border-black shadow-[6px_6px_0px_rgba(0,0,0,1)] p-4 sm:p-5">
+          <div key={card.label} className="bg-white border-2 border-black shadow-[3px_3px_0px_rgba(0,0,0,0.8)] p-4 sm:p-5">
             <div className="flex items-center gap-2 mb-3">
-              <div className={`w-8 h-8 ${card.color} border-2 border-black flex items-center justify-center shadow-[2px_2px_0px_rgba(0,0,0,1)]`}>
+              <div className={`w-8 h-8 ${card.color} border-2 border-black flex items-center justify-center shadow-[2px_2px_0px_rgba(0,0,0,0.5)]`}>
                 <card.icon size={15} className="text-white" />
               </div>
               <span className="text-[10px] font-black uppercase tracking-widest text-foreground/50 leading-tight">{card.label}</span>
@@ -185,7 +185,7 @@ export default function PaymentsPage() {
               className={`px-3 py-2 text-[10px] font-black uppercase tracking-widest border-2 transition-all capitalize ${
                 filterStatus === s
                   ? statusColors[s]
-                  : 'bg-white border-black/20 text-foreground/50 hover:border-black hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                  : 'bg-white border-black/20 text-foreground/50 hover:border-black hover:shadow-[2px_2px_0px_rgba(0,0,0,0.5)]'
               }`}
             >
               {s}
@@ -195,7 +195,7 @@ export default function PaymentsPage() {
       </div>
 
       {/* Transactions Table */}
-      <div className="bg-white border-2 border-black shadow-[6px_6px_0px_rgba(0,0,0,1)]">
+      <div className="bg-white border-2 border-black shadow-[3px_3px_0px_rgba(0,0,0,0.8)]">
         <div className="px-5 py-4 border-b-2 border-black bg-[#022A4A]">
           <h2 className="text-sm font-black uppercase tracking-widest text-white">
             Transactions <span className="text-white/40">({filtered.length})</span>
@@ -333,8 +333,8 @@ export default function PaymentsPage() {
                       className={`py-2.5 text-xs font-black uppercase tracking-widest border-2 transition-all ${
                         form.status === opt.val
                           ? opt.val === 'paid'
-                            ? 'bg-emerald-600 text-white border-emerald-800 shadow-[3px_3px_0px_rgba(0,0,0,1)]'
-                            : 'bg-amber-500 text-white border-amber-700 shadow-[3px_3px_0px_rgba(0,0,0,1)]'
+                            ? 'bg-emerald-600 text-white border-emerald-800 shadow-[2px_2px_0px_rgba(0,0,0,0.7)]'
+                            : 'bg-amber-500 text-white border-amber-700 shadow-[2px_2px_0px_rgba(0,0,0,0.7)]'
                           : 'border-black/20 text-foreground/50 hover:border-black'
                       }`}
                     >
@@ -354,7 +354,7 @@ export default function PaymentsPage() {
               <button
                 onClick={handleCreate}
                 disabled={saving}
-                className="flex-1 py-2.5 text-xs font-black uppercase tracking-widest bg-[#022A4A] text-white border-2 border-black shadow-[3px_3px_0px_rgba(0,0,0,1)] hover:shadow-[1px_1px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                className="flex-1 py-2.5 text-xs font-black uppercase tracking-widest bg-[#022A4A] text-white border-2 border-black shadow-[2px_2px_0px_rgba(0,0,0,0.7)] hover:shadow-[1px_1px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 {saving ? <Loader2 size={14} className="animate-spin" /> : <ArrowUpRight size={14} />}
                 {saving ? 'Creating...' : 'Create Record'}

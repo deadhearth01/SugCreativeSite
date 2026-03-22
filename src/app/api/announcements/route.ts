@@ -1,6 +1,8 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
 
+const ALL_ROLES = ['admin', 'student', 'client', 'mentor', 'employee', 'intern']
+
 // GET — List announcements visible to the user's role
 export async function GET(_req: NextRequest) {
   try {
@@ -43,13 +45,22 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Title and content are required' }, { status: 400 })
     }
 
+    // Expand 'all' — user_role[] enum doesn't accept literal 'all'
+    let resolvedRoles: string[]
+    if (!target_roles || target_roles.length === 0 || target_roles.includes('all')) {
+      resolvedRoles = ALL_ROLES
+    } else {
+      resolvedRoles = target_roles.filter((r: string) => ALL_ROLES.includes(r))
+      if (resolvedRoles.length === 0) resolvedRoles = ALL_ROLES
+    }
+
     const { data, error } = await supabase
       .from('announcements')
       .insert({
         title,
         content,
         is_pinned: is_pinned || false,
-        target_roles: target_roles || ['all'],
+        target_roles: resolvedRoles,
         created_by: user.id,
       })
       .select()

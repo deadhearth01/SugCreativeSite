@@ -1,18 +1,9 @@
 'use client'
 
-import { useState, useEffect, ReactNode } from 'react'
-import {
-  Users,
-  BookOpen,
-  CreditCard,
-  LifeBuoy,
-  Calendar,
-  Video,
-  ArrowUpRight,
-  Loader2,
-} from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { Users, BookOpen, CreditCard, LifeBuoy, Calendar, Video, ArrowUpRight, Loader2 } from 'lucide-react'
 import Link from 'next/link'
-import { StatCard, DashboardPanel, DashboardTable, StatusBadge } from '@/components/dashboard/DashboardUI'
+import { StatusBadge } from '@/components/dashboard/DashboardUI'
 import { createClient } from '@/lib/supabase/client'
 
 function timeAgo(dateStr: string) {
@@ -23,28 +14,22 @@ function timeAgo(dateStr: string) {
   const hrs = Math.floor(mins / 60)
   if (hrs < 24) return `${hrs}h ago`
   const days = Math.floor(hrs / 24)
-  if (days < 30) return `${days}d ago`
-  return new Date(dateStr).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' })
+  return days < 30 ? `${days}d ago` : new Date(dateStr).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' })
 }
 
-type Stats = {
-  totalUsers: number
-  activeCourses: number
-  revenue: number
-  openTickets: number
-}
+type Stats = { totalUsers: number; activeCourses: number; revenue: number; openTickets: number }
+type RecentUser = { full_name: string; role: string; status: string; created_at: string }
+type RecentTicket = { id: string; subject: string; priority: string; status: string }
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState<Stats>({ totalUsers: 0, activeCourses: 0, revenue: 0, openTickets: 0 })
-  const [recentUsers, setRecentUsers] = useState<ReactNode[][]>([])
-  const [recentTickets, setRecentTickets] = useState<ReactNode[][]>([])
+  const [recentUsers, setRecentUsers] = useState<RecentUser[]>([])
+  const [recentTickets, setRecentTickets] = useState<RecentTicket[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const load = async () => {
       const supabase = createClient()
-
-      // Fetch stats in parallel
       const [usersRes, coursesRes, paymentsRes, ticketsRes, recentUsersRes, recentTicketsRes] = await Promise.all([
         supabase.from('profiles').select('id', { count: 'exact', head: true }),
         supabase.from('courses').select('id', { count: 'exact', head: true }).eq('status', 'active'),
@@ -53,114 +38,132 @@ export default function AdminDashboard() {
         supabase.from('profiles').select('full_name, role, status, created_at').order('created_at', { ascending: false }).limit(5),
         supabase.from('tickets').select('id, subject, priority, status').order('created_at', { ascending: false }).limit(5),
       ])
-
       const totalRevenue = (paymentsRes.data || []).reduce((sum, p) => sum + (Number(p.amount) || 0), 0)
-
-      setStats({
-        totalUsers: usersRes.count || 0,
-        activeCourses: coursesRes.count || 0,
-        revenue: totalRevenue,
-        openTickets: ticketsRes.count || 0,
-      })
-
-      setRecentUsers(
-        (recentUsersRes.data || []).map((u, i) => [
-          u.full_name,
-          u.role?.charAt(0).toUpperCase() + u.role?.slice(1),
-          timeAgo(u.created_at),
-          <StatusBadge key={i} status={u.status || 'active'} />,
-        ])
-      )
-
-      setRecentTickets(
-        (recentTicketsRes.data || []).map((t, i) => [
-          `#${String(t.id).slice(0, 6)}`,
-          t.subject,
-          t.priority?.charAt(0).toUpperCase() + t.priority?.slice(1),
-          <StatusBadge key={i} status={t.status || 'open'} />,
-        ])
-      )
-
+      setStats({ totalUsers: usersRes.count || 0, activeCourses: coursesRes.count || 0, revenue: totalRevenue, openTickets: ticketsRes.count || 0 })
+      setRecentUsers((recentUsersRes.data || []) as RecentUser[])
+      setRecentTickets((recentTicketsRes.data || []) as RecentTicket[])
       setLoading(false)
     }
     load()
   }, [])
 
-  const formatRevenue = (amount: number) => {
-    if (amount >= 100000) return `₹${(amount / 100000).toFixed(1)}L`
-    if (amount >= 1000) return `₹${(amount / 1000).toFixed(1)}K`
-    return `₹${amount}`
-  }
+  const fmt = (amount: number) => amount >= 100000 ? `₹${(amount / 100000).toFixed(1)}L` : amount >= 1000 ? `₹${(amount / 1000).toFixed(1)}K` : `₹${amount}`
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center py-32">
-        <Loader2 size={28} className="animate-spin text-primary-bright" />
-      </div>
-    )
-  }
+  if (loading) return <div className="flex items-center justify-center py-32"><Loader2 size={28} className="animate-spin text-[#045184]" /></div>
 
   return (
-    <div className="space-y-8">
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard label="Total Users" value={stats.totalUsers.toLocaleString()} change="All registered" trend="up" icon={Users} color="navy" />
-        <StatCard label="Active Courses" value={String(stats.activeCourses)} change="Currently active" trend="up" icon={BookOpen} color="teal" />
-        <StatCard label="Revenue" value={formatRevenue(stats.revenue)} change="Total paid" trend="up" icon={CreditCard} color="mint" />
-        <StatCard label="Open Tickets" value={String(stats.openTickets)} change="Need attention" trend={stats.openTickets > 0 ? 'up' : 'down'} icon={LifeBuoy} color="sky" />
+    <div className="space-y-6">
+      {/* Welcome */}
+      <div className="bg-[#022A4A] border-2 border-black shadow-[3px_3px_0px_rgba(0,0,0,0.8)] p-6">
+        <div className="inline-flex items-center gap-2 bg-[#045184] text-white text-[10px] font-black uppercase tracking-widest px-3 py-1.5 border-2 border-white/20 shadow-[2px_2px_0px_rgba(0,0,0,0.5)] mb-3">
+          Admin Portal
+        </div>
+        <h2 className="text-xl font-black text-white">Admin Overview</h2>
+        <p className="text-white/60 text-sm font-semibold mt-1">{stats.openTickets > 0 ? `${stats.openTickets} open ticket${stats.openTickets > 1 ? 's' : ''} need attention.` : 'All systems running smoothly.'}</p>
+      </div>
+
+      {/* Stat Cards */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {[
+          { label: 'Total Users', value: stats.totalUsers.toLocaleString(), icon: Users, color: 'bg-[#045184]' },
+          { label: 'Active Courses', value: String(stats.activeCourses), icon: BookOpen, color: 'bg-emerald-600' },
+          { label: 'Revenue', value: fmt(stats.revenue), icon: CreditCard, color: 'bg-purple-600' },
+          { label: 'Open Tickets', value: String(stats.openTickets), icon: LifeBuoy, color: stats.openTickets > 0 ? 'bg-red-600' : 'bg-gray-500' },
+        ].map((card) => (
+          <div key={card.label} className="bg-white border-2 border-black shadow-[3px_3px_0px_rgba(0,0,0,0.8)] p-5">
+            <div className="flex items-center gap-2 mb-3">
+              <div className={`w-9 h-9 ${card.color} border-2 border-black flex items-center justify-center shadow-[2px_2px_0px_rgba(0,0,0,0.5)]`}>
+                <card.icon size={16} className="text-white" />
+              </div>
+              <span className="text-[10px] font-black uppercase tracking-widest text-foreground/50">{card.label}</span>
+            </div>
+            <div className="text-2xl sm:text-3xl font-black text-[#022A4A]">{card.value}</div>
+          </div>
+        ))}
       </div>
 
       {/* Quick Actions */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {[
-          { label: 'Add User', href: '/dashboard/admin/users', icon: Users },
+          { label: 'Users', href: '/dashboard/admin/users', icon: Users },
           { label: 'Meetings', href: '/dashboard/admin/meetings', icon: Video },
-          { label: 'New Course', href: '/dashboard/admin/courses', icon: BookOpen },
-          { label: 'View Calendar', href: '/dashboard/admin/calendar', icon: Calendar },
+          { label: 'Courses', href: '/dashboard/admin/courses', icon: BookOpen },
+          { label: 'Calendar', href: '/dashboard/admin/calendar', icon: Calendar },
         ].map((action) => (
-          <Link
-            key={action.label}
-            href={action.href}
-            className="bg-white border border-border rounded-xl p-4 flex items-center gap-3 hover:border-primary-bright hover:shadow-sm transition-all group"
+          <Link key={action.label} href={action.href}
+            className="bg-white border-2 border-black shadow-[2px_2px_0px_rgba(0,0,0,0.7)] p-4 flex items-center gap-3 hover:shadow-[1px_1px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all group"
           >
-            <action.icon size={18} className="text-primary-bright" />
-            <span className="text-sm font-medium text-primary">{action.label}</span>
-            <ArrowUpRight size={14} className="ml-auto text-foreground/30 group-hover:text-primary-bright transition-colors" />
+            <div className="w-8 h-8 bg-[#022A4A] border border-black flex items-center justify-center flex-shrink-0">
+              <action.icon size={15} className="text-white" />
+            </div>
+            <span className="text-xs font-black uppercase tracking-wide text-[#022A4A]">{action.label}</span>
+            <ArrowUpRight size={13} className="ml-auto text-foreground/30 group-hover:text-[#045184] transition-colors" />
           </Link>
         ))}
       </div>
 
       {/* Tables */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <DashboardPanel
-          title="Recent Registrations"
-          action={
-            <Link href="/dashboard/admin/users" className="text-xs text-primary-bright font-semibold hover:underline">
-              View All
+        {/* Recent Users */}
+        <div className="bg-white border-2 border-black shadow-[3px_3px_0px_rgba(0,0,0,0.8)]">
+          <div className="flex items-center justify-between px-5 py-4 border-b-2 border-black bg-[#022A4A]">
+            <h3 className="text-sm font-black uppercase tracking-widest text-white">Recent Registrations</h3>
+            <Link href="/dashboard/admin/users" className="text-[10px] font-black uppercase tracking-widest text-white/60 hover:text-white transition-colors flex items-center gap-1">
+              View All <ArrowUpRight size={12} />
             </Link>
-          }
-        >
-          {recentUsers.length > 0 ? (
-            <DashboardTable headers={['Name', 'Role', 'Joined', 'Status']} rows={recentUsers} />
+          </div>
+          {recentUsers.length === 0 ? (
+            <p className="text-sm text-foreground/40 py-8 text-center font-semibold">No users yet</p>
           ) : (
-            <p className="text-sm text-foreground/40 py-8 text-center">No users yet</p>
+            <table className="w-full text-sm">
+              <thead><tr className="bg-[#F4F6FA] border-b-2 border-black">
+                {['Name', 'Role', 'Joined', 'Status'].map(h => <th key={h} className="text-left py-3 px-4 text-[10px] font-black text-foreground/50 uppercase tracking-widest">{h}</th>)}
+              </tr></thead>
+              <tbody>
+                {recentUsers.map((u, i) => (
+                  <tr key={i} className="border-b border-black/8 hover:bg-[#F4F6FA]">
+                    <td className="py-3 px-4 font-bold text-[#022A4A] text-xs">{u.full_name}</td>
+                    <td className="py-3 px-4 text-xs font-semibold capitalize text-foreground/60">{u.role}</td>
+                    <td className="py-3 px-4 text-xs text-foreground/50">{timeAgo(u.created_at)}</td>
+                    <td className="py-3 px-4"><StatusBadge status={u.status || 'active'} /></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           )}
-        </DashboardPanel>
+        </div>
 
-        <DashboardPanel
-          title="Support Tickets"
-          action={
-            <Link href="/dashboard/admin/tickets" className="text-xs text-primary-bright font-semibold hover:underline">
-              View All
+        {/* Recent Tickets */}
+        <div className="bg-white border-2 border-black shadow-[3px_3px_0px_rgba(0,0,0,0.8)]">
+          <div className="flex items-center justify-between px-5 py-4 border-b-2 border-black bg-[#022A4A]">
+            <h3 className="text-sm font-black uppercase tracking-widest text-white">Support Tickets</h3>
+            <Link href="/dashboard/admin/tickets" className="text-[10px] font-black uppercase tracking-widest text-white/60 hover:text-white transition-colors flex items-center gap-1">
+              View All <ArrowUpRight size={12} />
             </Link>
-          }
-        >
-          {recentTickets.length > 0 ? (
-            <DashboardTable headers={['ID', 'Subject', 'Priority', 'Status']} rows={recentTickets} />
+          </div>
+          {recentTickets.length === 0 ? (
+            <p className="text-sm text-foreground/40 py-8 text-center font-semibold">No tickets yet</p>
           ) : (
-            <p className="text-sm text-foreground/40 py-8 text-center">No tickets yet</p>
+            <table className="w-full text-sm">
+              <thead><tr className="bg-[#F4F6FA] border-b-2 border-black">
+                {['Subject', 'Priority', 'Status'].map(h => <th key={h} className="text-left py-3 px-4 text-[10px] font-black text-foreground/50 uppercase tracking-widest">{h}</th>)}
+              </tr></thead>
+              <tbody>
+                {recentTickets.map((t, i) => (
+                  <tr key={i} className="border-b border-black/8 hover:bg-[#F4F6FA]">
+                    <td className="py-3 px-4 font-bold text-[#022A4A] text-xs truncate max-w-40">{t.subject}</td>
+                    <td className="py-3 px-4">
+                      <span className={`text-[10px] px-2 py-1 font-black uppercase tracking-wide border-2 ${t.priority === 'urgent' ? 'bg-red-100 text-red-700 border-red-400' : t.priority === 'high' ? 'bg-orange-100 text-orange-700 border-orange-400' : t.priority === 'medium' ? 'bg-amber-100 text-amber-700 border-amber-400' : 'bg-gray-100 text-gray-600 border-gray-300'}`}>
+                        {t.priority}
+                      </span>
+                    </td>
+                    <td className="py-3 px-4"><StatusBadge status={t.status} /></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           )}
-        </DashboardPanel>
+        </div>
       </div>
     </div>
   )
