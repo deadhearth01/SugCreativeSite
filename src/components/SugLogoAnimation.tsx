@@ -4,11 +4,11 @@ import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import "./SugLogoAnimation.css";
 
-const INITIAL_VIEWBOX = "97.5 97.5 180 180";
-const ARROW_ONE_VIEWBOX = "77.5 77.5 220 220";
-const ARROW_TWO_VIEWBOX = "57.5 57.5 260 260";
+const INITIAL_VIEWBOX    = "97.5 97.5 180 180";
+const ARROW_ONE_VIEWBOX  = "77.5 77.5 220 220";
+const ARROW_TWO_VIEWBOX  = "57.5 57.5 260 260";
 const ARROW_THREE_VIEWBOX = "37.5 37.5 300 300";
-const FINAL_VIEWBOX = "0 0 375 375";
+const FINAL_VIEWBOX      = "0 0 375 375";
 
 type ArrowCue = 1 | 2 | 3;
 
@@ -17,8 +17,8 @@ interface SugLogoAnimationProps {
   onAnimationComplete?: () => void;
 }
 
-// Direct vibrate — bypasses web-haptics isSupported check.
-// Works on Android Chrome; silently no-ops on iOS (no Vibration API).
+// Direct vibrate — bypasses web-haptics isSupported quirks.
+// Works on Android Chrome; no-ops silently on iOS (no Vibration API).
 function vibrate(pattern: number | number[]) {
   if (typeof navigator !== "undefined" && navigator.vibrate) {
     try { navigator.vibrate(pattern); } catch { /* not supported */ }
@@ -26,30 +26,29 @@ function vibrate(pattern: number | number[]) {
 }
 
 export function SugLogoAnimation({ className = "", onAnimationComplete }: SugLogoAnimationProps) {
-  const scopeRef = useRef<HTMLDivElement>(null);
-  const svgRef = useRef<SVGSVGElement>(null);
-  const bgWashRef = useRef<HTMLDivElement>(null);
-  const bgInnerRef = useRef<HTMLDivElement>(null);
-  const noiseRef = useRef<HTMLDivElement>(null);
+  const scopeRef     = useRef<HTMLDivElement>(null);
+  const svgRef       = useRef<SVGSVGElement>(null);
+  const bgWashRef    = useRef<HTMLDivElement>(null);
+  const bgInnerRef   = useRef<HTMLDivElement>(null);
+  const noiseRef     = useRef<HTMLDivElement>(null);
   const circleGroupRef = useRef<SVGGElement>(null);
-  const circleRef = useRef<SVGCircleElement>(null);
-  const sheenRef = useRef<SVGCircleElement>(null);
-  const sRef = useRef<SVGPathElement>(null);
-  const arrowOneRef = useRef<SVGGElement>(null);
-  const arrowTwoRef = useRef<SVGGElement>(null);
+  const circleRef    = useRef<SVGCircleElement>(null);
+  const sheenRef     = useRef<SVGCircleElement>(null);
+  const sRef         = useRef<SVGPathElement>(null);
+  const arrowOneRef  = useRef<SVGGElement>(null);
+  const arrowTwoRef  = useRef<SVGGElement>(null);
   const arrowThreeRef = useRef<SVGGElement>(null);
-  const whiteBgRef = useRef<HTMLDivElement>(null);
-  const timelineRef = useRef<GSAPTimeline | null>(null);
-  const bgLoopRef = useRef<gsap.core.Tween | null>(null);
-  const audioCtxRef = useRef<AudioContext | null>(null);
+  const whiteBgRef   = useRef<HTMLDivElement>(null);
+  const bgLoopRef    = useRef<gsap.core.Tween | null>(null);
+  const audioCtxRef  = useRef<AudioContext | null>(null);
+  const gsapCtxRef   = useRef<gsap.Context | null>(null);
   const [isSettled, setIsSettled] = useState(false);
 
-  // SSR-safe — evaluated once on client
   const isMobile =
     typeof window !== "undefined" &&
     /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
-  // ── Audio (desktop only) ───────────────────────────────
+  // ── Audio (desktop only) ─────────────────────────────────────
   const ensureAudio = async () => {
     if (isMobile || typeof window === "undefined") return null;
     const Ctx =
@@ -63,7 +62,9 @@ export function SugLogoAnimation({ className = "", onAnimationComplete }: SugLog
     } catch { return null; }
   };
 
-  const playSwoosh = async ({ from, to, duration, volume }: { from: number; to: number; duration: number; volume: number }) => {
+  const playSwoosh = async ({ from, to, duration, volume }: {
+    from: number; to: number; duration: number; volume: number;
+  }) => {
     const ctx = await ensureAudio();
     if (!ctx) return;
     try {
@@ -81,15 +82,12 @@ export function SugLogoAnimation({ className = "", onAnimationComplete }: SugLog
       gain.gain.setValueAtTime(0, t);
       gain.gain.linearRampToValueAtTime(volume, t + duration * 0.2);
       gain.gain.exponentialRampToValueAtTime(0.01, t + duration);
-      osc.connect(filter);
-      filter.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start(t);
-      osc.stop(t + duration + 0.1);
+      osc.connect(filter); filter.connect(gain); gain.connect(ctx.destination);
+      osc.start(t); osc.stop(t + duration + 0.1);
     } catch { /* ignore */ }
   };
 
-  // ── Sensory feedback ───────────────────────────────────
+  // ── Sensory feedback ─────────────────────────────────────────
   const executeSensoryFeedback = async (cue: ArrowCue) => {
     if (isMobile) {
       if (cue === 1) vibrate([40]);
@@ -103,107 +101,126 @@ export function SugLogoAnimation({ className = "", onAnimationComplete }: SugLog
   };
 
   const completeSensoryFeedback = () => {
-    if (isMobile) {
-      vibrate([80, 50, 100]);
-    } else {
-      void playSwoosh({ from: 1200, to: 600, duration: 0.5, volume: 0.3 });
-    }
+    if (isMobile) { vibrate([80, 50, 100]); }
+    else { void playSwoosh({ from: 1200, to: 600, duration: 0.5, volume: 0.3 }); }
   };
 
-  // ── Main GSAP animation ────────────────────────────────
+  // ── Main animation ────────────────────────────────────────────
   useEffect(() => {
-    if (
-      !scopeRef.current || !svgRef.current || !bgWashRef.current ||
-      !bgInnerRef.current || !noiseRef.current || !circleGroupRef.current ||
-      !circleRef.current || !sheenRef.current || !sRef.current ||
-      !arrowOneRef.current || !arrowTwoRef.current ||
-      !arrowThreeRef.current || !whiteBgRef.current
-    ) return;
+    let rafId: number;
+    let mounted = true;
 
-    const ctx = gsap.context(() => {
-      const sLength = sRef.current?.getTotalLength() ?? 1000;
-      setIsSettled(false);
-      bgLoopRef.current?.kill();
-      timelineRef.current?.kill();
+    // Defer by one rAF — ensures SVG is fully painted before we call
+    // getTotalLength(), which can return 0 on mobile if called too early.
+    rafId = requestAnimationFrame(() => {
+      if (!mounted) return;
+      if (
+        !scopeRef.current || !svgRef.current || !bgWashRef.current ||
+        !bgInnerRef.current || !noiseRef.current || !circleGroupRef.current ||
+        !circleRef.current || !sheenRef.current || !sRef.current ||
+        !arrowOneRef.current || !arrowTwoRef.current ||
+        !arrowThreeRef.current || !whiteBgRef.current
+      ) return;
 
-      // ── Initial state ──
-      gsap.set(whiteBgRef.current, { opacity: 0 });
-      gsap.set(bgWashRef.current, { scale: 4, opacity: 1, filter: "blur(0px)" });
-      gsap.set(bgInnerRef.current, { rotate: -8, scale: 1.05, xPercent: 0, yPercent: 0 });
-      gsap.set(noiseRef.current, { opacity: 0.1 });
-      gsap.set(svgRef.current, { attr: { viewBox: INITIAL_VIEWBOX } });
-      gsap.set(circleGroupRef.current, { opacity: 0, scale: 4, transformOrigin: "187.5px 187.5px" });
-      gsap.set(sheenRef.current, { opacity: 0 });
-      gsap.set(sRef.current, {
-        fillOpacity: 0, strokeOpacity: 1,
-        strokeDasharray: sLength * 3, strokeDashoffset: sLength * 3,
-      });
-      gsap.set(arrowOneRef.current,   { opacity: 0, scale: 0, x: -80,  y: 80,  rotate: -135, transformOrigin: "202px 190px" });
-      gsap.set(arrowTwoRef.current,   { opacity: 0, scale: 0, x: -100, y: 100, rotate: -135, transformOrigin: "235px 158px" });
-      gsap.set(arrowThreeRef.current, { opacity: 0, scale: 0, x: -120, y: 120, rotate: -135, transformOrigin: "281px 119px" });
+      gsapCtxRef.current = gsap.context(() => {
+        // getTotalLength() is safe now — SVG is in the DOM after one rAF
+        const rawLen = sRef.current?.getTotalLength() ?? 0;
+        // Fallback: if browser returns 0 (some mobile WebKit), use a
+        // measured constant for this specific path shape (~1120px)
+        const sLength = rawLen > 10 ? rawLen : 1120;
 
-      // Background loop — skipped on mobile (too GPU intensive)
-      if (!isMobile) {
-        bgLoopRef.current = gsap.to(bgInnerRef.current, {
-          scale: 1.12, rotate: 8, xPercent: 2, yPercent: 2,
-          duration: 2.8, ease: "sine.inOut", yoyo: true, repeat: -1,
+        bgLoopRef.current?.kill();
+
+        // ── Initial states ──
+        gsap.set(whiteBgRef.current,    { opacity: 0 });
+        gsap.set(bgWashRef.current,     { scale: 4, opacity: 1 });
+        gsap.set(bgInnerRef.current,    { rotate: -8, scale: 1.05, xPercent: 0, yPercent: 0 });
+        gsap.set(noiseRef.current,      { opacity: 0.1 });
+        gsap.set(svgRef.current,        { attr: { viewBox: INITIAL_VIEWBOX } });
+        gsap.set(circleGroupRef.current,{ opacity: 0, scale: 4, transformOrigin: "187.5px 187.5px" });
+        gsap.set(sheenRef.current,      { opacity: 0 });
+        gsap.set(sRef.current, {
+          fillOpacity: 0, strokeOpacity: 1,
+          strokeDasharray: sLength * 3,
+          strokeDashoffset: sLength * 3,
         });
-      }
+        gsap.set(arrowOneRef.current,   { opacity: 0, scale: 0, x: -80,  y: 80,  rotate: -135, transformOrigin: "202px 190px" });
+        gsap.set(arrowTwoRef.current,   { opacity: 0, scale: 0, x: -100, y: 100, rotate: -135, transformOrigin: "235px 158px" });
+        gsap.set(arrowThreeRef.current, { opacity: 0, scale: 0, x: -120, y: 120, rotate: -135, transformOrigin: "281px 119px" });
 
-      const tl = gsap.timeline({ delay: 0.15 });
+        // Background ambient loop — skip on mobile (GPU cost isn't worth it)
+        if (!isMobile) {
+          bgLoopRef.current = gsap.to(bgInnerRef.current, {
+            scale: 1.1, rotate: 8, xPercent: 2, yPercent: 2,
+            duration: 2.8, ease: "sine.inOut", yoyo: true, repeat: -1,
+          });
+        }
 
-      tl
-        // Draw the S
-        .to(sRef.current, { strokeDashoffset: 0, duration: 1.1, ease: "power2.inOut" })
-        .to(sRef.current, { fillOpacity: 1, strokeOpacity: 0.15, duration: 0.45 }, "-=0.2")
-        .call(() => { void executeSensoryFeedback(1); }, [], "-=0.1")
+        const tl = gsap.timeline({ delay: 0.15 });
 
-        // Arrow 1
-        .to(svgRef.current, { attr: { viewBox: ARROW_ONE_VIEWBOX }, duration: 0.55, ease: "power2.inOut" }, "<")
-        .to(arrowOneRef.current, { opacity: 1, scale: 1, x: 0, y: 0, rotate: 0, duration: 0.65, ease: "power3.out" }, "<+=0.08")
-        .call(() => { void executeSensoryFeedback(2); }, [], "+=0.08")
+        tl
+          // Draw the S letterform
+          .to(sRef.current, { strokeDashoffset: 0, duration: 1.1, ease: "power2.inOut" })
+          .to(sRef.current, { fillOpacity: 1, strokeOpacity: 0.15, duration: 0.45 }, "-=0.2")
+          .call(() => { void executeSensoryFeedback(1); }, [], "-=0.1")
 
-        // Arrow 2
-        .to(svgRef.current, { attr: { viewBox: ARROW_TWO_VIEWBOX }, duration: 0.55, ease: "power2.inOut" }, "<")
-        .to(arrowTwoRef.current, { opacity: 1, scale: 1, x: 0, y: 0, rotate: 0, duration: 0.65, ease: "power3.out" }, "<+=0.05")
-        .call(() => { void executeSensoryFeedback(3); }, [], "+=0.08")
+          // Arrow 1 in
+          .to(svgRef.current, { attr: { viewBox: ARROW_ONE_VIEWBOX }, duration: 0.55, ease: "power2.inOut" }, "<")
+          .to(arrowOneRef.current,  { opacity: 1, scale: 1, x: 0, y: 0, rotate: 0, duration: 0.6, ease: "power3.out" }, "<+=0.08")
+          .call(() => { void executeSensoryFeedback(2); }, [], "+=0.08")
 
-        // Arrow 3
-        .to(svgRef.current, { attr: { viewBox: ARROW_THREE_VIEWBOX }, duration: 0.55, ease: "power2.inOut" }, "<")
-        .to(arrowThreeRef.current, { opacity: 1, scale: 1, x: 0, y: 0, rotate: 0, duration: 0.65, ease: "power3.out" }, "<+=0.05")
+          // Arrow 2 in
+          .to(svgRef.current, { attr: { viewBox: ARROW_TWO_VIEWBOX }, duration: 0.55, ease: "power2.inOut" }, "<")
+          .to(arrowTwoRef.current,  { opacity: 1, scale: 1, x: 0, y: 0, rotate: 0, duration: 0.6, ease: "power3.out" }, "<+=0.05")
+          .call(() => { void executeSensoryFeedback(3); }, [], "+=0.08")
 
-        // Kill bg loop now — it's about to fade out, no point running it
-        .call(() => { bgLoopRef.current?.kill(); }, [], "+=0.2")
+          // Arrow 3 in
+          .to(svgRef.current, { attr: { viewBox: ARROW_THREE_VIEWBOX }, duration: 0.55, ease: "power2.inOut" }, "<")
+          .to(arrowThreeRef.current, { opacity: 1, scale: 1, x: 0, y: 0, rotate: 0, duration: 0.6, ease: "power3.out" }, "<+=0.05")
 
-        // Fade out gradient bg and noise
-        .to(noiseRef.current, { opacity: 0, duration: 0.9, ease: "sine.out" }, "<")
-        .to(bgWashRef.current, { scale: 0.85, filter: "blur(12px)", opacity: 0, duration: 1.1, ease: "power3.inOut" }, "<")
+          // Kill bg loop early — it's about to fade, no need to keep it running
+          .call(() => { bgLoopRef.current?.kill(); }, [], "+=0.2")
 
-        // Reveal the circular logo
-        .to(circleGroupRef.current, {
-          opacity: 1, scale: 1, duration: 1.1, ease: "power4.inOut",
-          onComplete: () => { completeSensoryFeedback(); },
-        }, "<")
-        .to(sRef.current, { strokeOpacity: 0, duration: 0.7, ease: "power2.out" }, "<+=0.2")
-        .to(sheenRef.current, { opacity: 1, duration: 0.8, ease: "power2.inOut" }, "<+=0.3")
+          // Fade noise + gradient bg
+          .to(noiseRef.current,   { opacity: 0, duration: 0.8, ease: "sine.out" }, "<")
+          .to(bgWashRef.current,  {
+            scale: 0.85,
+            opacity: 0,
+            duration: isMobile ? 0.7 : 1.0,
+            ease: "power3.inOut",
+            // Skip blur animation entirely on mobile — costly filter change
+            ...(isMobile ? {} : { filter: "blur(10px)" }),
+          }, "<")
 
-        // Fade in white bg THEN complete
-        .to(whiteBgRef.current, { opacity: 1, duration: 0.9, ease: "power2.inOut" }, "<+=0.1")
-        .to(svgRef.current, {
-          attr: { viewBox: FINAL_VIEWBOX },
-          duration: 1.1, ease: "power4.inOut",
-          onComplete: () => {
-            bgLoopRef.current?.kill();
-            setIsSettled(true);
-            onAnimationComplete?.();
-          },
-        }, "<");
+          // Reveal circular logo
+          .to(circleGroupRef.current, {
+            opacity: 1, scale: 1,
+            duration: isMobile ? 0.9 : 1.1,
+            ease: "power4.inOut",
+            onComplete: completeSensoryFeedback,
+          }, "<")
+          .to(sRef.current,   { strokeOpacity: 0, duration: 0.6, ease: "power2.out" }, "<+=0.2")
+          .to(sheenRef.current, { opacity: 1, duration: 0.7, ease: "power2.inOut" }, "<+=0.3")
 
-      timelineRef.current = tl;
-    }, scopeRef);
+          // Fade in white bg then complete
+          .to(whiteBgRef.current, { opacity: 1, duration: 0.8, ease: "power2.inOut" }, "<+=0.1")
+          .to(svgRef.current, {
+            attr: { viewBox: FINAL_VIEWBOX },
+            duration: 1.0, ease: "power4.inOut",
+            onComplete: () => {
+              bgLoopRef.current?.kill();
+              setIsSettled(true);
+              onAnimationComplete?.();
+            },
+          }, "<");
+
+      }, scopeRef);
+    });
 
     return () => {
-      ctx.revert();
+      mounted = false;
+      cancelAnimationFrame(rafId);
+      gsapCtxRef.current?.revert();
       bgLoopRef.current?.kill();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -222,17 +239,17 @@ export function SugLogoAnimation({ className = "", onAnimationComplete }: SugLog
           ref={svgRef}
           className="sug-logo-animation__svg"
           viewBox={INITIAL_VIEWBOX}
-          aria-label="SUG Creative loading animation"
+          aria-label="SUG Creative loading"
         >
           <defs>
             <linearGradient id="logo-gradient" x1="0%" y1="100%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#0878C0" />
-              <stop offset="50%" stopColor="#23B3B0" />
+              <stop offset="0%"   stopColor="#0878C0" />
+              <stop offset="50%"  stopColor="#23B3B0" />
               <stop offset="100%" stopColor="#9BE562" />
             </linearGradient>
             <radialGradient id="logo-sheen" cx="30%" cy="25%" r="65%">
-              <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.45" />
-              <stop offset="35%" stopColor="#FFFFFF" stopOpacity="0.1" />
+              <stop offset="0%"   stopColor="#FFFFFF" stopOpacity="0.45" />
+              <stop offset="35%"  stopColor="#FFFFFF" stopOpacity="0.1" />
               <stop offset="100%" stopColor="#FFFFFF" stopOpacity="0" />
             </radialGradient>
             <filter id="logo-shadow" x="-50%" y="-50%" width="200%" height="200%">
@@ -252,7 +269,7 @@ export function SugLogoAnimation({ className = "", onAnimationComplete }: SugLog
 
           <g ref={circleGroupRef} opacity="0">
             <circle ref={circleRef} cx="187.5" cy="187.5" r="168.5" fill="url(#logo-gradient)" filter="url(#logo-shadow)" />
-            <circle ref={sheenRef} cx="187.5" cy="187.5" r="168.5" fill="url(#logo-sheen)" />
+            <circle ref={sheenRef}  cx="187.5" cy="187.5" r="168.5" fill="url(#logo-sheen)" />
           </g>
 
           <g>
@@ -269,36 +286,22 @@ export function SugLogoAnimation({ className = "", onAnimationComplete }: SugLog
           </g>
 
           <g ref={arrowOneRef} className="sug-logo-animation__arrow" opacity="0">
-            <g clipPath="url(#clip-arrow1-1)">
-              <g clipPath="url(#clip-arrow1-2)">
-                <g clipPath="url(#clip-arrow1-3)">
-                  <path fill="#FFFFFF" d="M 214.929688 177.1875 L 191.105469 176.128906 C 186.503906 175.925781 185.726562 184.886719 191.179688 185.035156 L 206.003906 185.4375 L 204.871094 200.351562 C 204.527344 204.894531 213.382812 205.375 213.636719 200.757812 Z M 214.929688 177.1875" />
-                </g>
-              </g>
-            </g>
+            <g clipPath="url(#clip-arrow1-1)"><g clipPath="url(#clip-arrow1-2)"><g clipPath="url(#clip-arrow1-3)">
+              <path fill="#FFFFFF" d="M 214.929688 177.1875 L 191.105469 176.128906 C 186.503906 175.925781 185.726562 184.886719 191.179688 185.035156 L 206.003906 185.4375 L 204.871094 200.351562 C 204.527344 204.894531 213.382812 205.375 213.636719 200.757812 Z M 214.929688 177.1875" />
+            </g></g></g>
           </g>
 
           <g ref={arrowTwoRef} className="sug-logo-animation__arrow" opacity="0">
-            <g clipPath="url(#clip-arrow2-1)">
-              <g clipPath="url(#clip-arrow2-2)">
-                <g clipPath="url(#clip-arrow2-3)">
-                  <path fill="#FFFFFF" d="M 255.640625 139.804688 L 222.710938 138.34375 C 216.351562 138.058594 215.277344 150.449219 222.8125 150.652344 L 243.304688 151.207031 L 241.738281 171.828125 C 241.261719 178.105469 253.507812 178.769531 253.855469 172.386719 Z M 255.640625 139.804688" />
-                </g>
-              </g>
-            </g>
+            <g clipPath="url(#clip-arrow2-1)"><g clipPath="url(#clip-arrow2-2)"><g clipPath="url(#clip-arrow2-3)">
+              <path fill="#FFFFFF" d="M 255.640625 139.804688 L 222.710938 138.34375 C 216.351562 138.058594 215.277344 150.449219 222.8125 150.652344 L 243.304688 151.207031 L 241.738281 171.828125 C 241.261719 178.105469 253.507812 178.769531 253.855469 172.386719 Z M 255.640625 139.804688" />
+            </g></g></g>
           </g>
 
           <g ref={arrowThreeRef} className="sug-logo-animation__arrow" opacity="0">
             <g transform="translate(239, 56)">
-              <g clipPath="url(#clip-arrow3-1)">
-                <g clipPath="url(#clip-arrow3-2)">
-                  <g clipPath="url(#clip-arrow3-3)">
-                    <g clipPath="url(#clip-arrow3-4)">
-                      <path fill="#FFFFFF" d="M 70.199219 31.34375 L 14.542969 28.871094 C 3.796875 28.390625 1.980469 49.332031 14.714844 49.675781 L 49.347656 50.613281 L 46.703125 85.460938 C 45.894531 96.070312 66.589844 97.191406 67.179688 86.40625 Z M 70.199219 31.34375" />
-                    </g>
-                  </g>
-                </g>
-              </g>
+              <g clipPath="url(#clip-arrow3-1)"><g clipPath="url(#clip-arrow3-2)"><g clipPath="url(#clip-arrow3-3)"><g clipPath="url(#clip-arrow3-4)">
+                <path fill="#FFFFFF" d="M 70.199219 31.34375 L 14.542969 28.871094 C 3.796875 28.390625 1.980469 49.332031 14.714844 49.675781 L 49.347656 50.613281 L 46.703125 85.460938 C 45.894531 96.070312 66.589844 97.191406 67.179688 86.40625 Z M 70.199219 31.34375" />
+              </g></g></g></g>
             </g>
           </g>
         </svg>

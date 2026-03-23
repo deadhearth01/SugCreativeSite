@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import Image from 'next/image'
 import {
   User, Mail, Phone, MapPin, Briefcase, Edit2, Save, X,
-  Camera, CheckCircle, AlertCircle, Loader2, Shield, Calendar,
+  Camera, CheckCircle, AlertCircle, Loader2, Shield, Calendar, Trash2,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 
@@ -96,6 +96,25 @@ export default function ProfilePage() {
       setToast({ type: 'error', message: err instanceof Error ? err.message : 'Failed to save profile.' })
     } finally {
       setSaving(false)
+    }
+  }
+
+  async function handleRemovePhoto() {
+    setUploadingAvatar(true)
+    try {
+      const res = await fetch('/api/profile', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ avatar_url: null }),
+      })
+      const { data, error } = await res.json()
+      if (error) throw new Error(error)
+      setProfile(prev => prev ? { ...prev, avatar_url: null } : prev)
+      setToast({ type: 'success', message: 'Profile photo removed.' })
+    } catch (err) {
+      setToast({ type: 'error', message: err instanceof Error ? err.message : 'Failed to remove photo.' })
+    } finally {
+      setUploadingAvatar(false)
     }
   }
 
@@ -193,6 +212,19 @@ export default function ProfilePage() {
               </button>
               <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarUpload} />
             </div>
+
+            {/* Remove photo — only in edit mode when a photo exists */}
+            {editing && profile.avatar_url && (
+              <button
+                onClick={handleRemovePhoto}
+                disabled={uploadingAvatar}
+                className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-red-500 hover:text-red-600 border border-red-200 hover:border-red-400 px-3 py-1.5 transition-colors disabled:opacity-40 self-end sm:self-auto"
+                title="Remove profile photo"
+              >
+                {uploadingAvatar ? <Loader2 size={12} className="animate-spin" /> : <Trash2 size={12} />}
+                Remove photo
+              </button>
+            )}
 
             <div className="flex gap-2">
               {editing ? (
