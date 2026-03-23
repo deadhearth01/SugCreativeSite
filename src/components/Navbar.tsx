@@ -3,6 +3,7 @@
 import { useState, useEffect, useLayoutEffect, useRef } from 'react'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import { ArrowUpRight } from 'lucide-react'
 import { gsap } from 'gsap'
 import StaggeredMenu from './StaggeredMenu'
@@ -78,13 +79,15 @@ export default function Navbar() {
           
           {/* Logo */}
           <Link href="/" className="flex items-center gap-3 group relative z-[60]">
-            <div className={`w-12 h-12 flex items-center justify-center rounded-none shadow-[2px_2px_0px_rgba(0,0,0,0.1)] transition-all duration-300 group-hover:shadow-[4px_4px_0px_rgba(0,0,0,0.2)] ${
-              isDarkBg ? 'bg-white text-primary-dark shadow-[4px_4px_0px_rgba(255,255,255,0.2)]' : 'bg-primary-dark text-white'
-            }`}>
-              <span className="font-heading font-black text-lg tracking-tighter">SC</span>
-            </div>
+            <Image
+              src="/sug-new-log.svg"
+              alt="Sug Creative Logo"
+              width={44}
+              height={44}
+              className="flex-shrink-0 transition-transform duration-300 group-hover:scale-105"
+            />
             <span className={`text-2xl font-heading font-black tracking-tight transition-colors duration-300 ${
-              isDarkBg ? 'text-white' : 'text-primary-dark'
+              isDarkBg ? 'text-white' : 'text-foreground'
             }`}>
               SUG CREATIVE
             </span>
@@ -155,10 +158,8 @@ export default function Navbar() {
           isFixed={true}
           logo={
             <Link href="/" className="flex items-center gap-2 group relative z-[60] ml-4 mt-2">
-              <div className={`w-8 h-8 flex items-center justify-center shadow-[2px_2px_0px_rgba(0,0,0,0.1)] transition-all duration-300 group-hover:shadow-[4px_4px_0px_rgba(0,0,0,0.2)] bg-primary-dark text-white`}>
-                <span className="font-heading font-black text-xs tracking-tighter">SC</span>
-              </div>
-              <span className={`text-lg font-heading font-black tracking-tight transition-colors duration-300 text-primary-dark pt-1`}>
+              <Image src="/sug-new-log.svg" alt="Sug Creative Logo" width={34} height={34} className="flex-shrink-0" />
+              <span className="text-lg font-heading font-black tracking-tight text-foreground pt-1">
                 SUG CREATIVE
               </span>
             </Link>

@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { ArrowUpRight, Mail, Phone, MapPin, Facebook, Linkedin, Instagram, Twitter } from 'lucide-react'
 
 const footerLinks = {
@@ -67,10 +68,8 @@ export default function Footer() {
           <div className="lg:col-span-4 flex flex-col">
             <div className="mb-10">
               <Link href="/" className="inline-block group">
-                <div className="flex items-center gap-4">
-                  <div className="w-14 h-14 bg-white flex items-center justify-center shadow-[4px_4px_0px_rgba(255,255,255,0.2)] group-hover:shadow-[6px_6px_0px_rgba(255,255,255,1)] transition-all">
-                    <span className="text-primary-dark font-heading font-black text-xl tracking-tighter">SC</span>
-                  </div>
+                <div className="flex items-center gap-3">
+                  <Image src="/sug-new-log.svg" alt="Sug Creative Logo" width={52} height={52} className="flex-shrink-0" />
                   <span className="font-heading font-black text-2xl tracking-tight">SUG CREATIVE</span>
                 </div>
               </Link>

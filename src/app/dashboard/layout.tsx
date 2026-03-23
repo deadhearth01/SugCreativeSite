@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import {
   LayoutDashboard,
@@ -201,17 +202,15 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <div className={`border-b border-white/10 flex items-center ${sidebarCollapsed && !mobile ? 'justify-center p-4' : 'justify-between p-5'}`}>
         {(!sidebarCollapsed || mobile) ? (
           <Link href="/" className="flex items-center gap-2.5 min-w-0">
-            <div className="w-8 h-8 bg-white flex items-center justify-center flex-shrink-0">
-              <span className="font-black text-primary text-xs tracking-tight">SC</span>
-            </div>
+            <Image src="/sug-new-log.svg" alt="Sug Creative" width={32} height={32} className="flex-shrink-0" />
             <div className="min-w-0">
               <span className="text-white text-sm font-black tracking-tight block truncate">SUG CREATIVE</span>
               <span className="text-white/40 text-[10px] font-bold uppercase tracking-widest">{roleLabels[role]} Portal</span>
             </div>
           </Link>
         ) : (
-          <Link href="/" className="w-8 h-8 bg-white flex items-center justify-center">
-            <span className="font-black text-primary text-xs tracking-tight">SC</span>
+          <Link href="/">
+            <Image src="/sug-new-log.svg" alt="Sug Creative" width={32} height={32} />
           </Link>
         )}
         {mobile ? (
