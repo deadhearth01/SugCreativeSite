@@ -2,10 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
-import { useWebHaptics } from "web-haptics/react";
 import "./SugLogoAnimation.css";
 
-// ViewBox definitions for camera movement (All absolutely centered at 187.5, 187.5)
 const INITIAL_VIEWBOX = "97.5 97.5 180 180";
 const ARROW_ONE_VIEWBOX = "77.5 77.5 220 220";
 const ARROW_TWO_VIEWBOX = "57.5 57.5 260 260";
@@ -17,6 +15,14 @@ type ArrowCue = 1 | 2 | 3;
 interface SugLogoAnimationProps {
   className?: string;
   onAnimationComplete?: () => void;
+}
+
+// Direct vibrate — bypasses web-haptics isSupported check.
+// Works on Android Chrome; silently no-ops on iOS (no Vibration API).
+function vibrate(pattern: number | number[]) {
+  if (typeof navigator !== "undefined" && navigator.vibrate) {
+    try { navigator.vibrate(pattern); } catch { /* not supported */ }
+  }
 }
 
 export function SugLogoAnimation({ className = "", onAnimationComplete }: SugLogoAnimationProps) {
@@ -35,26 +41,26 @@ export function SugLogoAnimation({ className = "", onAnimationComplete }: SugLog
   const whiteBgRef = useRef<HTMLDivElement>(null);
   const timelineRef = useRef<GSAPTimeline | null>(null);
   const bgLoopRef = useRef<gsap.core.Tween | null>(null);
-  const audioContextRef = useRef<AudioContext | null>(null);
+  const audioCtxRef = useRef<AudioContext | null>(null);
   const [isSettled, setIsSettled] = useState(false);
-  const { trigger, isSupported } = useWebHaptics();
 
-  // SSR-safe mobile detection
-  const isMobile = typeof window !== "undefined" && /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  // SSR-safe — evaluated once on client
+  const isMobile =
+    typeof window !== "undefined" &&
+    /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
+  // ── Audio (desktop only) ───────────────────────────────
   const ensureAudio = async () => {
-    if (typeof window === "undefined") return null;
-    const AudioContextClass =
+    if (isMobile || typeof window === "undefined") return null;
+    const Ctx =
       window.AudioContext ||
       (window as typeof window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
-    if (!AudioContextClass) return null;
-    if (!audioContextRef.current) {
-      audioContextRef.current = new AudioContextClass();
-    }
-    if (audioContextRef.current.state === "suspended") {
-      try { await audioContextRef.current.resume(); } catch { /* blocked */ }
-    }
-    return audioContextRef.current;
+    if (!Ctx) return null;
+    try {
+      if (!audioCtxRef.current) audioCtxRef.current = new Ctx();
+      if (audioCtxRef.current.state === "suspended") await audioCtxRef.current.resume();
+      return audioCtxRef.current;
+    } catch { return null; }
   };
 
   const playSwoosh = async ({ from, to, duration, volume }: { from: number; to: number; duration: number; volume: number }) => {
@@ -62,33 +68,34 @@ export function SugLogoAnimation({ className = "", onAnimationComplete }: SugLog
     if (!ctx) return;
     try {
       const osc = ctx.createOscillator();
-      const gainNode = ctx.createGain();
+      const gain = ctx.createGain();
       const filter = ctx.createBiquadFilter();
       osc.type = "sine";
       filter.type = "lowpass";
       filter.Q.value = 5;
-      const now = ctx.currentTime;
-      osc.frequency.setValueAtTime(from, now);
-      osc.frequency.exponentialRampToValueAtTime(to, now + duration);
-      filter.frequency.setValueAtTime(from * 2, now);
-      filter.frequency.exponentialRampToValueAtTime(to * 0.5, now + duration);
-      gainNode.gain.setValueAtTime(0, now);
-      gainNode.gain.linearRampToValueAtTime(volume, now + duration * 0.2);
-      gainNode.gain.exponentialRampToValueAtTime(0.01, now + duration);
+      const t = ctx.currentTime;
+      osc.frequency.setValueAtTime(from, t);
+      osc.frequency.exponentialRampToValueAtTime(to, t + duration);
+      filter.frequency.setValueAtTime(from * 2, t);
+      filter.frequency.exponentialRampToValueAtTime(to * 0.5, t + duration);
+      gain.gain.setValueAtTime(0, t);
+      gain.gain.linearRampToValueAtTime(volume, t + duration * 0.2);
+      gain.gain.exponentialRampToValueAtTime(0.01, t + duration);
       osc.connect(filter);
-      filter.connect(gainNode);
-      gainNode.connect(ctx.destination);
-      osc.start(now);
-      osc.stop(now + duration + 0.1);
+      filter.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(t);
+      osc.stop(t + duration + 0.1);
     } catch { /* ignore */ }
   };
 
+  // ── Sensory feedback ───────────────────────────────────
   const executeSensoryFeedback = async (cue: ArrowCue) => {
-    if (isMobile && isSupported) {
-      if (cue === 1) trigger([{ duration: 40, intensity: 0.9 }]);
-      else if (cue === 2) trigger([{ duration: 60, intensity: 1.0 }]);
-      else if (cue === 3) trigger([{ duration: 50, intensity: 1.0 }, { delay: 40, duration: 80, intensity: 1.0 }]);
-    } else if (!isMobile) {
+    if (isMobile) {
+      if (cue === 1) vibrate([40]);
+      else if (cue === 2) vibrate([60]);
+      else if (cue === 3) vibrate([50, 40, 80]);
+    } else {
       if (cue === 1) await playSwoosh({ from: 600, to: 1000, duration: 0.25, volume: 0.2 });
       else if (cue === 2) await playSwoosh({ from: 800, to: 1200, duration: 0.28, volume: 0.25 });
       else if (cue === 3) await playSwoosh({ from: 1000, to: 1500, duration: 0.3, volume: 0.3 });
@@ -96,19 +103,21 @@ export function SugLogoAnimation({ className = "", onAnimationComplete }: SugLog
   };
 
   const completeSensoryFeedback = () => {
-    if (isMobile && isSupported) {
-      trigger([{ duration: 80, intensity: 1.0 }, { delay: 50, duration: 100, intensity: 1.0 }]);
-    } else if (!isMobile) {
+    if (isMobile) {
+      vibrate([80, 50, 100]);
+    } else {
       void playSwoosh({ from: 1200, to: 600, duration: 0.5, volume: 0.3 });
     }
   };
 
+  // ── Main GSAP animation ────────────────────────────────
   useEffect(() => {
     if (
       !scopeRef.current || !svgRef.current || !bgWashRef.current ||
       !bgInnerRef.current || !noiseRef.current || !circleGroupRef.current ||
       !circleRef.current || !sheenRef.current || !sRef.current ||
-      !arrowOneRef.current || !arrowTwoRef.current || !arrowThreeRef.current || !whiteBgRef.current
+      !arrowOneRef.current || !arrowTwoRef.current ||
+      !arrowThreeRef.current || !whiteBgRef.current
     ) return;
 
     const ctx = gsap.context(() => {
@@ -117,10 +126,11 @@ export function SugLogoAnimation({ className = "", onAnimationComplete }: SugLog
       bgLoopRef.current?.kill();
       timelineRef.current?.kill();
 
+      // ── Initial state ──
       gsap.set(whiteBgRef.current, { opacity: 0 });
-      gsap.set(bgWashRef.current, { scale: 5, opacity: 1, filter: "blur(0px)" });
+      gsap.set(bgWashRef.current, { scale: 4, opacity: 1, filter: "blur(0px)" });
       gsap.set(bgInnerRef.current, { rotate: -8, scale: 1.05, xPercent: 0, yPercent: 0 });
-      gsap.set(noiseRef.current, { opacity: 0.12 });
+      gsap.set(noiseRef.current, { opacity: 0.1 });
       gsap.set(svgRef.current, { attr: { viewBox: INITIAL_VIEWBOX } });
       gsap.set(circleGroupRef.current, { opacity: 0, scale: 4, transformOrigin: "187.5px 187.5px" });
       gsap.set(sheenRef.current, { opacity: 0 });
@@ -128,55 +138,75 @@ export function SugLogoAnimation({ className = "", onAnimationComplete }: SugLog
         fillOpacity: 0, strokeOpacity: 1,
         strokeDasharray: sLength * 3, strokeDashoffset: sLength * 3,
       });
-      gsap.set(arrowOneRef.current, { opacity: 0, scale: 0, x: -80, y: 80, rotate: -135, transformOrigin: "202px 190px" });
-      gsap.set(arrowTwoRef.current, { opacity: 0, scale: 0, x: -100, y: 100, rotate: -135, transformOrigin: "235px 158px" });
+      gsap.set(arrowOneRef.current,   { opacity: 0, scale: 0, x: -80,  y: 80,  rotate: -135, transformOrigin: "202px 190px" });
+      gsap.set(arrowTwoRef.current,   { opacity: 0, scale: 0, x: -100, y: 100, rotate: -135, transformOrigin: "235px 158px" });
       gsap.set(arrowThreeRef.current, { opacity: 0, scale: 0, x: -120, y: 120, rotate: -135, transformOrigin: "281px 119px" });
 
-      bgLoopRef.current = gsap.to(bgInnerRef.current, {
-        scale: 1.15, rotate: 8, xPercent: 2, yPercent: 2,
-        duration: 2.8, ease: "sine.inOut", yoyo: true, repeat: -1,
-      });
+      // Background loop — skipped on mobile (too GPU intensive)
+      if (!isMobile) {
+        bgLoopRef.current = gsap.to(bgInnerRef.current, {
+          scale: 1.12, rotate: 8, xPercent: 2, yPercent: 2,
+          duration: 2.8, ease: "sine.inOut", yoyo: true, repeat: -1,
+        });
+      }
 
-      const timeline = gsap.timeline({ delay: 0.2 });
-      timeline
-        .to(sRef.current, { strokeDashoffset: 0, duration: 1.2, ease: "power2.inOut" })
-        .to(sRef.current, { fillOpacity: 1, strokeOpacity: 0.15, duration: 0.5 }, "-=0.2")
+      const tl = gsap.timeline({ delay: 0.15 });
+
+      tl
+        // Draw the S
+        .to(sRef.current, { strokeDashoffset: 0, duration: 1.1, ease: "power2.inOut" })
+        .to(sRef.current, { fillOpacity: 1, strokeOpacity: 0.15, duration: 0.45 }, "-=0.2")
         .call(() => { void executeSensoryFeedback(1); }, [], "-=0.1")
-        .to(svgRef.current, { attr: { viewBox: ARROW_ONE_VIEWBOX }, duration: 0.6, ease: "power2.inOut" }, "<")
-        .to(arrowOneRef.current, { opacity: 1, scale: 1, x: 0, y: 0, rotate: 0, duration: 0.7, ease: "power3.out" }, "<+=0.08")
-        .call(() => { void executeSensoryFeedback(2); }, [], "+=0.1")
-        .to(svgRef.current, { attr: { viewBox: ARROW_TWO_VIEWBOX }, duration: 0.6, ease: "power2.inOut" }, "<")
-        .to(arrowTwoRef.current, { opacity: 1, scale: 1, x: 0, y: 0, rotate: 0, duration: 0.7, ease: "power3.out" }, "<+=0.05")
-        .call(() => { void executeSensoryFeedback(3); }, [], "+=0.1")
-        .to(svgRef.current, { attr: { viewBox: ARROW_THREE_VIEWBOX }, duration: 0.6, ease: "power2.inOut" }, "<")
-        .to(arrowThreeRef.current, { opacity: 1, scale: 1, x: 0, y: 0, rotate: 0, duration: 0.7, ease: "power3.out" }, "<+=0.05")
-        .to(noiseRef.current, { opacity: 0, duration: 1.2, ease: "sine.out" }, "+=0.4")
-        .to(bgWashRef.current, { scale: 0.8, filter: "blur(20px)", opacity: 0, duration: 1.5, ease: "power3.inOut" }, "<")
+
+        // Arrow 1
+        .to(svgRef.current, { attr: { viewBox: ARROW_ONE_VIEWBOX }, duration: 0.55, ease: "power2.inOut" }, "<")
+        .to(arrowOneRef.current, { opacity: 1, scale: 1, x: 0, y: 0, rotate: 0, duration: 0.65, ease: "power3.out" }, "<+=0.08")
+        .call(() => { void executeSensoryFeedback(2); }, [], "+=0.08")
+
+        // Arrow 2
+        .to(svgRef.current, { attr: { viewBox: ARROW_TWO_VIEWBOX }, duration: 0.55, ease: "power2.inOut" }, "<")
+        .to(arrowTwoRef.current, { opacity: 1, scale: 1, x: 0, y: 0, rotate: 0, duration: 0.65, ease: "power3.out" }, "<+=0.05")
+        .call(() => { void executeSensoryFeedback(3); }, [], "+=0.08")
+
+        // Arrow 3
+        .to(svgRef.current, { attr: { viewBox: ARROW_THREE_VIEWBOX }, duration: 0.55, ease: "power2.inOut" }, "<")
+        .to(arrowThreeRef.current, { opacity: 1, scale: 1, x: 0, y: 0, rotate: 0, duration: 0.65, ease: "power3.out" }, "<+=0.05")
+
+        // Kill bg loop now — it's about to fade out, no point running it
+        .call(() => { bgLoopRef.current?.kill(); }, [], "+=0.2")
+
+        // Fade out gradient bg and noise
+        .to(noiseRef.current, { opacity: 0, duration: 0.9, ease: "sine.out" }, "<")
+        .to(bgWashRef.current, { scale: 0.85, filter: "blur(12px)", opacity: 0, duration: 1.1, ease: "power3.inOut" }, "<")
+
+        // Reveal the circular logo
         .to(circleGroupRef.current, {
-          opacity: 1, scale: 1, duration: 1.5, ease: "power4.inOut",
-          onComplete: () => { void completeSensoryFeedback(); }
+          opacity: 1, scale: 1, duration: 1.1, ease: "power4.inOut",
+          onComplete: () => { completeSensoryFeedback(); },
         }, "<")
-        .to(sRef.current, { strokeOpacity: 0, duration: 0.8, ease: "power2.out" }, "<+=0.2")
-        .to(sheenRef.current, { opacity: 1, duration: 1, ease: "power2.inOut" }, "<+=0.4")
-        .to(whiteBgRef.current, { opacity: 1, duration: 1.2, ease: "power2.inOut" }, "<+=0.15")
+        .to(sRef.current, { strokeOpacity: 0, duration: 0.7, ease: "power2.out" }, "<+=0.2")
+        .to(sheenRef.current, { opacity: 1, duration: 0.8, ease: "power2.inOut" }, "<+=0.3")
+
+        // Fade in white bg THEN complete
+        .to(whiteBgRef.current, { opacity: 1, duration: 0.9, ease: "power2.inOut" }, "<+=0.1")
         .to(svgRef.current, {
           attr: { viewBox: FINAL_VIEWBOX },
-          duration: 1.4, ease: "power4.inOut",
+          duration: 1.1, ease: "power4.inOut",
           onComplete: () => {
             bgLoopRef.current?.kill();
             setIsSettled(true);
-            if (onAnimationComplete) onAnimationComplete();
-          }
+            onAnimationComplete?.();
+          },
         }, "<");
 
-      timelineRef.current = timeline;
+      timelineRef.current = tl;
     }, scopeRef);
 
     return () => {
       ctx.revert();
       bgLoopRef.current?.kill();
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -188,7 +218,12 @@ export function SugLogoAnimation({ className = "", onAnimationComplete }: SugLog
       <div ref={noiseRef} className="sug-logo-animation__noise" />
 
       <div className="sug-logo-animation__frame">
-        <svg ref={svgRef} className="sug-logo-animation__svg" viewBox={INITIAL_VIEWBOX} aria-label="SUG Creative loading animation">
+        <svg
+          ref={svgRef}
+          className="sug-logo-animation__svg"
+          viewBox={INITIAL_VIEWBOX}
+          aria-label="SUG Creative loading animation"
+        >
           <defs>
             <linearGradient id="logo-gradient" x1="0%" y1="100%" x2="100%" y2="0%">
               <stop offset="0%" stopColor="#0878C0" />

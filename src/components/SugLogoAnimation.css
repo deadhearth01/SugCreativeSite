@@ -3,10 +3,11 @@
   width: 100vw;
   height: 100vh;
   overflow: hidden;
-  background-color: transparent;
+  background-color: #041520; /* dark fallback before GSAP initializes */
   display: flex;
   justify-content: center;
   align-items: center;
+  contain: layout style paint; /* limits repaint scope — major perf win */
 }
 
 /* Base structural bits */
@@ -18,17 +19,20 @@
   height: 100%;
   background: white;
   z-index: 0;
+  will-change: opacity;
 }
 
 .sug-logo-animation__bg-wash {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 160vmax;
-  height: 160vmax;
+  /* Reduced from 160vmax — oversized caused unnecessary GPU memory */
+  width: 110vmax;
+  height: 110vmax;
   transform: translate(-50%, -50%);
   transform-origin: center;
   z-index: 1;
+  will-change: transform, opacity, filter;
 }
 
 .sug-logo-animation__bg-inner {
@@ -45,7 +49,9 @@
     #0878c0 285deg,
     #0878c0 360deg
   );
-  filter: blur(40px);
+  /* Reduced from 40px — was the #1 GPU/crash cause on mobile */
+  filter: blur(18px);
+  will-change: transform;
 }
 
 .sug-logo-animation__noise {
@@ -65,7 +71,7 @@
   position: relative;
   z-index: 10;
   width: 100%;
-  max-width: 400px;
+  max-width: 380px;
   aspect-ratio: 1;
   display: flex;
   justify-content: center;
@@ -76,16 +82,39 @@
   width: 100%;
   height: 100%;
   overflow: visible;
-  filter: drop-shadow(0 0 20px rgba(0,0,0,0.1));
+  filter: drop-shadow(0 0 16px rgba(0, 0, 0, 0.15));
+  will-change: contents;
 }
 
 .sug-logo-animation__arrow,
 .sug-logo-animation__s {
   transform-box: fill-box;
+  will-change: transform, opacity;
 }
 
-/* Smooth out final state */
-.sug-logo-animation[data-settled="true"] .sug-logo-animation__bg-wash,
+/* ── Mobile: drastically lighter ──────────────────────── */
+@media (max-width: 768px) {
+  .sug-logo-animation__bg-wash {
+    width: 100vmax;
+    height: 100vmax;
+  }
+
+  .sug-logo-animation__bg-inner {
+    /* 8px on mobile — was the #1 crash cause */
+    filter: blur(8px);
+  }
+
+  .sug-logo-animation__frame {
+    max-width: 260px;
+  }
+}
+
+/* Settled state — opacity instead of display:none avoids layout recalc */
+.sug-logo-animation[data-settled="true"] .sug-logo-animation__bg-wash {
+  opacity: 0;
+  pointer-events: none;
+}
 .sug-logo-animation[data-settled="true"] .sug-logo-animation__noise {
-  display: none;
+  opacity: 0;
+  pointer-events: none;
 }
