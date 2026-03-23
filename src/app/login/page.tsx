@@ -3,6 +3,7 @@
 import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import { gsap } from 'gsap'
 import { Eye, EyeOff, ArrowRight } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
@@ -130,9 +131,7 @@ function LoginContent() {
         {/* Content overlaid on top of Squares */}
         <div className="login-brand relative z-10">
           <Link href="/" className="inline-flex items-center gap-3 group">
-            <div className="w-12 h-12 flex items-center justify-center bg-white rounded-none shadow-[4px_4px_0px_rgba(255,255,255,0.2)] transition-transform group-hover:-translate-y-1">
-              <span className="text-primary-dark font-heading font-black text-lg tracking-tighter">SC</span>
-            </div>
+            <Image src="/sug-new-log.svg" alt="Sug Creative" width={44} height={44} className="flex-shrink-0 transition-transform group-hover:-translate-y-1" />
             <span className="text-white text-2xl font-heading font-black tracking-tight">SUG CREATIVE</span>
           </Link>
         </div>
@@ -141,7 +140,7 @@ function LoginContent() {
           <h2 className="text-5xl lg:text-7xl font-heading font-black text-white leading-[1.1] mb-6 uppercase tracking-tight">
             Your<br />
             Gateway<br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-300 to-white">To Growth</span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#82C93D] to-[#35C8E0]">To Growth</span>
           </h2>
           <p className="text-white/70 max-w-md text-lg font-medium leading-relaxed border-l-2 border-white/20 pl-4">
             Access your personalized portal to manage projects, track progress, collaborate with experts, and scale your operations.
@@ -169,9 +168,8 @@ function LoginContent() {
           {/* Mobile logo */}
           <div className="lg:hidden mb-10 flex justify-center">
             <Link href="/" className="inline-flex items-center gap-3">
-              <div className="w-10 h-10 bg-primary-dark flex items-center justify-center rounded-none shadow-[2px_2px_0px_rgba(0,0,0,1)]">
-                <span className="text-white font-heading font-black text-sm tracking-tighter">SC</span>
-              </div>
+              <Image src="/sug-new-log.svg" alt="Sug Creative" width={40} height={40} className="flex-shrink-0" />
+              <span className="text-primary-dark text-xl font-heading font-black tracking-tight">SUG CREATIVE</span>
             </Link>
           </div>
 

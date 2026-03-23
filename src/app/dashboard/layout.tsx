@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
@@ -28,8 +28,11 @@ import {
   ChevronLeft,
   ChevronRight,
   Wallet,
+  User,
+  ChevronDown,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
+import WelcomeScreen from '@/components/dashboard/WelcomeScreen'
 
 type NavItem = {
   label: string
@@ -164,6 +167,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
+  const [profileDropdownOpen, setProfileDropdownOpen] = useState(false)
+  const dropdownRef = useRef<HTMLDivElement>(null)
 
   const role = pathname.split('/')[2] || 'admin'
   const navItems = roleNavItems[role] || roleNavItems.admin
@@ -183,6 +188,17 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           if (data) setUserProfile(data)
         })
     })
+  }, [])
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setProfileDropdownOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
   }, [])
 
   const getInitials = (name: string | null) => {
@@ -318,15 +334,63 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </h1>
           </div>
 
-          <div className="flex items-center gap-3 flex-shrink-0">
-            {userProfile?.full_name && (
-              <span className="text-sm text-foreground/50 font-semibold hidden sm:block truncate max-w-32">
-                {userProfile.full_name}
-              </span>
+          <div className="flex items-center gap-3 flex-shrink-0 relative" ref={dropdownRef}>
+            <button
+              onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
+              className="flex items-center gap-2 hover:bg-black/5 px-2 py-1.5 transition-colors -mr-1"
+            >
+              {userProfile?.full_name && (
+                <span className="text-sm text-foreground/50 font-semibold hidden sm:block truncate max-w-32">
+                  {userProfile.full_name}
+                </span>
+              )}
+              {userProfile?.avatar_url ? (
+                <Image src={userProfile.avatar_url} alt="Avatar" width={36} height={36} className="w-9 h-9 object-cover border-2 border-[#1580A0] shadow-[2px_2px_0px_rgba(0,0,0,0.15)]" />
+              ) : (
+                <div className="w-9 h-9 bg-[#1A9AB5] flex items-center justify-center text-white text-xs font-black border-2 border-[#1580A0] shadow-[2px_2px_0px_rgba(0,0,0,0.15)]">
+                  {getInitials(userProfile?.full_name || null)}
+                </div>
+              )}
+              <ChevronDown size={14} className={`text-foreground/40 transition-transform ${profileDropdownOpen ? 'rotate-180' : ''}`} />
+            </button>
+
+            {/* Profile Dropdown */}
+            {profileDropdownOpen && (
+              <div className="absolute top-full right-0 mt-2 w-56 bg-white border-2 border-black/10 shadow-[4px_4px_0px_rgba(0,0,0,0.08)] z-50">
+                <div className="px-4 py-3 border-b border-black/8">
+                  <p className="text-xs font-black uppercase tracking-widest text-[#1A9AB5]">{roleLabels[role]}</p>
+                  <p className="text-sm font-semibold text-foreground truncate mt-0.5">{userProfile?.full_name || 'User'}</p>
+                  <p className="text-xs text-foreground/40 truncate">{userProfile?.email || ''}</p>
+                </div>
+                <div className="py-1">
+                  <Link
+                    href={`/dashboard/${role}/profile`}
+                    onClick={() => setProfileDropdownOpen(false)}
+                    className="flex items-center gap-3 px-4 py-2.5 text-sm font-semibold text-foreground/70 hover:text-foreground hover:bg-black/5 transition-colors"
+                  >
+                    <User size={15} />
+                    My Profile
+                  </Link>
+                  <Link
+                    href={`/dashboard/${role}/settings`}
+                    onClick={() => setProfileDropdownOpen(false)}
+                    className="flex items-center gap-3 px-4 py-2.5 text-sm font-semibold text-foreground/70 hover:text-foreground hover:bg-black/5 transition-colors"
+                  >
+                    <Settings size={15} />
+                    Settings
+                  </Link>
+                </div>
+                <div className="border-t border-black/8 py-1">
+                  <button
+                    onClick={() => { setProfileDropdownOpen(false); handleLogout() }}
+                    className="flex items-center gap-3 px-4 py-2.5 text-sm font-semibold text-red-500 hover:text-red-600 hover:bg-red-50 transition-colors w-full"
+                  >
+                    <LogOut size={15} />
+                    Sign Out
+                  </button>
+                </div>
+              </div>
             )}
-            <div className="w-9 h-9 bg-[#1A9AB5] flex items-center justify-center text-white text-xs font-black border-2 border-[#1580A0] shadow-[2px_2px_0px_rgba(0,0,0,0.15)]">
-              {getInitials(userProfile?.full_name || null)}
-            </div>
           </div>
         </header>
 
@@ -335,6 +399,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           {children}
         </main>
       </div>
+
+      {/* First-login Welcome Screen */}
+      <WelcomeScreen name={userProfile?.full_name || null} role={role} />
     </div>
   )
 }
