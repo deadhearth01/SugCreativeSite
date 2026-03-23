@@ -49,7 +49,7 @@ export default function MentorStudentsPage() {
     load()
   }, [])
 
-  if (loading) return <div className="flex items-center justify-center py-32"><Loader2 size={28} className="animate-spin text-primary-bright" /></div>
+  if (loading) return <div className="flex items-center justify-center py-32"><Loader2 size={28} className="animate-spin text-[#1A9AB5]" /></div>
 
   return (
     <div>
@@ -65,7 +65,7 @@ export default function MentorStudentsPage() {
           {students.map((student) => (
             <div key={student.id} className="bg-white border border-border rounded-xl p-5 hover:shadow-sm transition-shadow">
               <div className="flex items-center gap-4 mb-4">
-                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 overflow-hidden">
+                <div className="w-12 h-12 rounded-full bg-[#35C8E0]/20 flex items-center justify-center flex-shrink-0 overflow-hidden">
                   {student.avatar_url ? (
                     <img src={student.avatar_url} alt={student.full_name} className="w-full h-full object-cover" />
                   ) : (
@@ -78,7 +78,7 @@ export default function MentorStudentsPage() {
                 </div>
               </div>
               <div className="flex items-center justify-between text-xs text-foreground/60">
-                <span className="bg-primary-bright/10 text-primary-bright px-2.5 py-1 rounded-md font-semibold">
+                <span className="bg-[#35C8E0]/20 text-[#1A9AB5] px-2.5 py-1 rounded-md font-semibold">
                   {student.sessionCount} {student.sessionCount === 1 ? 'session' : 'sessions'}
                 </span>
                 <span>Joined {new Date(student.created_at).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })}</span>

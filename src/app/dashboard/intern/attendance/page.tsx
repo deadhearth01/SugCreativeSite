@@ -119,7 +119,7 @@ export default function InternAttendancePage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-32">
-        <Loader2 size={28} className="animate-spin text-primary-bright" />
+        <Loader2 size={28} className="animate-spin text-[#1A9AB5]" />
       </div>
     )
   }

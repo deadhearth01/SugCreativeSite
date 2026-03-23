@@ -79,7 +79,7 @@ export default function ClientMeetingsPage() {
     setToast({ message: 'Link copied!', type: 'success' })
   }
 
-  if (loading) return <div className="flex items-center justify-center py-32"><Loader2 size={28} className="animate-spin text-primary-bright" /></div>
+  if (loading) return <div className="flex items-center justify-center py-32"><Loader2 size={28} className="animate-spin text-[#1A9AB5]" /></div>
 
   return (
     <div>
@@ -90,7 +90,7 @@ export default function ClientMeetingsPage() {
           <button
             key={t}
             onClick={() => setTab(t)}
-            className={`px-4 py-1.5 rounded-full text-sm font-medium capitalize transition-colors ${tab === t ? 'bg-primary text-white' : 'bg-white border border-border text-foreground/60 hover:border-primary-bright hover:text-primary'}`}
+            className={`px-4 py-1.5 rounded-full text-sm font-medium capitalize transition-colors ${tab === t ? 'bg-primary text-white' : 'bg-white border border-border text-foreground/60 hover:border-[#35C8E0] hover:text-primary'}`}
           >
             {t}
           </button>
@@ -111,7 +111,7 @@ export default function ClientMeetingsPage() {
               <div key={m.id} className="bg-white border border-border rounded-xl p-5 hover:shadow-sm transition-shadow">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div className="flex items-start gap-4">
-                    <div className={`w-11 h-11 rounded-lg flex items-center justify-center flex-shrink-0 ${!isPast ? 'bg-primary-bright/10 text-primary-bright' : 'bg-gray-100 text-gray-400'}`}>
+                    <div className={`w-11 h-11 rounded-lg flex items-center justify-center flex-shrink-0 ${!isPast ? 'bg-[#35C8E0]/20 text-[#1A9AB5]' : 'bg-gray-100 text-gray-400'}`}>
                       {!isPast ? <Video size={20} /> : <VideoOff size={20} />}
                     </div>
                     <div>

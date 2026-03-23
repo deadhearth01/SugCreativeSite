@@ -78,7 +78,7 @@ export default function ClientTicketsPage() {
     }
   }
 
-  if (loading) return <div className="flex items-center justify-center py-32"><Loader2 size={28} className="animate-spin text-primary-bright" /></div>
+  if (loading) return <div className="flex items-center justify-center py-32"><Loader2 size={28} className="animate-spin text-[#1A9AB5]" /></div>
 
   return (
     <div>
@@ -127,7 +127,7 @@ export default function ClientTicketsPage() {
                   type="text"
                   value={form.subject}
                   onChange={e => setForm({ ...form, subject: e.target.value })}
-                  className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-primary-bright"
+                  className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-[#35C8E0]"
                   placeholder="Brief description of your issue"
                 />
               </div>
@@ -136,7 +136,7 @@ export default function ClientTicketsPage() {
                 <textarea
                   value={form.description}
                   onChange={e => setForm({ ...form, description: e.target.value })}
-                  className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-primary-bright resize-none"
+                  className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-[#35C8E0] resize-none"
                   rows={4}
                   placeholder="Provide more details about your issue..."
                 />
@@ -146,7 +146,7 @@ export default function ClientTicketsPage() {
                 <select
                   value={form.priority}
                   onChange={e => setForm({ ...form, priority: e.target.value })}
-                  className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-primary-bright bg-white"
+                  className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-[#35C8E0] bg-white"
                 >
                   <option value="low">Low</option>
                   <option value="medium">Medium</option>

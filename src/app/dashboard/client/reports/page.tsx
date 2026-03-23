@@ -36,7 +36,7 @@ export default function ClientReportsPage() {
     load()
   }, [])
 
-  if (loading) return <div className="flex items-center justify-center py-32"><Loader2 size={28} className="animate-spin text-primary-bright" /></div>
+  if (loading) return <div className="flex items-center justify-center py-32"><Loader2 size={28} className="animate-spin text-[#1A9AB5]" /></div>
 
   return (
     <div>
@@ -52,8 +52,8 @@ export default function ClientReportsPage() {
             <div key={report.id} className="bg-white border border-border rounded-xl p-5 hover:shadow-sm transition-shadow">
               <div className="flex items-start justify-between gap-4">
                 <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 bg-primary-bright/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <FileText size={18} className="text-primary-bright" />
+                  <div className="w-10 h-10 bg-[#35C8E0]/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <FileText size={18} className="text-[#1A9AB5]" />
                   </div>
                   <div>
                     <h3 className="font-medium text-primary text-sm">{report.title}</h3>

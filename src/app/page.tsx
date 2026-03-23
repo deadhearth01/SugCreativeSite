@@ -6,6 +6,7 @@ import { useRef, useEffect, useState } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { ArrowUpRight, Plus, CheckCircle2, TrendingUp } from 'lucide-react'
+import Grainient from '@/components/Grainient'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import AnimatedSection from '@/components/AnimatedSection'
@@ -132,9 +133,27 @@ export default function HomePage() {
       <Navbar />
 
       {/* ═══ HERO ═══ */}
-      <section className="relative min-h-screen flex items-center bg-[#fdfbf9] pt-32 pb-16 overflow-hidden border-b-2 border-black/10">
+      <section className="relative min-h-screen flex items-center bg-[#f2fafd] pt-32 pb-16 overflow-hidden border-b-2 border-black/10">
+        {/* Grainient brand background — subtle, fills the entire hero */}
+        <div className="absolute inset-0 opacity-[0.12]">
+          <Grainient
+            color1="#82C93D"
+            color2="#35C8E0"
+            color3="#1A9AB5"
+            timeSpeed={0.1}
+            warpStrength={0.5}
+            warpFrequency={3}
+            warpSpeed={0.8}
+            warpAmplitude={90}
+            rotationAmount={180}
+            grainAmount={0.06}
+            contrast={1.2}
+            saturation={1.4}
+            zoom={0.75}
+          />
+        </div>
         {/* Subtle sharp grid background */}
-        <div className="absolute inset-0" style={{ backgroundImage: 'linear-gradient(rgba(0,0,0,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.03) 1px, transparent 1px)', backgroundSize: '60px 60px' }} />
+        <div className="absolute inset-0" style={{ backgroundImage: 'linear-gradient(rgba(53,200,224,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(53,200,224,0.03) 1px, transparent 1px)', backgroundSize: '60px 60px' }} />
         
         <div className="container-wide relative z-10 w-full">
           <div className="flex flex-col lg:flex-row items-center gap-16 lg:gap-12">
@@ -151,7 +170,7 @@ export default function HomePage() {
                 <div className="flex items-center text-primary mt-2 mb-2">
                   <RotatingText
                     texts={SHIFT_TEXTS}
-                    mainClassName="px-2 sm:px-2 md:px-3 bg-[#4DA8DB] text-white overflow-hidden py-0.5 sm:py-1 md:py-2 justify-center rounded-lg inline-block"
+                    mainClassName="px-2 sm:px-2 md:px-3 bg-[#35C8E0] text-white overflow-hidden py-0.5 sm:py-1 md:py-2 justify-center rounded-lg inline-block"
                     staggerFrom={"last"}
                     initial={{ y: "100%" }}
                     animate={{ y: 0 }}
@@ -203,7 +222,7 @@ export default function HomePage() {
                 {/* Overlapping Stat Box 1 (Bottom Left) */}
                 <div className="absolute bottom-4 -left-2 md:-left-8 bg-white/95 backdrop-blur-xl border-2 border-primary-dark p-6 rounded-none shadow-[8px_8px_0px_rgba(0,0,0,1)] z-30 pointer-events-auto max-w-[240px]">
                   <div className="flex items-center gap-2 mb-3 text-primary-dark uppercase text-[10px] font-black tracking-widest border-b-2 border-black/10 pb-2">
-                    <TrendingUp size={14} className="text-[#4DA8DB]" />
+                    <TrendingUp size={14} className="text-[#82C93D]" />
                     Performance
                   </div>
                   <div className="text-4xl font-heading font-black text-primary-dark mb-1 tabular-nums">
@@ -215,12 +234,12 @@ export default function HomePage() {
                 </div>
 
                 {/* Overlapping Stat Box 2 (Top Right) */}
-                <div className="absolute top-10 right-0 md:-right-8 bg-primary-dark text-white border-2 border-primary-dark p-4 rounded-none shadow-[8px_8px_0px_rgba(77,168,219,1)] z-30 pointer-events-auto flex items-center gap-4">
-                  <div className="w-12 h-12 bg-white flex items-center justify-center rounded-none shadow-[2px_2px_0px_rgba(77,168,219,1)]">
+                <div className="absolute top-10 right-0 md:-right-8 bg-primary-dark text-white border-2 border-primary-dark p-4 rounded-none shadow-[8px_8px_0px_rgba(130,201,61,1)] z-30 pointer-events-auto flex items-center gap-4">
+                  <div className="w-12 h-12 bg-white flex items-center justify-center rounded-none shadow-[2px_2px_0px_rgba(130,201,61,1)]">
                     <CheckCircle2 size={24} className="text-primary-dark" />
                   </div>
                   <div>
-                    <div className="text-2xl font-black font-heading leading-none mb-1 text-[#4DA8DB]">98%</div>
+                    <div className="text-2xl font-black font-heading leading-none mb-1 text-[#82C93D]">98%</div>
                     <div className="text-[10px] uppercase tracking-widest font-bold text-white/70">Success Rate</div>
                   </div>
                 </div>
@@ -238,7 +257,7 @@ export default function HomePage() {
         <div className="absolute inset-0" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px)', backgroundSize: '80px 80px' }} />
 
         <div className="container-wide mb-14 text-center relative z-10">
-          <div className="inline-block bg-white text-primary-dark font-black text-xs uppercase tracking-widest px-4 py-2 mb-6 rounded-none shadow-[4px_4px_0px_rgba(77,168,219,1)] border-2 border-white">
+          <div className="inline-block bg-white text-primary-dark font-black text-xs uppercase tracking-widest px-4 py-2 mb-6 rounded-none shadow-[4px_4px_0px_rgba(130,201,61,1)] border-2 border-white">
             Our Collaborations
           </div>
           <h2 className="text-3xl md:text-5xl font-heading font-black text-white tracking-tight leading-tight">
@@ -316,8 +335,8 @@ export default function HomePage() {
                   </div>
 
                   {/* Content Overlay */}
-                  <div className="absolute inset-x-0 bottom-0 p-8 flex flex-col justify-end border-t-4 border-transparent group-hover:border-[#4DA8DB] transition-colors duration-500">
-                    <h3 className="text-2xl font-heading font-black text-white mb-4 tracking-tight group-hover:text-[#4DA8DB] transition-colors duration-300 leading-tight">
+                  <div className="absolute inset-x-0 bottom-0 p-8 flex flex-col justify-end border-t-4 border-transparent group-hover:border-[#82C93D] transition-colors duration-500">
+                    <h3 className="text-2xl font-heading font-black text-white mb-4 tracking-tight group-hover:text-[#82C93D] transition-colors duration-300 leading-tight">
                       {srv.title}
                     </h3>
                     <p className="text-white/80 font-bold text-[14px] leading-relaxed">
@@ -365,7 +384,7 @@ export default function HomePage() {
                 <div key={step.num} className="bg-white border-2 border-primary-dark p-8 md:p-10 rounded-none shadow-[8px_8px_0px_rgba(0,0,0,1)] hover:-translate-y-1 hover:shadow-[12px_12px_0px_rgba(0,0,0,1)] transition-all duration-300 flex flex-col sm:flex-row gap-6 sm:gap-8 items-start relative overflow-hidden group">
                   <div className="absolute right-0 top-0 w-32 h-32 bg-primary/5 rounded-none -z-0 transition-transform duration-700 group-hover:scale-[2.5]" />
                   
-                  <div className="w-14 h-14 flex-shrink-0 bg-primary-dark text-white font-black text-2xl flex items-center justify-center rounded-none shadow-[4px_4px_0px_rgba(77,168,219,1)] border-2 border-primary-dark relative z-10 group-hover:bg-primary transition-colors">
+                  <div className="w-14 h-14 flex-shrink-0 bg-primary-dark text-white font-black text-2xl flex items-center justify-center rounded-none shadow-[4px_4px_0px_rgba(130,201,61,1)] border-2 border-primary-dark relative z-10 group-hover:bg-primary transition-colors">
                     {step.num}
                   </div>
                   <div className="relative z-10">
@@ -398,7 +417,7 @@ export default function HomePage() {
               <p className="text-primary-dark/70 text-lg md:text-xl font-bold leading-relaxed max-w-lg mb-10">
                 Don't let inefficiency block your success. We identify critical pain points and implement targeted strategies to propel you forward.
               </p>
-              <Button asChild size="lg" className="bg-primary-dark hover:bg-black text-white font-black text-sm uppercase tracking-widest rounded-none border-2 border-primary-dark px-10 h-16 shadow-[4px_4px_0px_rgba(77,168,219,1)] transition-all hover:-translate-y-1 hover:shadow-[8px_8px_0px_rgba(77,168,219,1)]">
+              <Button asChild size="lg" className="bg-primary-dark hover:bg-black text-white font-black text-sm uppercase tracking-widest rounded-none border-2 border-primary-dark px-10 h-16 shadow-[4px_4px_0px_rgba(130,201,61,1)] transition-all hover:-translate-y-1 hover:shadow-[8px_8px_0px_rgba(130,201,61,1)]">
                 <Link href="/services">Discover Solutions</Link>
               </Button>
             </div>
@@ -419,10 +438,10 @@ export default function HomePage() {
               <div className="floating-tag absolute -right-6 md:-right-16 top-[20%] bg-primary text-white border-2 border-primary-dark font-black text-xs md:text-sm uppercase tracking-widest px-6 py-4 rounded-none shadow-[6px_6px_0px_rgba(0,0,0,1)] rotate-[-6deg] z-20 whitespace-nowrap">
                 Lost Opportunities
               </div>
-              <div className="floating-tag absolute -left-6 md:-left-12 top-[45%] bg-[#4DA8DB] text-primary-dark border-2 border-primary-dark font-black text-xs md:text-sm uppercase tracking-widest px-6 py-4 rounded-none shadow-[6px_6px_0px_rgba(0,0,0,1)] rotate-[4deg] z-20 whitespace-nowrap">
+              <div className="floating-tag absolute -left-6 md:-left-12 top-[45%] bg-[#35C8E0] text-primary-dark border-2 border-primary-dark font-black text-xs md:text-sm uppercase tracking-widest px-6 py-4 rounded-none shadow-[6px_6px_0px_rgba(0,0,0,1)] rotate-[4deg] z-20 whitespace-nowrap">
                 Lack of Expertise
               </div>
-              <div className="floating-tag absolute -right-2 md:-right-8 bottom-[20%] bg-white text-primary-dark border-2 border-primary-dark font-black text-xs md:text-sm uppercase tracking-widest px-6 py-4 rounded-none shadow-[6px_6px_0px_rgba(77,168,219,1)] rotate-[-3deg] z-20 whitespace-nowrap">
+              <div className="floating-tag absolute -right-2 md:-right-8 bottom-[20%] bg-white text-primary-dark border-2 border-primary-dark font-black text-xs md:text-sm uppercase tracking-widest px-6 py-4 rounded-none shadow-[6px_6px_0px_rgba(130,201,61,1)] rotate-[-3deg] z-20 whitespace-nowrap">
                 Limited Success
               </div>
             </div>

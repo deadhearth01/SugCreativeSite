@@ -120,7 +120,7 @@ export default function TicketsPage() {
     resolved: tickets.filter(t => t.status === 'resolved').length,
   }
 
-  if (loading) return <div className="flex items-center justify-center py-32"><Loader2 size={28} className="animate-spin text-primary-bright" /></div>
+  if (loading) return <div className="flex items-center justify-center py-32"><Loader2 size={28} className="animate-spin text-[#1A9AB5]" /></div>
 
   return (
     <div className="space-y-6">
@@ -137,7 +137,7 @@ export default function TicketsPage() {
       <div className="bg-white border border-border rounded-xl p-4 flex flex-col sm:flex-row gap-3">
         <div className="flex-1 relative">
           <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-foreground/40" />
-          <input type="text" placeholder="Search tickets..." value={search} onChange={e => setSearch(e.target.value)} className="w-full pl-10 pr-4 py-2 border border-border rounded-lg text-sm focus:outline-none focus:border-primary-bright" />
+          <input type="text" placeholder="Search tickets..." value={search} onChange={e => setSearch(e.target.value)} className="w-full pl-10 pr-4 py-2 border border-border rounded-lg text-sm focus:outline-none focus:border-[#35C8E0]" />
         </div>
         <div className="flex gap-2 flex-wrap">
           {['all', 'open', 'in_progress', 'resolved', 'closed'].map(s => (
@@ -159,7 +159,7 @@ export default function TicketsPage() {
           ) : (
             <div className="divide-y divide-border max-h-[600px] overflow-y-auto">
               {filtered.map(t => (
-                <button key={t.id} onClick={() => openTicket(t)} className={`w-full text-left p-4 hover:bg-off-white/50 transition-colors ${selectedTicket?.id === t.id ? 'bg-primary/5 border-l-2 border-primary-bright' : ''}`}>
+                <button key={t.id} onClick={() => openTicket(t)} className={`w-full text-left p-4 hover:bg-off-white/50 transition-colors ${selectedTicket?.id === t.id ? 'bg-[#35C8E0]/10 border-l-2 border-[#35C8E0]' : ''}`}>
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
@@ -194,7 +194,7 @@ export default function TicketsPage() {
                   {['in_progress', 'resolved', 'closed'].map(s => (
                     selectedTicket.status !== s && (
                       <button key={s} onClick={() => handleStatusUpdate(selectedTicket.id, s)}
-                        className="text-xs px-2 py-1 rounded border border-border text-foreground/60 hover:border-primary-bright hover:text-primary capitalize transition-colors">
+                        className="text-xs px-2 py-1 rounded border border-border text-foreground/60 hover:border-[#35C8E0] hover:text-primary capitalize transition-colors">
                         Mark {s.replace('_', ' ')}
                       </button>
                     )
@@ -208,7 +208,7 @@ export default function TicketsPage() {
                 ) : (
                   replies.map(r => (
                     <div key={r.id} className={`flex gap-2 ${r.author?.role === 'admin' || r.author?.role === 'employee' ? 'flex-row-reverse' : ''}`}>
-                      <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center text-xs font-bold text-primary shrink-0">
+                      <div className="w-7 h-7 rounded-full bg-[#35C8E0]/20 flex items-center justify-center text-xs font-bold text-primary shrink-0">
                         {r.author?.full_name?.[0] || '?'}
                       </div>
                       <div className={`max-w-[75%] ${r.author?.role === 'admin' || r.author?.role === 'employee' ? 'bg-primary text-white' : 'bg-off-white'} rounded-xl px-3 py-2`}>
@@ -223,7 +223,7 @@ export default function TicketsPage() {
               <div className="p-4 border-t border-border">
                 <div className="flex gap-2">
                   <input value={replyMessage} onChange={e => setReplyMessage(e.target.value)} onKeyDown={e => e.key === 'Enter' && !e.shiftKey && handleReply()}
-                    className="flex-1 border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary-bright" placeholder="Type a reply..." />
+                    className="flex-1 border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#35C8E0]" placeholder="Type a reply..." />
                   <button onClick={handleReply} disabled={replying || !replyMessage.trim()} className="px-4 py-2 bg-primary text-white rounded-lg text-sm font-semibold hover:bg-primary/90 transition-colors disabled:opacity-50">
                     <MessageSquare size={16} />
                   </button>

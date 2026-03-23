@@ -50,7 +50,7 @@ export default function ClientPaymentsPage() {
 
   const filtered = filter === 'all' ? payments : payments.filter(p => p.status === filter)
 
-  if (loading) return <div className="flex items-center justify-center py-32"><Loader2 size={28} className="animate-spin text-primary-bright" /></div>
+  if (loading) return <div className="flex items-center justify-center py-32"><Loader2 size={28} className="animate-spin text-[#1A9AB5]" /></div>
 
   return (
     <div>
@@ -67,7 +67,7 @@ export default function ClientPaymentsPage() {
           <button
             key={s}
             onClick={() => setFilter(s)}
-            className={`px-4 py-1.5 rounded-full text-sm font-medium capitalize transition-colors ${filter === s ? 'bg-primary text-white' : 'bg-white border border-border text-foreground/60 hover:border-primary-bright hover:text-primary'}`}
+            className={`px-4 py-1.5 rounded-full text-sm font-medium capitalize transition-colors ${filter === s ? 'bg-primary text-white' : 'bg-white border border-border text-foreground/60 hover:border-[#35C8E0] hover:text-primary'}`}
           >
             {s}
           </button>

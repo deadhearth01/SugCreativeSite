@@ -21,7 +21,7 @@ const eventColors = [
   'bg-primary-bright',
   'bg-primary',
   'bg-teal-500',
-  'bg-sky-500',
+  'bg-[#E0F2F8]0',
   'bg-mint',
 ]
 
@@ -75,7 +75,7 @@ export default function EmployeeCalendarPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-32">
-        <Loader2 size={28} className="animate-spin text-primary-bright" />
+        <Loader2 size={28} className="animate-spin text-[#1A9AB5]" />
       </div>
     )
   }
@@ -110,11 +110,11 @@ export default function EmployeeCalendarPage() {
                 return (
                   <div
                     key={i}
-                    className={`min-h-[70px] p-2 border border-border/50 text-sm ${isToday ? 'bg-primary-bright/5 border-primary-bright' : day ? 'hover:bg-off-white/50' : 'bg-off-white/30'}`}
+                    className={`min-h-[70px] p-2 border border-border/50 text-sm ${isToday ? 'bg-primary-bright/5 border-[#35C8E0]' : day ? 'hover:bg-off-white/50' : 'bg-off-white/30'}`}
                   >
                     {day && (
                       <>
-                        <span className={`text-xs font-medium ${isToday ? 'text-primary-bright font-bold' : 'text-foreground/60'}`}>
+                        <span className={`text-xs font-medium ${isToday ? 'text-[#1A9AB5] font-bold' : 'text-foreground/60'}`}>
                           {day}
                         </span>
                         <div className="mt-1 space-y-0.5">

@@ -170,7 +170,7 @@ export default function EmployeeTicketsPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-32">
-        <Loader2 size={28} className="animate-spin text-primary-bright" />
+        <Loader2 size={28} className="animate-spin text-[#1A9AB5]" />
       </div>
     )
   }
@@ -218,11 +218,11 @@ export default function EmployeeTicketsPage() {
               <div
                 key={ticket.id}
                 onClick={() => handleOpenTicket(ticket)}
-                className="bg-white border border-border rounded-xl p-5 hover:shadow-sm hover:border-primary-bright/50 transition-all cursor-pointer"
+                className="bg-white border border-border rounded-xl p-5 hover:shadow-sm hover:border-[#35C8E0]/50 transition-all cursor-pointer"
               >
                 <div className="flex items-center justify-between gap-4">
                   <div className="flex items-start gap-3 min-w-0">
-                    <MessageSquare size={18} className="text-primary-bright flex-shrink-0 mt-0.5" />
+                    <MessageSquare size={18} className="text-[#1A9AB5] flex-shrink-0 mt-0.5" />
                     <div className="min-w-0">
                       <h3 className="font-medium text-primary truncate">{ticket.subject}</h3>
                       <p className="text-xs text-foreground/50 mt-0.5 line-clamp-1">{ticket.description}</p>
@@ -234,7 +234,7 @@ export default function EmployeeTicketsPage() {
                           {ticket.priority}
                         </span>
                         {isAssigned && (
-                          <span className="text-xs px-2 py-0.5 rounded font-medium bg-primary/10 text-primary">assigned to you</span>
+                          <span className="text-xs px-2 py-0.5 rounded font-medium bg-[#35C8E0]/20 text-primary">assigned to you</span>
                         )}
                         {replyCount > 0 && (
                           <span className="text-xs text-foreground/40">{replyCount} repl{replyCount === 1 ? 'y' : 'ies'}</span>
@@ -274,7 +274,7 @@ export default function EmployeeTicketsPage() {
                   value={form.subject}
                   onChange={(e) => setForm({ ...form, subject: e.target.value })}
                   placeholder="Brief summary of your issue"
-                  className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-primary-bright"
+                  className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-[#35C8E0]"
                 />
               </div>
               <div>
@@ -284,7 +284,7 @@ export default function EmployeeTicketsPage() {
                   value={form.description}
                   onChange={(e) => setForm({ ...form, description: e.target.value })}
                   placeholder="Describe your issue in detail..."
-                  className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-primary-bright resize-none"
+                  className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-[#35C8E0] resize-none"
                 />
               </div>
               <div>
@@ -292,7 +292,7 @@ export default function EmployeeTicketsPage() {
                 <select
                   value={form.priority}
                   onChange={(e) => setForm({ ...form, priority: e.target.value })}
-                  className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-primary-bright bg-white"
+                  className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-[#35C8E0] bg-white"
                 >
                   <option value="low">Low</option>
                   <option value="medium">Medium</option>
@@ -338,7 +338,7 @@ export default function EmployeeTicketsPage() {
                       onChange={(e) => handleUpdateStatus(selectedTicket.id, e.target.value)}
                       disabled={updatingStatus}
                       onClick={(e) => e.stopPropagation()}
-                      className="text-xs border border-border rounded px-2 py-1 bg-white focus:outline-none focus:border-primary-bright disabled:opacity-60"
+                      className="text-xs border border-border rounded px-2 py-1 bg-white focus:outline-none focus:border-[#35C8E0] disabled:opacity-60"
                     >
                       <option value="open">Open</option>
                       <option value="in_progress">In Progress</option>
@@ -361,7 +361,7 @@ export default function EmployeeTicketsPage() {
 
               {repliesLoading ? (
                 <div className="flex justify-center py-4">
-                  <Loader2 size={20} className="animate-spin text-primary-bright" />
+                  <Loader2 size={20} className="animate-spin text-[#1A9AB5]" />
                 </div>
               ) : replies.length === 0 ? (
                 <p className="text-sm text-foreground/40 py-4 text-center">No replies yet</p>
@@ -393,7 +393,7 @@ export default function EmployeeTicketsPage() {
                   onChange={(e) => setReplyText(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleAddReply()}
                   placeholder="Type your reply..."
-                  className="flex-1 border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-primary-bright"
+                  className="flex-1 border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-[#35C8E0]"
                 />
                 <button
                   onClick={handleAddReply}

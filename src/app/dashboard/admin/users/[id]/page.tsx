@@ -294,7 +294,7 @@ export default function UserDetailPage() {
           <div className="flex flex-col md:flex-row gap-6">
             {/* Avatar */}
             <div className="flex-shrink-0">
-              <div className="w-24 h-24 rounded-xl bg-primary/10 flex items-center justify-center text-primary text-2xl font-bold">
+              <div className="w-24 h-24 rounded-xl bg-[#35C8E0]/20 flex items-center justify-center text-primary text-2xl font-bold">
                 {user.full_name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
               </div>
             </div>
@@ -334,7 +334,7 @@ export default function UserDetailPage() {
               {user.tags && user.tags.length > 0 && (
                 <div className="flex flex-wrap gap-1.5 mt-4">
                   {user.tags.map((tag, i) => (
-                    <span key={i} className="text-xs bg-primary/5 text-primary px-2 py-1 rounded-full font-medium flex items-center gap-1">
+                    <span key={i} className="text-xs bg-[#35C8E0]/10 text-primary px-2 py-1 rounded-full font-medium flex items-center gap-1">
                       <Tag size={10} />
                       {tag}
                     </span>
@@ -749,7 +749,7 @@ function StatCard({ label, value, icon }: { label: string; value: number | strin
   return (
     <div className="bg-white border border-border rounded-xl p-4">
       <div className="flex items-center gap-3">
-        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+        <div className="w-10 h-10 rounded-lg bg-[#35C8E0]/20 flex items-center justify-center text-primary">
           {icon}
         </div>
         <div>

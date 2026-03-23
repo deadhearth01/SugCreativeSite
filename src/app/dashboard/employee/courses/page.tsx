@@ -98,7 +98,7 @@ export default function EmployeeCoursesPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-32">
-        <Loader2 size={28} className="animate-spin text-primary-bright" />
+        <Loader2 size={28} className="animate-spin text-[#1A9AB5]" />
       </div>
     )
   }
@@ -118,8 +118,8 @@ export default function EmployeeCoursesPage() {
               return (
                 <div key={e.id} className="bg-white border border-border rounded-xl p-5 hover:shadow-md transition-shadow">
                   <div className="flex items-center justify-between mb-3">
-                    <BookOpen size={18} className="text-primary-bright" />
-                    <span className={`text-xs font-semibold px-2 py-1 rounded ${progress === 100 ? 'bg-green-100 text-green-700' : 'bg-sky/20 text-primary-bright'}`}>
+                    <BookOpen size={18} className="text-[#1A9AB5]" />
+                    <span className={`text-xs font-semibold px-2 py-1 rounded ${progress === 100 ? 'bg-green-100 text-green-700' : 'bg-[#35C8E0]/20 text-[#1A9AB5]'}`}>
                       {progress === 100 ? 'Completed' : 'In Progress'}
                     </span>
                   </div>
@@ -153,7 +153,7 @@ export default function EmployeeCoursesPage() {
             {availableCourses.map((c) => (
               <div key={c.id} className="bg-white border border-border rounded-xl p-5 hover:shadow-md transition-shadow">
                 <div className="flex items-center justify-between mb-3">
-                  <BookOpen size={18} className="text-primary-bright" />
+                  <BookOpen size={18} className="text-[#1A9AB5]" />
                   {c.category && (
                     <span className="text-xs bg-off-white px-2 py-1 rounded-md font-medium text-foreground/60">{c.category}</span>
                   )}

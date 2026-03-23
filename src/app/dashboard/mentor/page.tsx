@@ -75,7 +75,7 @@ export default function MentorDashboard() {
     load()
   }, [])
 
-  if (loading) return <div className="flex items-center justify-center py-32"><Loader2 size={28} className="animate-spin text-primary-bright" /></div>
+  if (loading) return <div className="flex items-center justify-center py-32"><Loader2 size={28} className="animate-spin text-[#1A9AB5]" /></div>
 
   return (
     <div className="space-y-8">
@@ -98,15 +98,15 @@ export default function MentorDashboard() {
           { label: 'Calendar', href: '/dashboard/mentor/calendar', icon: Calendar },
           { label: 'Earnings', href: '/dashboard/mentor/earnings', icon: CreditCard },
         ].map((a) => (
-          <Link key={a.label} href={a.href} className="bg-white border border-border rounded-xl p-4 flex items-center gap-3 hover:border-primary-bright hover:shadow-sm transition-all group">
-            <a.icon size={18} className="text-primary-bright" />
+          <Link key={a.label} href={a.href} className="bg-white border border-border rounded-xl p-4 flex items-center gap-3 hover:border-[#35C8E0] hover:shadow-sm transition-all group">
+            <a.icon size={18} className="text-[#1A9AB5]" />
             <span className="text-sm font-medium text-primary">{a.label}</span>
-            <ArrowUpRight size={14} className="ml-auto text-foreground/30 group-hover:text-primary-bright transition-colors" />
+            <ArrowUpRight size={14} className="ml-auto text-foreground/30 group-hover:text-[#1A9AB5] transition-colors" />
           </Link>
         ))}
       </div>
 
-      <DashboardPanel title="Recent Sessions" action={<Link href="/dashboard/mentor/sessions" className="text-xs text-primary-bright font-semibold hover:underline">View All</Link>}>
+      <DashboardPanel title="Recent Sessions" action={<Link href="/dashboard/mentor/sessions" className="text-xs text-[#1A9AB5] font-semibold hover:underline">View All</Link>}>
         {recentSessions.length === 0 ? (
           <p className="text-sm text-foreground/50 py-4 text-center">No sessions yet.</p>
         ) : (

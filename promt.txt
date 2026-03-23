@@ -1,0 +1,105 @@
+Create a complete website for SUG Creative in the light theme and the brand colors are in the screenshots first make the landing page with this pages 
+Home
+•	Hero section with strong headline + CTA
+•	Brief about SUG
+•	Overview of services (Business, Career, Startup)
+•	Key stats (e.g., careers transformed)
+•	Testimonials preview
+•	Contact CTA
+________________________________________
+About
+•	Company story
+•	Mission & vision
+•	Why choose SUG
+•	Team highlights
+________________________________________
+Services (All services in one page with sections)
+Include separate sections for:
+•	Business Solutions
+•	Career Guidance / Trainings
+•	Startup Hub
+•	Clear CTA under each section
+________________________________________
+Success Stories / Testimonials
+•	Student & client testimonials
+•	Results / impact numbers
+•	Case highlights
+________________________________________
+Blog / Resources 
+•	Career tips
+•	Startup guidance
+•	Business insights
+________________________________________
+Contact
+•	Contact form
+•	Email / phone
+•	Social links
+________________________________________ Legal Pages (Footer Only)
+•	Privacy Policy
+•	Terms & Conditions
+•	Refund Policy
+
+
+this are just for refference and for the better output use this tech stack 
+nextjs
+tailwind 
+lenis
+motion 
+three js 
+gsap 
+use this for best site in the world and the corners should be boxy and use proper animation all around theh site with proper markeitng and design guideline 
+in .agents 
+and use bun for packages and running and there are soem roles for the dashbord for this site 
+<aside>
+
+## Roles
+
+</aside>
+
+1. Admin 
+    1. Actions 
+        1. Create and manage other roles
+        2. CRUD courses in the site (price, photos, dates, info, and other time based content) 
+        3. Can schedule and mange meetings
+        4. Can add budget and spendings of the company
+    2. Pages
+        1. Dashboard 
+        2. User management (Sub user management, can go to individual user and update anything ) add user, manage students, clients, mentors, employee’s 
+        3. SUG Calendar 
+        4. Course modifications in the site 
+        5.  Payment management 
+        6. Announcements 
+        7. Support and Tickets
+        8. Settings 
+        9.  
+2. Student
+    1. Actions
+        1. Can enroll courses and join workshops from dashboards 
+        2.  Can raise a ticket (Solved by admin or employee)
+    2. Pages 
+        1. Dashboard 
+        2. Training courses 
+        3. Resume builder 
+        4. meetings 
+        5. SUG Calendar
+        6. 
+3. Client
+4. Mentor 
+5. Employee 
+6. Intern 
+
+<aside>
+
+## User Flow
+
+</aside>
+
+<aside>
+
+## Wire Framing or Site structure
+
+</aside>
+
+
+this is incomplete roles actions and pages complte it and design it accordingly 
+the site should be feel so premium and best ui UX 

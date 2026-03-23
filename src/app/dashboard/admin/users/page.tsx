@@ -112,13 +112,13 @@ function TagChipSelector({
   return (
     <div>
       <div
-        className="min-h-[42px] w-full border border-border rounded-lg px-3 py-2 flex flex-wrap gap-1.5 cursor-text focus-within:border-primary-bright transition-colors"
+        className="min-h-[42px] w-full border border-border rounded-lg px-3 py-2 flex flex-wrap gap-1.5 cursor-text focus-within:border-[#35C8E0] transition-colors"
         onClick={() => inputRef.current?.focus()}
       >
         {selectedTags.map(tag => (
           <span
             key={tag}
-            className="inline-flex items-center gap-1 bg-primary/10 text-primary text-xs font-medium px-2.5 py-1 rounded-full"
+            className="inline-flex items-center gap-1 bg-[#35C8E0]/20 text-primary text-xs font-medium px-2.5 py-1 rounded-full"
           >
             <Tag size={10} />
             {tag}
@@ -157,7 +157,7 @@ function TagChipSelector({
           <button
             type="button"
             onClick={() => addTag(inputValue)}
-            className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full bg-primary/5 border border-primary/40 text-primary hover:bg-primary/10 transition-colors"
+            className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full bg-[#35C8E0]/10 border border-primary/40 text-primary hover:bg-[#35C8E0]/20 transition-colors"
           >
             <Plus size={9} />
             Create &quot;{inputValue.trim()}&quot;
@@ -289,7 +289,7 @@ function UserActionsMenu({
       <button
         ref={btnRef}
         onClick={toggleMenu}
-        className="p-1.5 rounded-lg hover:bg-primary/10 text-foreground/40 hover:text-primary transition-colors"
+        className="p-1.5 rounded-lg hover:bg-[#35C8E0]/20 text-foreground/40 hover:text-primary transition-colors"
         title="More options"
       >
         <MoreVertical size={15} />
@@ -605,7 +605,7 @@ export default function UsersPage() {
             <span className="hidden sm:inline">{tab.label}</span>
             {tab.count !== undefined && tab.count > 0 && (
               <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${
-                activeTab === tab.key ? 'bg-white/20 text-white' : 'bg-primary/10 text-primary'
+                activeTab === tab.key ? 'bg-white/20 text-white' : 'bg-[#35C8E0]/20 text-primary'
               }`}>
                 {tab.count}
               </span>
@@ -628,7 +628,7 @@ export default function UsersPage() {
               className={`p-3 rounded-xl border text-center transition-all ${
                 filterRole === role
                   ? 'bg-primary text-white border-primary'
-                  : 'bg-white border-border hover:border-primary-bright'
+                  : 'bg-white border-border hover:border-[#35C8E0]'
               }`}
             >
               <div className={`text-xl font-bold ${filterRole === role ? 'text-white' : 'text-primary'}`}>{count}</div>
@@ -649,7 +649,7 @@ export default function UsersPage() {
             placeholder="Search by name, email, or tag..."
             value={search}
             onChange={(e) => { setSearch(e.target.value); setPage(1) }}
-            className="w-full pl-10 pr-4 py-2 border border-border rounded-lg text-sm focus:outline-none focus:border-primary-bright"
+            className="w-full pl-10 pr-4 py-2 border border-border rounded-lg text-sm focus:outline-none focus:border-[#35C8E0]"
           />
         </div>
         <div className="flex items-center gap-2 flex-wrap">
@@ -674,7 +674,7 @@ export default function UsersPage() {
       <div className="bg-white border border-border rounded-xl">
         {loading ? (
           <div className="flex items-center justify-center py-20">
-            <Loader2 size={24} className="animate-spin text-primary-bright" />
+            <Loader2 size={24} className="animate-spin text-[#1A9AB5]" />
             <span className="ml-2 text-sm text-foreground/50">Loading users...</span>
           </div>
         ) : paginated.length === 0 ? (
@@ -703,7 +703,7 @@ export default function UsersPage() {
                   >
                     <td className="py-3 px-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center text-primary text-xs font-bold flex-shrink-0">
+                        <div className="w-9 h-9 rounded-lg bg-[#35C8E0]/20 flex items-center justify-center text-primary text-xs font-bold flex-shrink-0">
                           {u.full_name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
                         </div>
                         <div className="min-w-0">
@@ -729,7 +729,7 @@ export default function UsersPage() {
                     <td className="py-3 px-4 hidden md:table-cell">
                       <div className="flex flex-wrap gap-1">
                         {(u.tags || []).length > 0 ? u.tags.map((tag, i) => (
-                          <span key={i} className="text-[10px] bg-primary/5 text-primary px-1.5 py-0.5 rounded-full font-medium flex items-center gap-0.5">
+                          <span key={i} className="text-[10px] bg-[#35C8E0]/10 text-primary px-1.5 py-0.5 rounded-full font-medium flex items-center gap-0.5">
                             <Tag size={8} />
                             {tag}
                           </span>
@@ -808,7 +808,7 @@ export default function UsersPage() {
             <div className="space-y-3">
               <p className="text-sm text-foreground/50 font-medium">{signupRequests.length} pending request{signupRequests.length !== 1 ? 's' : ''}</p>
               {signupRequests.map((u) => (
-                <div key={u.id} className="bg-white border border-border rounded-xl p-4 flex flex-col sm:flex-row items-start sm:items-center gap-4 hover:border-primary-bright transition-colors">
+                <div key={u.id} className="bg-white border border-border rounded-xl p-4 flex flex-col sm:flex-row items-start sm:items-center gap-4 hover:border-[#35C8E0] transition-colors">
                   <div className="flex items-center gap-3 flex-1 min-w-0">
                     <div className="w-11 h-11 rounded-xl bg-amber-100 flex items-center justify-center text-amber-700 text-sm font-bold flex-shrink-0">
                       {u.full_name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
@@ -855,7 +855,7 @@ export default function UsersPage() {
           {roleStats.map((rs) => {
             const roleUsers = users.filter(u => u.role === rs.role)
             return (
-              <div key={rs.role} className="bg-white border border-border rounded-xl p-5 hover:border-primary-bright transition-colors">
+              <div key={rs.role} className="bg-white border border-border rounded-xl p-5 hover:border-[#35C8E0] transition-colors">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-3">
                     <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-sm font-bold ${rs.color}`}>
@@ -868,7 +868,7 @@ export default function UsersPage() {
                   </div>
                   <button
                     onClick={() => { setFilterRole(rs.role); setActiveTab('all') }}
-                    className="text-xs font-semibold text-primary-bright hover:underline"
+                    className="text-xs font-semibold text-[#1A9AB5] hover:underline"
                   >
                     View all
                   </button>
@@ -877,7 +877,7 @@ export default function UsersPage() {
                   <div className="space-y-2">
                     {roleUsers.slice(0, 3).map((u) => (
                       <div key={u.id} className="flex items-center gap-2 p-2 rounded-lg bg-off-white/60">
-                        <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center text-primary text-[10px] font-bold flex-shrink-0">
+                        <div className="w-7 h-7 rounded-lg bg-[#35C8E0]/20 flex items-center justify-center text-primary text-[10px] font-bold flex-shrink-0">
                           {u.full_name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
                         </div>
                         <div className="min-w-0 flex-1">
@@ -911,16 +911,16 @@ export default function UsersPage() {
             <div className="p-6 space-y-4">
               <div>
                 <label className="block text-sm font-medium text-foreground/70 mb-1">Full Name *</label>
-                <input type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-primary-bright" placeholder="Enter full name" />
+                <input type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-[#35C8E0]" placeholder="Enter full name" />
               </div>
               <div>
                 <label className="block text-sm font-medium text-foreground/70 mb-1">Email *</label>
-                <input type="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-primary-bright" placeholder="user@example.com" />
+                <input type="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-[#35C8E0]" placeholder="user@example.com" />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-foreground/70 mb-1">Role</label>
-                  <select value={formData.role} onChange={(e) => setFormData({ ...formData, role: e.target.value })} className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-primary-bright bg-white">
+                  <select value={formData.role} onChange={(e) => setFormData({ ...formData, role: e.target.value })} className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-[#35C8E0] bg-white">
                     {Object.entries(roleLabels).map(([val, label]) => (
                       <option key={val} value={val}>{label}</option>
                     ))}
@@ -928,7 +928,7 @@ export default function UsersPage() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-foreground/70 mb-1">Phone</label>
-                  <input type="tel" value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-primary-bright" placeholder="+91 ..." />
+                  <input type="tel" value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-[#35C8E0]" placeholder="+91 ..." />
                 </div>
               </div>
               <div>
@@ -939,7 +939,7 @@ export default function UsersPage() {
                       type={showPassword ? 'text' : 'password'}
                       value={formData.password}
                       onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                      className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-primary-bright pr-10 font-mono"
+                      className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-[#35C8E0] pr-10 font-mono"
                       placeholder="Password"
                     />
                     <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-foreground/40 hover:text-primary">
@@ -959,7 +959,7 @@ export default function UsersPage() {
                 {showPassword && formData.password && (
                   <button
                     onClick={() => copyToClipboard(formData.password, 'pw')}
-                    className="mt-1.5 text-xs text-primary-bright hover:underline flex items-center gap-1"
+                    className="mt-1.5 text-xs text-[#1A9AB5] hover:underline flex items-center gap-1"
                   >
                     {copiedId === 'pw' ? <><Check size={10} /> Copied!</> : <><Copy size={10} /> Copy password</>}
                   </button>
@@ -998,7 +998,7 @@ export default function UsersPage() {
             </div>
             <div className="p-6 space-y-4">
               <div className="flex items-center gap-4 p-4 bg-off-white rounded-xl">
-                <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center text-primary text-lg font-bold">
+                <div className="w-14 h-14 rounded-xl bg-[#35C8E0]/20 flex items-center justify-center text-primary text-lg font-bold">
                   {selectedUser.full_name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
                 </div>
                 <div>
@@ -1014,16 +1014,16 @@ export default function UsersPage() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-foreground/70 mb-1">Full Name</label>
-                <input type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-primary-bright" />
+                <input type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-[#35C8E0]" />
               </div>
               <div>
                 <label className="block text-sm font-medium text-foreground/70 mb-1">Email</label>
-                <input type="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-primary-bright" />
+                <input type="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-[#35C8E0]" />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-foreground/70 mb-1">Role</label>
-                  <select value={formData.role} onChange={(e) => setFormData({ ...formData, role: e.target.value })} className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-primary-bright bg-white">
+                  <select value={formData.role} onChange={(e) => setFormData({ ...formData, role: e.target.value })} className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-[#35C8E0] bg-white">
                     {Object.entries(roleLabels).map(([val, label]) => (
                       <option key={val} value={val}>{label}</option>
                     ))}
@@ -1031,7 +1031,7 @@ export default function UsersPage() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-foreground/70 mb-1">Phone</label>
-                  <input type="tel" value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-primary-bright" />
+                  <input type="tel" value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-[#35C8E0]" />
                 </div>
               </div>
               <div>
@@ -1042,7 +1042,7 @@ export default function UsersPage() {
                       type={showPassword ? 'text' : 'password'}
                       value={formData.password}
                       onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                      className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-primary-bright pr-10 font-mono"
+                      className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-[#35C8E0] pr-10 font-mono"
                       placeholder="Leave blank to keep current"
                     />
                     <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-foreground/40 hover:text-primary">
@@ -1060,7 +1060,7 @@ export default function UsersPage() {
                 {showPassword && formData.password && (
                   <button
                     onClick={() => copyToClipboard(formData.password, 'pw-edit')}
-                    className="mt-1.5 text-xs text-primary-bright hover:underline flex items-center gap-1"
+                    className="mt-1.5 text-xs text-[#1A9AB5] hover:underline flex items-center gap-1"
                   >
                     {copiedId === 'pw-edit' ? <><Check size={10} /> Copied!</> : <><Copy size={10} /> Copy password</>}
                   </button>
@@ -1118,7 +1118,7 @@ export default function UsersPage() {
             </div>
             <div className="p-6 space-y-5">
               <div className="flex items-center gap-4">
-                <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center text-primary text-xl font-bold flex-shrink-0">
+                <div className="w-16 h-16 rounded-2xl bg-[#35C8E0]/20 flex items-center justify-center text-primary text-xl font-bold flex-shrink-0">
                   {viewProfileUser.full_name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
                 </div>
                 <div>
@@ -1158,7 +1158,7 @@ export default function UsersPage() {
                     <p className="text-xs text-foreground/50 font-medium mb-2 flex items-center gap-1"><Tag size={12} /> Tags</p>
                     <div className="flex flex-wrap gap-1.5">
                       {viewProfileUser.tags.map((tag, i) => (
-                        <span key={i} className="text-xs bg-primary/10 text-primary px-2.5 py-1 rounded-full font-medium">{tag}</span>
+                        <span key={i} className="text-xs bg-[#35C8E0]/20 text-primary px-2.5 py-1 rounded-full font-medium">{tag}</span>
                       ))}
                     </div>
                   </div>
@@ -1232,7 +1232,7 @@ export default function UsersPage() {
                 {[
                   { label: 'Account Created', date: viewActivityUser.created_at, icon: <UserPlus size={14} />, color: 'text-green-600 bg-green-50' },
                   { label: 'Profile Last Updated', date: viewActivityUser.updated_at, icon: <Edit size={14} />, color: 'text-blue-600 bg-blue-50' },
-                  { label: 'Current Status', date: null, icon: viewActivityUser.status === 'banned' ? <Ban size={14} /> : <Shield size={14} />, color: viewActivityUser.status === 'banned' ? 'text-red-600 bg-red-50' : 'text-primary bg-primary/10', value: viewActivityUser.status },
+                  { label: 'Current Status', date: null, icon: viewActivityUser.status === 'banned' ? <Ban size={14} /> : <Shield size={14} />, color: viewActivityUser.status === 'banned' ? 'text-red-600 bg-red-50' : 'text-primary bg-[#35C8E0]/20', value: viewActivityUser.status },
                 ].map((actItem, i) => (
                   <div key={i} className="flex items-start gap-3 p-3 bg-off-white rounded-xl">
                     <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${actItem.color}`}>
@@ -1279,7 +1279,7 @@ export default function UsersPage() {
                       type={showNewPassword ? 'text' : 'password'}
                       value={newPassword}
                       onChange={(e) => setNewPassword(e.target.value)}
-                      className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-primary-bright pr-10 font-mono"
+                      className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-[#35C8E0] pr-10 font-mono"
                       placeholder="Enter new password"
                     />
                     <button type="button" onClick={() => setShowNewPassword(v => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-foreground/40 hover:text-primary">
@@ -1296,7 +1296,7 @@ export default function UsersPage() {
                   </button>
                 </div>
                 {showNewPassword && newPassword && (
-                  <button onClick={() => copyToClipboard(newPassword, 'new-pw')} className="mt-1.5 text-xs text-primary-bright hover:underline flex items-center gap-1">
+                  <button onClick={() => copyToClipboard(newPassword, 'new-pw')} className="mt-1.5 text-xs text-[#1A9AB5] hover:underline flex items-center gap-1">
                     {copiedId === 'new-pw' ? <><Check size={10} /> Copied!</> : <><Copy size={10} /> Copy password</>}
                   </button>
                 )}

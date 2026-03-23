@@ -279,7 +279,7 @@ export default function MeetingsPage() {
               (filterStatus === 'all' && s.label === 'Total') ||
               filterStatus === s.label.toLowerCase()
                 ? 'bg-primary text-white border-primary'
-                : 'bg-white border-border hover:border-primary-bright'
+                : 'bg-white border-border hover:border-[#35C8E0]'
             }`}
           >
             <div className={`text-xl font-bold ${
@@ -303,7 +303,7 @@ export default function MeetingsPage() {
             placeholder="Search meetings..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-border rounded-lg text-sm focus:outline-none focus:border-primary-bright"
+            className="w-full pl-10 pr-4 py-2 border border-border rounded-lg text-sm focus:outline-none focus:border-[#35C8E0]"
           />
         </div>
         <div className="flex items-center gap-2">
@@ -326,7 +326,7 @@ export default function MeetingsPage() {
       <div className="space-y-3">
         {loading ? (
           <div className="flex items-center justify-center py-20 bg-white rounded-xl border border-border">
-            <Loader2 size={24} className="animate-spin text-primary-bright" />
+            <Loader2 size={24} className="animate-spin text-[#1A9AB5]" />
             <span className="ml-2 text-sm text-foreground/50">Loading meetings...</span>
           </div>
         ) : filtered.length === 0 ? (
@@ -335,12 +335,12 @@ export default function MeetingsPage() {
           </div>
         ) : (
           filtered.map(m => (
-            <div key={m.id} className="bg-white border border-border rounded-xl p-5 hover:border-primary-bright/30 transition-all">
+            <div key={m.id} className="bg-white border border-border rounded-xl p-5 hover:border-[#35C8E0]/30 transition-all">
               <div className="flex flex-col sm:flex-row gap-4">
                 {/* Left: Info */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
+                    <div className="w-10 h-10 rounded-xl bg-[#35C8E0]/20 flex items-center justify-center flex-shrink-0">
                       <Video size={18} className="text-primary" />
                     </div>
                     <div className="min-w-0 flex-1">
@@ -349,7 +349,7 @@ export default function MeetingsPage() {
                         <span className={`text-[10px] font-semibold uppercase px-2 py-0.5 rounded-md ${statusColors[m.status] || 'bg-gray-100 text-gray-600'}`}>
                           {m.status.replace('_', ' ')}
                         </span>
-                        <span className="text-[10px] font-medium bg-primary/5 text-primary px-2 py-0.5 rounded-md capitalize">
+                        <span className="text-[10px] font-medium bg-[#35C8E0]/10 text-primary px-2 py-0.5 rounded-md capitalize">
                           {m.meeting_type}
                         </span>
                       </div>
@@ -450,16 +450,16 @@ export default function MeetingsPage() {
             <div className="p-6 space-y-4">
               <div>
                 <label className="block text-sm font-medium text-foreground/70 mb-1">Title *</label>
-                <input type="text" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-primary-bright" placeholder="Meeting title" />
+                <input type="text" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-[#35C8E0]" placeholder="Meeting title" />
               </div>
               <div>
                 <label className="block text-sm font-medium text-foreground/70 mb-1">Description</label>
-                <textarea value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} rows={2} className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-primary-bright resize-none" placeholder="Optional description" />
+                <textarea value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} rows={2} className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-[#35C8E0] resize-none" placeholder="Optional description" />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-foreground/70 mb-1">Type</label>
-                  <select value={form.meeting_type} onChange={e => setForm({ ...form, meeting_type: e.target.value })} className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-primary-bright bg-white">
+                  <select value={form.meeting_type} onChange={e => setForm({ ...form, meeting_type: e.target.value })} className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-[#35C8E0] bg-white">
                     <option value="general">General</option>
                     <option value="mentoring">Mentoring</option>
                     <option value="interview">Interview</option>
@@ -469,17 +469,17 @@ export default function MeetingsPage() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-foreground/70 mb-1">Duration (minutes)</label>
-                  <input type="number" min={5} max={480} value={form.duration_minutes} onChange={e => setForm({ ...form, duration_minutes: Number(e.target.value) })} className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-primary-bright" />
+                  <input type="number" min={5} max={480} value={form.duration_minutes} onChange={e => setForm({ ...form, duration_minutes: Number(e.target.value) })} className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-[#35C8E0]" />
                 </div>
               </div>
               <div>
                 <label className="block text-sm font-medium text-foreground/70 mb-1">Scheduled Date & Time *</label>
-                <input type="datetime-local" value={form.scheduled_at} onChange={e => setForm({ ...form, scheduled_at: e.target.value })} className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-primary-bright" />
+                <input type="datetime-local" value={form.scheduled_at} onChange={e => setForm({ ...form, scheduled_at: e.target.value })} className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-[#35C8E0]" />
               </div>
               <div>
                 <label className="block text-sm font-medium text-foreground/70 mb-1">Google Meet Link</label>
                 <div className="flex gap-2">
-                  <input type="text" value={form.meeting_link} onChange={e => setForm({ ...form, meeting_link: e.target.value })} className="flex-1 border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-primary-bright font-mono text-xs" />
+                  <input type="text" value={form.meeting_link} onChange={e => setForm({ ...form, meeting_link: e.target.value })} className="flex-1 border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-[#35C8E0] font-mono text-xs" />
                   <button
                     onClick={() => setForm({ ...form, meeting_link: generateMeetLink() })}
                     className="px-3 py-2.5 rounded-lg border border-border hover:bg-off-white text-foreground/60 hover:text-primary transition-colors text-sm"
@@ -499,7 +499,7 @@ export default function MeetingsPage() {
                       key={p.id}
                       onClick={() => toggleParticipant(p.id)}
                       className={`w-full flex items-center gap-3 px-4 py-2 text-left hover:bg-off-white transition-colors text-sm border-b border-border/50 last:border-0 ${
-                        form.participant_ids.includes(p.id) ? 'bg-primary/5' : ''
+                        form.participant_ids.includes(p.id) ? 'bg-[#35C8E0]/10' : ''
                       }`}
                     >
                       <div className={`w-5 h-5 rounded border flex items-center justify-center flex-shrink-0 ${

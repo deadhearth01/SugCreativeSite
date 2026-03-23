@@ -22,10 +22,10 @@ const services = [
 ]
 
 const contactInfo = [
-  { icon: Mail, label: 'Email Us', value: 'hello@sugcreative.com', href: 'mailto:hello@sugcreative.com', color: 'bg-primary-dark', accent: '#4DA8DB' },
-  { icon: Phone, label: 'Call Us', value: '+91 98765 43210', href: 'tel:+919876543210', color: 'bg-[#4DA8DB]', accent: '#022A4A' },
-  { icon: MapPin, label: 'Visit Us', value: 'Chennai, India', href: '#', color: 'bg-white border-2 border-primary-dark', accent: '#022A4A' },
-  { icon: Clock, label: 'Office Hours', value: 'Mon–Fri: 9AM–7PM', href: '#', color: 'bg-primary-dark/10 border-2 border-primary-dark', accent: '#022A4A' },
+  { icon: Mail, label: 'Email Us', value: 'hello@sugcreative.com', href: 'mailto:hello@sugcreative.com', color: 'bg-primary-dark', accent: '#82C93D' },
+  { icon: Phone, label: 'Call Us', value: '+91 98765 43210', href: 'tel:+919876543210', color: 'bg-[#82C93D]', accent: '#1A9AB5' },
+  { icon: MapPin, label: 'Visit Us', value: 'Chennai, India', href: '#', color: 'bg-white border-2 border-primary-dark', accent: '#1A9AB5' },
+  { icon: Clock, label: 'Office Hours', value: 'Mon–Fri: 9AM–7PM', href: '#', color: 'bg-primary-dark/10 border-2 border-primary-dark', accent: '#1A9AB5' },
 ]
 
 const faqItems = [
@@ -83,7 +83,7 @@ export default function ContactPage() {
               </div>
               <h1 className="hero-animate text-5xl sm:text-6xl md:text-7xl font-heading font-black text-primary-dark leading-[1.05] tracking-tight mb-6">
                 Let&apos;s Start a<br />
-                <span className="text-[#4DA8DB]">Conversation</span>
+                <span className="text-[#82C93D]">Conversation</span>
               </h1>
               <p className="hero-animate text-lg md:text-xl text-primary-dark/70 font-bold leading-relaxed border-l-4 border-primary pl-5 max-w-2xl">
                 Have a question, project, or idea? We&apos;d love to hear from you.
@@ -91,8 +91,8 @@ export default function ContactPage() {
               </p>
             </div>
             <div className="hero-animate shrink-0 hidden lg:block">
-              <div className="bg-primary-dark text-white border-2 border-primary-dark p-6 rounded-none shadow-[8px_8px_0px_rgba(77,168,219,1)]">
-                <MessageSquare size={32} className="text-[#4DA8DB] mb-3" />
+              <div className="bg-primary-dark text-white border-2 border-primary-dark p-6 rounded-none shadow-[8px_8px_0px_rgba(130,201,61,1)]">
+                <MessageSquare size={32} className="text-[#82C93D] mb-3" />
                 <div className="text-3xl font-heading font-black text-white mb-1">24h</div>
                 <div className="text-xs font-black uppercase tracking-widest text-white/60">Average Response Time</div>
               </div>
@@ -112,12 +112,12 @@ export default function ContactPage() {
                   href={info.href}
                   className="group flex flex-col gap-4 p-6 border-2 border-white/10 bg-white/5 hover:bg-white/10 hover:border-white/30 transition-all duration-300 backdrop-blur-sm shadow-[4px_4px_0px_rgba(0,0,0,0.3)] hover:-translate-y-1 hover:shadow-[8px_8px_0px_rgba(0,0,0,0.5)]"
                 >
-                  <div className="w-12 h-12 flex items-center justify-center bg-white/10 border border-white/20 group-hover:bg-[#4DA8DB] group-hover:border-[#4DA8DB] transition-colors">
-                    <info.icon size={20} className="text-[#4DA8DB] group-hover:text-white transition-colors" />
+                  <div className="w-12 h-12 flex items-center justify-center bg-white/10 border border-white/20 group-hover:bg-[#82C93D] group-hover:border-[#82C93D] transition-colors">
+                    <info.icon size={20} className="text-[#82C93D] group-hover:text-white transition-colors" />
                   </div>
                   <div>
                     <div className="text-[10px] font-black uppercase tracking-widest text-white/40 mb-1">{info.label}</div>
-                    <div className="text-sm font-black text-white group-hover:text-[#4DA8DB] transition-colors">{info.value}</div>
+                    <div className="text-sm font-black text-white group-hover:text-[#82C93D] transition-colors">{info.value}</div>
                   </div>
                 </a>
               </AnimatedSection>
@@ -147,8 +147,8 @@ export default function ContactPage() {
                       '98% client satisfaction rate since 2015',
                     ].map((item, i) => (
                       <div key={i} className="flex items-start gap-3 group">
-                        <div className="w-6 h-6 bg-primary-dark border-2 border-primary-dark flex items-center justify-center shrink-0 mt-0.5 shadow-[2px_2px_0px_rgba(77,168,219,0.5)]">
-                          <CheckCircle2 size={12} className="text-[#4DA8DB]" />
+                        <div className="w-6 h-6 bg-primary-dark border-2 border-primary-dark flex items-center justify-center shrink-0 mt-0.5 shadow-[2px_2px_0px_rgba(130,201,61,0.5)]">
+                          <CheckCircle2 size={12} className="text-[#82C93D]" />
                         </div>
                         <span className="text-primary-dark font-bold text-sm leading-relaxed">{item}</span>
                       </div>
@@ -181,11 +181,11 @@ export default function ContactPage() {
                   <div className="bg-primary-dark text-white px-8 py-6 border-b-2 border-primary-dark">
                     <div className="flex items-center justify-between">
                       <div>
-                        <div className="text-[10px] font-black uppercase tracking-widest text-[#4DA8DB] mb-1">Free Consultation</div>
+                        <div className="text-[10px] font-black uppercase tracking-widest text-[#82C93D] mb-1">Free Consultation</div>
                         <h2 className="text-xl font-heading font-black text-white">Send Us a Message</h2>
                       </div>
-                      <div className="w-12 h-12 bg-[#4DA8DB]/20 border border-[#4DA8DB]/40 flex items-center justify-center">
-                        <Send size={20} className="text-[#4DA8DB]" />
+                      <div className="w-12 h-12 bg-[#82C93D]/20 border border-[#82C93D]/40 flex items-center justify-center">
+                        <Send size={20} className="text-[#82C93D]" />
                       </div>
                     </div>
                   </div>
@@ -193,8 +193,8 @@ export default function ContactPage() {
                   <div className="p-8 md:p-10">
                     {submitted ? (
                       <div className="text-center py-16">
-                        <div className="w-20 h-20 mx-auto flex items-center justify-center bg-primary-dark border-2 border-primary-dark mb-6 shadow-[6px_6px_0px_rgba(77,168,219,1)]">
-                          <CheckCircle2 size={36} className="text-[#4DA8DB]" />
+                        <div className="w-20 h-20 mx-auto flex items-center justify-center bg-primary-dark border-2 border-primary-dark mb-6 shadow-[6px_6px_0px_rgba(130,201,61,1)]">
+                          <CheckCircle2 size={36} className="text-[#82C93D]" />
                         </div>
                         <h3 className="text-2xl font-heading font-black text-primary-dark mb-4">Message Sent!</h3>
                         <p className="text-primary-dark/60 font-bold max-w-sm mx-auto leading-relaxed">

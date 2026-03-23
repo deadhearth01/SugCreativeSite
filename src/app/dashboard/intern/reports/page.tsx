@@ -100,7 +100,7 @@ export default function InternReportsPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-32">
-        <Loader2 size={28} className="animate-spin text-primary-bright" />
+        <Loader2 size={28} className="animate-spin text-[#1A9AB5]" />
       </div>
     )
   }
@@ -151,7 +151,7 @@ export default function InternReportsPage() {
                   value={form.title}
                   onChange={(e) => setForm({ ...form, title: e.target.value })}
                   placeholder="e.g. Week 3 — Content Creation"
-                  className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-primary-bright"
+                  className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-[#35C8E0]"
                 />
               </div>
               <div>
@@ -159,7 +159,7 @@ export default function InternReportsPage() {
                 <select
                   value={form.report_type}
                   onChange={(e) => setForm({ ...form, report_type: e.target.value })}
-                  className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-primary-bright bg-white"
+                  className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-[#35C8E0] bg-white"
                 >
                   <option value="intern_weekly">Weekly Report</option>
                   <option value="intern_final">Final Report</option>
@@ -173,7 +173,7 @@ export default function InternReportsPage() {
                   value={form.content}
                   onChange={(e) => setForm({ ...form, content: e.target.value })}
                   placeholder="Describe what you worked on, your learnings, and any challenges..."
-                  className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-primary-bright resize-none"
+                  className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-[#35C8E0] resize-none"
                 />
               </div>
             </div>

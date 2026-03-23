@@ -54,7 +54,7 @@ export default function MentorCalendarPage() {
 
   const upcomingEvents = events.filter(e => new Date(e.start_time) >= today).slice(0, 8)
 
-  if (loading) return <div className="flex items-center justify-center py-32"><Loader2 size={28} className="animate-spin text-primary-bright" /></div>
+  if (loading) return <div className="flex items-center justify-center py-32"><Loader2 size={28} className="animate-spin text-[#1A9AB5]" /></div>
 
   return (
     <div>
@@ -94,11 +94,11 @@ export default function MentorCalendarPage() {
                 return (
                   <div
                     key={i}
-                    className={`min-h-[70px] p-1.5 rounded-lg border text-sm ${isToday ? 'bg-primary-bright/5 border-primary-bright' : day ? 'border-border/50 hover:bg-off-white/50' : 'border-transparent bg-off-white/30'}`}
+                    className={`min-h-[70px] p-1.5 rounded-lg border text-sm ${isToday ? 'bg-primary-bright/5 border-[#35C8E0]' : day ? 'border-border/50 hover:bg-off-white/50' : 'border-transparent bg-off-white/30'}`}
                   >
                     {day && (
                       <>
-                        <span className={`text-xs font-medium block mb-1 ${isToday ? 'text-primary-bright font-bold' : 'text-foreground/60'}`}>{day}</span>
+                        <span className={`text-xs font-medium block mb-1 ${isToday ? 'text-[#1A9AB5] font-bold' : 'text-foreground/60'}`}>{day}</span>
                         {dayEvents.slice(0, 2).map(e => (
                           <div
                             key={e.id}

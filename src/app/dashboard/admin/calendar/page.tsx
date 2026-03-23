@@ -51,12 +51,12 @@ type BigCalendarEvent = {
 const DnDCalendar = withDragAndDrop<BigCalendarEvent>(Calendar)
 
 const EVENT_TYPES = [
-  { value: 'meeting', label: 'Meeting', color: '#0A6BAF' },
+  { value: 'meeting', label: 'Meeting', color: '#82C93D' },
   { value: 'deadline', label: 'Deadline', color: '#EF4444' },
   { value: 'holiday', label: 'Holiday', color: '#10B981' },
   { value: 'workshop', label: 'Workshop', color: '#8B5CF6' },
   { value: 'exam', label: 'Exam', color: '#F59E0B' },
-  { value: 'general', label: 'General', color: '#045184' },
+  { value: 'general', label: 'General', color: '#35C8E0' },
 ]
 
 const ROLE_OPTIONS = [
@@ -69,7 +69,7 @@ const ROLE_OPTIONS = [
   { value: 'intern', label: 'Interns' },
 ]
 
-const EVENT_COLORS = ['#045184', '#0A6BAF', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#06B6D4', '#EC4899']
+const EVENT_COLORS = ['#35C8E0', '#82C93D', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#06B6D4', '#EC4899']
 
 function Toast({ message, type, onClose }: { message: string; type: 'success' | 'error'; onClose: () => void }) {
   useEffect(() => { const t = setTimeout(onClose, 4000); return () => clearTimeout(t) }, [onClose])
@@ -99,7 +99,7 @@ export default function CalendarPage() {
     end_time: '',
     all_day: false,
     location: '',
-    color: '#045184',
+    color: '#35C8E0',
     target_roles: ['all'] as string[],
   })
 
@@ -167,7 +167,7 @@ export default function CalendarPage() {
       end_time: format(end, "yyyy-MM-dd'T'HH:mm"),
       all_day: isAllDay,
       location: '',
-      color: '#045184',
+      color: '#35C8E0',
       target_roles: ['all'],
     })
     setShowModal(true)
@@ -270,7 +270,7 @@ export default function CalendarPage() {
       end_time: event.end_time ? format(new Date(event.end_time), "yyyy-MM-dd'T'HH:mm") : '',
       all_day: event.all_day,
       location: event.location || '',
-      color: event.color || '#045184',
+      color: event.color || '#35C8E0',
       target_roles: event.target_roles || ['all'],
     })
     setSelectedEvent(null)
@@ -349,7 +349,7 @@ export default function CalendarPage() {
 
   // Custom event styling based on color
   const eventStyleGetter = useCallback((event: BigCalendarEvent) => {
-    const color = event.resource.color || '#045184'
+    const color = event.resource.color || '#35C8E0'
     return {
       style: {
         backgroundColor: color,
@@ -364,7 +364,7 @@ export default function CalendarPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-32">
-        <Loader2 size={28} className="animate-spin text-primary-bright" />
+        <Loader2 size={28} className="animate-spin text-[#1A9AB5]" />
       </div>
     )
   }
@@ -386,7 +386,7 @@ export default function CalendarPage() {
                 end_time: format(add(new Date(), { hours: 1 }), "yyyy-MM-dd'T'HH:mm"),
                 all_day: false,
                 location: '',
-                color: '#045184',
+                color: '#35C8E0',
                 target_roles: ['all'],
               })
               setShowModal(true)
@@ -469,7 +469,7 @@ export default function CalendarPage() {
               <div className="flex items-start justify-between">
                 <div>
                   <div className="flex items-center gap-2 mb-1">
-                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: selectedEvent.color || '#045184' }} />
+                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: selectedEvent.color || '#35C8E0' }} />
                     <span className="text-xs font-semibold text-foreground/50 uppercase">
                       {EVENT_TYPES.find(t => t.value === selectedEvent.event_type)?.label || selectedEvent.event_type}
                     </span>
@@ -517,7 +517,7 @@ export default function CalendarPage() {
                   <Users size={16} className="text-foreground/40 flex-shrink-0" />
                   <div className="flex flex-wrap gap-1">
                     {(selectedEvent.target_roles || ['all']).map(role => (
-                      <span key={role} className="px-2 py-0.5 bg-primary/10 text-primary text-xs font-medium rounded-full capitalize">
+                      <span key={role} className="px-2 py-0.5 bg-[#35C8E0]/20 text-primary text-xs font-medium rounded-full capitalize">
                         {role === 'all' ? 'All Users' : role}
                       </span>
                     ))}
@@ -550,7 +550,7 @@ export default function CalendarPage() {
           <div className="bg-white rounded-2xl w-full max-w-lg shadow-xl max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between p-6 border-b border-border sticky top-0 bg-white z-10">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-lg bg-[#35C8E0]/20 flex items-center justify-center">
                   <CalendarIcon size={20} className="text-primary" />
                 </div>
                 <h2 className="text-lg font-bold text-primary">

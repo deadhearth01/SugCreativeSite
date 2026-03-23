@@ -1,7 +1,7 @@
 /* ═══════════════════════════════════════════════════════════
    REACT BIG CALENDAR - SHADCN/BRAND STYLED
    Based on shadcn-ui-big-calendar with brand colors
-   Brand: #045184 deep blue
+   Brand: #35C8E0 deep blue
    ═══════════════════════════════════════════════════════════ */
 
 /* ── Base Reset ── */
@@ -888,8 +888,8 @@ button[disabled].rbc-btn {
    ══════════════════════════════════════════════════════════════ */
 
 .rbc-event[data-event-type="meeting"] {
-  --event-bg: #0A6BAF;
-  --event-border: #045184;
+  --event-bg: #82C93D;
+  --event-border: #35C8E0;
 }
 
 .rbc-event[data-event-type="deadline"] {
@@ -913,6 +913,6 @@ button[disabled].rbc-btn {
 }
 
 .rbc-event[data-event-type="general"] {
-  --event-bg: #045184;
-  --event-border: #033660;
+  --event-bg: #35C8E0;
+  --event-border: #1AAFCB;
 }

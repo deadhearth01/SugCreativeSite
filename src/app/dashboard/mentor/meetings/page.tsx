@@ -111,7 +111,7 @@ export default function MentorMeetingsPage() {
   }
 
   if (loading) {
-    return <div className="flex items-center justify-center py-32"><Loader2 size={28} className="animate-spin text-primary-bright" /></div>
+    return <div className="flex items-center justify-center py-32"><Loader2 size={28} className="animate-spin text-[#1A9AB5]" /></div>
   }
 
   return (
@@ -129,7 +129,7 @@ export default function MentorMeetingsPage() {
       {/* Filter */}
       <div className="flex gap-2">
         {(['upcoming', 'all', 'completed'] as const).map(f => (
-          <button key={f} onClick={() => setFilter(f)} className={`px-4 py-2 rounded-lg text-sm font-semibold capitalize transition-colors ${filter === f ? 'bg-primary text-white' : 'bg-white border border-border text-foreground/60 hover:border-primary-bright'}`}>
+          <button key={f} onClick={() => setFilter(f)} className={`px-4 py-2 rounded-lg text-sm font-semibold capitalize transition-colors ${filter === f ? 'bg-primary text-white' : 'bg-white border border-border text-foreground/60 hover:border-[#35C8E0]'}`}>
             {f === 'upcoming' ? 'Upcoming' : f === 'completed' ? 'Past' : 'All'}
           </button>
         ))}
@@ -144,7 +144,7 @@ export default function MentorMeetingsPage() {
         ) : (
           <div className="space-y-3">
             {filtered.map(m => (
-              <div key={m.id} className="border border-border rounded-xl p-4 hover:border-primary-bright/50 transition-colors">
+              <div key={m.id} className="border border-border rounded-xl p-4 hover:border-[#35C8E0]/50 transition-colors">
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
@@ -195,34 +195,34 @@ export default function MentorMeetingsPage() {
               <div>
                 <label className="block text-xs font-semibold text-foreground/60 mb-1.5 uppercase tracking-wide">Title *</label>
                 <input type="text" value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
-                  className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary-bright" placeholder="e.g. Weekly Check-in" />
+                  className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#35C8E0]" placeholder="e.g. Weekly Check-in" />
               </div>
               <div>
                 <label className="block text-xs font-semibold text-foreground/60 mb-1.5 uppercase tracking-wide">Description</label>
                 <textarea value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
-                  className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary-bright resize-none" rows={2} />
+                  className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#35C8E0] resize-none" rows={2} />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-semibold text-foreground/60 mb-1.5 uppercase tracking-wide">Date & Time *</label>
                   <input type="datetime-local" value={form.scheduled_at} onChange={e => setForm(f => ({ ...f, scheduled_at: e.target.value }))}
-                    className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary-bright" />
+                    className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#35C8E0]" />
                 </div>
                 <div>
                   <label className="block text-xs font-semibold text-foreground/60 mb-1.5 uppercase tracking-wide">Duration (min)</label>
                   <input type="number" value={form.duration} onChange={e => setForm(f => ({ ...f, duration: e.target.value }))}
-                    className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary-bright" min="15" step="15" />
+                    className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#35C8E0]" min="15" step="15" />
                 </div>
               </div>
               <div>
                 <label className="block text-xs font-semibold text-foreground/60 mb-1.5 uppercase tracking-wide">Google Meet Link</label>
                 <input type="url" value={form.meeting_link} onChange={e => setForm(f => ({ ...f, meeting_link: e.target.value }))}
-                  className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary-bright" placeholder="https://meet.google.com/..." />
+                  className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#35C8E0]" placeholder="https://meet.google.com/..." />
               </div>
               <div>
                 <label className="block text-xs font-semibold text-foreground/60 mb-1.5 uppercase tracking-wide">Invite Students</label>
                 <select multiple value={form.participant_ids} onChange={e => setForm(f => ({ ...f, participant_ids: Array.from(e.target.selectedOptions, o => o.value) }))}
-                  className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary-bright h-24">
+                  className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#35C8E0] h-24">
                   {students.map(s => <option key={s.id} value={s.id}>{s.full_name} ({s.email})</option>)}
                 </select>
                 <p className="text-xs text-foreground/40 mt-1">Hold Ctrl/Cmd to select multiple</p>

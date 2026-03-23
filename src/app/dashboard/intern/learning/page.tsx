@@ -33,7 +33,7 @@ const resourceTypeIcon: Record<string, React.ReactNode> = {
   pdf: <FileText size={16} className="text-red-500" />,
   video: <BookOpen size={16} className="text-blue-500" />,
   article: <FileText size={16} className="text-green-600" />,
-  link: <LinkIcon size={16} className="text-primary-bright" />,
+  link: <LinkIcon size={16} className="text-[#1A9AB5]" />,
   document: <FileText size={16} className="text-foreground/50" />,
 }
 
@@ -72,7 +72,7 @@ export default function InternLearningPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-32">
-        <Loader2 size={28} className="animate-spin text-primary-bright" />
+        <Loader2 size={28} className="animate-spin text-[#1A9AB5]" />
       </div>
     )
   }
@@ -85,7 +85,7 @@ export default function InternLearningPage() {
       <section>
         <div className="flex items-center justify-between mb-4">
           <h2 className="font-heading font-bold text-primary text-lg flex items-center gap-2">
-            <GraduationCap size={20} className="text-primary-bright" />
+            <GraduationCap size={20} className="text-[#1A9AB5]" />
             My Courses
           </h2>
           <span className="text-sm text-foreground/50">{enrolledCourses.length} enrolled</span>
@@ -109,7 +109,7 @@ export default function InternLearningPage() {
                     <img src={course.thumbnail_url} alt={course.title} className="w-full h-32 object-cover" />
                   ) : (
                     <div className="w-full h-32 bg-gradient-to-br from-primary/10 to-primary-bright/10 flex items-center justify-center">
-                      <GraduationCap size={32} className="text-primary-bright/50" />
+                      <GraduationCap size={32} className="text-[#1A9AB5]/50" />
                     </div>
                   )}
                   <div className="p-4">
@@ -149,7 +149,7 @@ export default function InternLearningPage() {
       <section>
         <div className="flex items-center justify-between mb-4">
           <h2 className="font-heading font-bold text-primary text-lg flex items-center gap-2">
-            <BookOpen size={20} className="text-primary-bright" />
+            <BookOpen size={20} className="text-[#1A9AB5]" />
             Mentor Resources
           </h2>
           <span className="text-sm text-foreground/50">{resources.length} available</span>
@@ -198,7 +198,7 @@ export default function InternLearningPage() {
                         className="flex-shrink-0 p-2 rounded-lg hover:bg-off-white transition-colors group"
                         title="Open resource"
                       >
-                        <ExternalLink size={16} className="text-foreground/30 group-hover:text-primary-bright transition-colors" />
+                        <ExternalLink size={16} className="text-foreground/30 group-hover:text-[#1A9AB5] transition-colors" />
                       </a>
                     )}
                   </div>

@@ -42,7 +42,7 @@ const serviceCategories = [
     desc: 'Strategic consulting and operational excellence for businesses ready to scale, optimize, and dominate their market.',
     image: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=900&h=600&fit=crop',
     cta: 'Get Business Consultation',
-    accentColor: '#4DA8DB',
+    accentColor: '#82C93D',
     items: [
       { icon: BarChart3, title: 'Strategic Consulting', desc: 'Data-driven strategies to optimize operations, reduce costs, and accelerate growth.' },
       { icon: Monitor, title: 'Digital Transformation', desc: 'Modernize your business with cutting-edge technology solutions and automation.' },
@@ -61,7 +61,7 @@ const serviceCategories = [
     desc: 'Comprehensive career development programs to help you land your dream job, switch industries, or level up your skills.',
     image: 'https://images.unsplash.com/photo-1521737711867-e3b97375f902?w=900&h=600&fit=crop',
     cta: 'Start Your Career Journey',
-    accentColor: '#022A4A',
+    accentColor: '#1A9AB5',
     items: [
       { icon: GraduationCap, title: 'Professional Training', desc: 'Industry-relevant courses in tech, business, marketing, and more — taught by practitioners.' },
       { icon: FileText, title: 'Resume & Profile Building', desc: 'Craft ATS-optimized resumes, LinkedIn profiles, and professional portfolios that get noticed.' },
@@ -80,7 +80,7 @@ const serviceCategories = [
     desc: 'A complete ecosystem for founders — from first idea to first funding round. We provide the mentorship, resources, and connections you need.',
     image: 'https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=900&h=600&fit=crop',
     cta: 'Launch Your Startup',
-    accentColor: '#4DA8DB',
+    accentColor: '#82C93D',
     items: [
       { icon: Lightbulb, title: 'Ideation & Validation', desc: 'Turn your idea into a validated business concept with market research and feasibility analysis.' },
       { icon: Building2, title: 'Business Model Design', desc: 'Create sustainable, scalable business models with revenue strategies that work.' },
@@ -99,7 +99,7 @@ const serviceCategories = [
     desc: 'Technology-powered learning platforms and solutions to make education accessible, engaging, and results-driven for institutions and learners alike.',
     image: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=900&h=600&fit=crop',
     cta: 'Explore Edu Tech',
-    accentColor: '#022A4A',
+    accentColor: '#1A9AB5',
     items: [
       { icon: Monitor, title: 'Learning Management', desc: 'Custom LMS platforms with analytics, gamification, and AI-powered personalization.' },
       { icon: PenTool, title: 'Content Development', desc: 'Interactive course content, video production, and assessment design for modern learners.' },
@@ -115,7 +115,7 @@ const serviceCategories = [
     desc: 'Our flagship youth development program — designed to build competitive skills, leadership abilities, and professional confidence.',
     image: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=900&h=600&fit=crop',
     cta: 'Enroll Your Youth',
-    accentColor: '#4DA8DB',
+    accentColor: '#82C93D',
     items: [
       { icon: Trophy, title: 'Competition Prep', desc: 'Training for hackathons, case competitions, olympiads, and global challenges.' },
       { icon: Users, title: 'Leadership Development', desc: 'Programs designed to cultivate communication, teamwork, and strategic thinking.' },
@@ -160,7 +160,7 @@ export default function ServicesPage() {
               <h1 className="hero-animate text-5xl sm:text-6xl md:text-7xl font-heading font-black text-primary-dark leading-[1.05] tracking-tight mb-8">
                 Everything<br />
                 You Need to<br />
-                <span className="text-[#4DA8DB]">Succeed</span>
+                <span className="text-[#82C93D]">Succeed</span>
               </h1>
               <div className="hero-animate text-lg md:text-xl text-primary-dark/70 max-w-xl leading-relaxed font-bold border-l-4 border-primary pl-5 mb-10">
                 From enterprise consulting to career launchpads — we offer a comprehensive ecosystem
@@ -173,7 +173,7 @@ export default function ServicesPage() {
                     href={`#${s.id}`}
                     className="flex items-center gap-2 bg-white border-2 border-primary-dark text-primary-dark font-black text-xs uppercase tracking-wider px-4 py-2 rounded-none shadow-[3px_3px_0px_rgba(0,0,0,1)] hover:bg-primary-dark hover:text-white transition-all hover:-translate-y-0.5 hover:shadow-[5px_5px_0px_rgba(0,0,0,1)]"
                   >
-                    <span className="text-[#4DA8DB] font-black">{s.num}</span>
+                    <span className="text-[#82C93D] font-black">{s.num}</span>
                     {s.title}
                   </a>
                 ))}
@@ -186,7 +186,7 @@ export default function ServicesPage() {
                   <Image src={s.image} alt={s.title} fill className="object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-110" />
                   <div className="absolute inset-0 bg-primary-dark/60 group-hover:bg-primary-dark/40 transition-colors" />
                   <div className="absolute inset-0 p-4 flex flex-col justify-end">
-                    <div className="text-[10px] font-black uppercase tracking-widest text-[#4DA8DB]">{s.num}</div>
+                    <div className="text-[10px] font-black uppercase tracking-widest text-[#82C93D]">{s.num}</div>
                     <div className="text-sm font-black text-white leading-tight">{s.title}</div>
                   </div>
                 </div>
@@ -209,8 +209,8 @@ export default function ServicesPage() {
               <div className={`flex flex-col lg:flex-row items-start lg:items-center gap-12 mb-16 ${catIndex % 2 !== 0 ? 'lg:flex-row-reverse' : ''}`}>
                 <div className="flex-1">
                   <div className="flex items-center gap-4 mb-6">
-                    <div className="w-16 h-16 flex items-center justify-center bg-primary-dark border-2 border-primary-dark shadow-[4px_4px_0px_rgba(77,168,219,1)]">
-                      <cat.icon size={26} className="text-[#4DA8DB]" />
+                    <div className="w-16 h-16 flex items-center justify-center bg-primary-dark border-2 border-primary-dark shadow-[4px_4px_0px_rgba(130,201,61,1)]">
+                      <cat.icon size={26} className="text-[#82C93D]" />
                     </div>
                     <div className="inline-block bg-primary text-white font-black text-xs uppercase tracking-widest px-4 py-2 rounded-none shadow-[4px_4px_0px_rgba(0,0,0,1)] border-2 border-primary-dark">
                       {cat.num} — {cat.tagline}
@@ -235,12 +235,12 @@ export default function ServicesPage() {
               {cat.items.map((item, i) => (
                 <AnimatedSection key={item.title} delay={i * 0.08}>
                   <div className="bg-white border-2 border-primary-dark p-8 rounded-none shadow-[6px_6px_0px_rgba(0,0,0,1)] hover:-translate-y-1 hover:shadow-[10px_10px_0px_rgba(0,0,0,1)] transition-all duration-300 group h-full">
-                    <div className="w-12 h-12 flex items-center justify-center bg-primary-dark border-2 border-primary-dark mb-6 shadow-[3px_3px_0px_rgba(77,168,219,1)] group-hover:bg-[#4DA8DB] transition-colors">
-                      <item.icon size={20} className="text-[#4DA8DB] group-hover:text-white transition-colors" />
+                    <div className="w-12 h-12 flex items-center justify-center bg-primary-dark border-2 border-primary-dark mb-6 shadow-[3px_3px_0px_rgba(130,201,61,1)] group-hover:bg-[#82C93D] transition-colors">
+                      <item.icon size={20} className="text-[#82C93D] group-hover:text-white transition-colors" />
                     </div>
                     <h3 className="text-lg font-heading font-black text-primary-dark mb-3">{item.title}</h3>
                     <p className="text-primary-dark/70 text-sm font-bold leading-relaxed">{item.desc}</p>
-                    <div className="mt-6 flex items-center gap-2 text-xs font-black uppercase tracking-widest text-[#4DA8DB] opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="mt-6 flex items-center gap-2 text-xs font-black uppercase tracking-widest text-[#82C93D] opacity-0 group-hover:opacity-100 transition-opacity">
                       <CheckCircle2 size={14} />
                       Included in plan
                     </div>
@@ -274,7 +274,7 @@ export default function ServicesPage() {
                 </div>
                 <h2 className="text-4xl md:text-5xl font-heading font-black text-white mb-4 leading-tight">
                   Let&apos;s Find the Right<br />
-                  <span className="text-[#4DA8DB]">Solution For You</span>
+                  <span className="text-[#82C93D]">Solution For You</span>
                 </h2>
                 <p className="text-white/50 text-lg font-bold">
                   Book a free discovery call and our experts will map out the best path forward.

@@ -17,9 +17,9 @@ function FlowingMenu({
   items = [],
   speed = 15,
   textColor = '#fff',
-  bgColor = '#045184',
+  bgColor = '#35C8E0',
   marqueeBgColor = '#fff',
-  marqueeTextColor = '#045184',
+  marqueeTextColor = '#35C8E0',
   borderColor = 'rgba(255,255,255,0.15)'
 }: FlowingMenuProps) {
   return (

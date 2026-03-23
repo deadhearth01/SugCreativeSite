@@ -49,13 +49,13 @@ export default function AdminDashboard() {
 
   const fmt = (amount: number) => amount >= 100000 ? `₹${(amount / 100000).toFixed(1)}L` : amount >= 1000 ? `₹${(amount / 1000).toFixed(1)}K` : `₹${amount}`
 
-  if (loading) return <div className="flex items-center justify-center py-32"><Loader2 size={28} className="animate-spin text-[#045184]" /></div>
+  if (loading) return <div className="flex items-center justify-center py-32"><Loader2 size={28} className="animate-spin text-[#35C8E0]" /></div>
 
   return (
     <div className="space-y-6">
       {/* Welcome */}
-      <div className="bg-[#022A4A] border-2 border-black shadow-[3px_3px_0px_rgba(0,0,0,0.8)] p-6">
-        <div className="inline-flex items-center gap-2 bg-[#045184] text-white text-[10px] font-black uppercase tracking-widest px-3 py-1.5 border-2 border-white/20 shadow-[2px_2px_0px_rgba(0,0,0,0.5)] mb-3">
+      <div className="bg-[#1A9AB5] border-2 border-black shadow-[3px_3px_0px_rgba(0,0,0,0.8)] p-6">
+        <div className="inline-flex items-center gap-2 bg-[#35C8E0] text-white text-[10px] font-black uppercase tracking-widest px-3 py-1.5 border-2 border-white/20 shadow-[2px_2px_0px_rgba(0,0,0,0.5)] mb-3">
           Admin Portal
         </div>
         <h2 className="text-xl font-black text-white">Admin Overview</h2>
@@ -65,7 +65,7 @@ export default function AdminDashboard() {
       {/* Stat Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[
-          { label: 'Total Users', value: stats.totalUsers.toLocaleString(), icon: Users, color: 'bg-[#045184]' },
+          { label: 'Total Users', value: stats.totalUsers.toLocaleString(), icon: Users, color: 'bg-[#35C8E0]' },
           { label: 'Active Courses', value: String(stats.activeCourses), icon: BookOpen, color: 'bg-emerald-600' },
           { label: 'Revenue', value: fmt(stats.revenue), icon: CreditCard, color: 'bg-purple-600' },
           { label: 'Open Tickets', value: String(stats.openTickets), icon: LifeBuoy, color: stats.openTickets > 0 ? 'bg-red-600' : 'bg-gray-500' },
@@ -77,7 +77,7 @@ export default function AdminDashboard() {
               </div>
               <span className="text-[10px] font-black uppercase tracking-widest text-foreground/50">{card.label}</span>
             </div>
-            <div className="text-2xl sm:text-3xl font-black text-[#022A4A]">{card.value}</div>
+            <div className="text-2xl sm:text-3xl font-black text-[#1A9AB5]">{card.value}</div>
           </div>
         ))}
       </div>
@@ -93,11 +93,11 @@ export default function AdminDashboard() {
           <Link key={action.label} href={action.href}
             className="bg-white border-2 border-black shadow-[2px_2px_0px_rgba(0,0,0,0.7)] p-4 flex items-center gap-3 hover:shadow-[1px_1px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all group"
           >
-            <div className="w-8 h-8 bg-[#022A4A] border border-black flex items-center justify-center flex-shrink-0">
+            <div className="w-8 h-8 bg-[#1A9AB5] border border-black flex items-center justify-center flex-shrink-0">
               <action.icon size={15} className="text-white" />
             </div>
-            <span className="text-xs font-black uppercase tracking-wide text-[#022A4A]">{action.label}</span>
-            <ArrowUpRight size={13} className="ml-auto text-foreground/30 group-hover:text-[#045184] transition-colors" />
+            <span className="text-xs font-black uppercase tracking-wide text-[#1A9AB5]">{action.label}</span>
+            <ArrowUpRight size={13} className="ml-auto text-foreground/30 group-hover:text-[#35C8E0] transition-colors" />
           </Link>
         ))}
       </div>
@@ -106,7 +106,7 @@ export default function AdminDashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Recent Users */}
         <div className="bg-white border-2 border-black shadow-[3px_3px_0px_rgba(0,0,0,0.8)]">
-          <div className="flex items-center justify-between px-5 py-4 border-b-2 border-black bg-[#022A4A]">
+          <div className="flex items-center justify-between px-5 py-4 border-b-2 border-black bg-[#1A9AB5]">
             <h3 className="text-sm font-black uppercase tracking-widest text-white">Recent Registrations</h3>
             <Link href="/dashboard/admin/users" className="text-[10px] font-black uppercase tracking-widest text-white/60 hover:text-white transition-colors flex items-center gap-1">
               View All <ArrowUpRight size={12} />
@@ -122,7 +122,7 @@ export default function AdminDashboard() {
               <tbody>
                 {recentUsers.map((u, i) => (
                   <tr key={i} className="border-b border-black/8 hover:bg-[#F4F6FA]">
-                    <td className="py-3 px-4 font-bold text-[#022A4A] text-xs">{u.full_name}</td>
+                    <td className="py-3 px-4 font-bold text-[#1A9AB5] text-xs">{u.full_name}</td>
                     <td className="py-3 px-4 text-xs font-semibold capitalize text-foreground/60">{u.role}</td>
                     <td className="py-3 px-4 text-xs text-foreground/50">{timeAgo(u.created_at)}</td>
                     <td className="py-3 px-4"><StatusBadge status={u.status || 'active'} /></td>
@@ -135,7 +135,7 @@ export default function AdminDashboard() {
 
         {/* Recent Tickets */}
         <div className="bg-white border-2 border-black shadow-[3px_3px_0px_rgba(0,0,0,0.8)]">
-          <div className="flex items-center justify-between px-5 py-4 border-b-2 border-black bg-[#022A4A]">
+          <div className="flex items-center justify-between px-5 py-4 border-b-2 border-black bg-[#1A9AB5]">
             <h3 className="text-sm font-black uppercase tracking-widest text-white">Support Tickets</h3>
             <Link href="/dashboard/admin/tickets" className="text-[10px] font-black uppercase tracking-widest text-white/60 hover:text-white transition-colors flex items-center gap-1">
               View All <ArrowUpRight size={12} />
@@ -151,7 +151,7 @@ export default function AdminDashboard() {
               <tbody>
                 {recentTickets.map((t, i) => (
                   <tr key={i} className="border-b border-black/8 hover:bg-[#F4F6FA]">
-                    <td className="py-3 px-4 font-bold text-[#022A4A] text-xs truncate max-w-40">{t.subject}</td>
+                    <td className="py-3 px-4 font-bold text-[#1A9AB5] text-xs truncate max-w-40">{t.subject}</td>
                     <td className="py-3 px-4">
                       <span className={`text-[10px] px-2 py-1 font-black uppercase tracking-wide border-2 ${t.priority === 'urgent' ? 'bg-red-100 text-red-700 border-red-400' : t.priority === 'high' ? 'bg-orange-100 text-orange-700 border-orange-400' : t.priority === 'medium' ? 'bg-amber-100 text-amber-700 border-amber-400' : 'bg-gray-100 text-gray-600 border-gray-300'}`}>
                         {t.priority}

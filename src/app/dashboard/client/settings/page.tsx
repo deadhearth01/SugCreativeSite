@@ -73,7 +73,7 @@ export default function ClientSettingsPage() {
     } finally { setSavingPassword(false) }
   }
 
-  if (loading) return <div className="flex items-center justify-center py-32"><Loader2 size={28} className="animate-spin text-primary-bright" /></div>
+  if (loading) return <div className="flex items-center justify-center py-32"><Loader2 size={28} className="animate-spin text-[#1A9AB5]" /></div>
 
   return (
     <div>
@@ -88,7 +88,7 @@ export default function ClientSettingsPage() {
                 type="text"
                 value={profile.full_name || ''}
                 onChange={e => setProfile(p => ({ ...p, full_name: e.target.value }))}
-                className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-primary-bright"
+                className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-[#35C8E0]"
               />
             </div>
             <div>
@@ -107,7 +107,7 @@ export default function ClientSettingsPage() {
                 type="tel"
                 value={profile.phone || ''}
                 onChange={e => setProfile(p => ({ ...p, phone: e.target.value }))}
-                className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-primary-bright"
+                className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-[#35C8E0]"
                 placeholder="+91 98765 43210"
               />
             </div>
@@ -116,7 +116,7 @@ export default function ClientSettingsPage() {
               <textarea
                 value={profile.bio || ''}
                 onChange={e => setProfile(p => ({ ...p, bio: e.target.value }))}
-                className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-primary-bright resize-none"
+                className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-[#35C8E0] resize-none"
                 rows={3}
                 placeholder="Brief bio..."
               />
@@ -140,7 +140,7 @@ export default function ClientSettingsPage() {
                 type="password"
                 value={passwords.new_password}
                 onChange={e => setPasswords(p => ({ ...p, new_password: e.target.value }))}
-                className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-primary-bright"
+                className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-[#35C8E0]"
                 placeholder="Min. 8 characters"
               />
             </div>
@@ -150,7 +150,7 @@ export default function ClientSettingsPage() {
                 type="password"
                 value={passwords.confirm}
                 onChange={e => setPasswords(p => ({ ...p, confirm: e.target.value }))}
-                className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-primary-bright"
+                className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-[#35C8E0]"
               />
             </div>
             <button

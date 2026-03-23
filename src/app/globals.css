@@ -7,88 +7,96 @@
 
 /* ═══════════════════════════════════════════════════════════
    BRAND TOKENS + SHADCN INTEGRATION
-   Brand: #045184 deep blue — white surface — sharp corners
+   Brand: #35C8E0 cyan (logo top-right) ← → #82C93D lime (logo bottom-left)
+   No dark colors — bright vibrant palette throughout
    ═══════════════════════════════════════════════════════════ */
 :root {
-  /* ── Brand Blue Scale ── */
-  --primary: #045184;
-  --primary-deep: #033660;
-  --primary-dark: #022A4A;
-  --primary-light: #0A6BAF;
-  --primary-bright: #1E88C9;
-  --primary-soft: #4DA8DB;
-  --primary-pale: #7EC4E8;
-  --primary-wash: #B0DDEF;
-  --primary-ghost: #E0F0F8;
+  /* ── Brand Cyan Scale (logo top-right color) ── */
+  --primary: #35C8E0;
+  --primary-deep: #1AAFCB;
+  --primary-dark: #1A9AB5;
+  --primary-light: #58D8EB;
+  --primary-bright: #7EE5F2;
+  --primary-soft: #A8EEF7;
+  --primary-pale: #CBF4FA;
+  --primary-wash: #E5F9FC;
+  --primary-ghost: #F2FCFE;
+
+  /* ── Brand Lime (logo bottom-left color) ── */
+  --lime: #82C93D;
+  --lime-soft: #A0D96A;
+  --lime-pale: #C2E8A0;
 
   /* ── Surfaces ── */
   --white: #FFFFFF;
-  --off-white: #F8FAFC;
-  --light: #F1F5F9;
+  --off-white: #F2FAFD;
+  --light: #EEF8FC;
 
   /* ── Borders ── */
-  --border: #CBD5E1;
-  --border-light: #E2E8F0;
+  --border: #8ECFDC;
+  --border-light: #B8EAF5;
 
-  /* ── Text ── */
-  --foreground: #0F172A;
-  --foreground-secondary: #334155;
-  --foreground-muted: #64748B;
-  --foreground-subtle: #94A3B8;
+  /* ── Text — neutral dark for readability ── */
+  --foreground: #111827;
+  --foreground-secondary: #374151;
+  --foreground-muted: #6B7280;
+  --foreground-subtle: #9CA3AF;
 
   /* ── Surface ── */
   --surface: #FFFFFF;
-  --surface-raised: #F8FAFC;
-  --surface-overlay: rgba(4, 81, 132, 0.03);
+  --surface-raised: #F2FAFD;
+  --surface-overlay: rgba(53, 200, 224, 0.03);
 
-  /* ── Accent ── */
-  --accent: #F8FAFC;
-  --accent-orange: #FF6B35;
-  --accent-orange-soft: #FF8F66;
+  /* ── Accent Lime (logo's lime gradient stop) ── */
+  --accent: #F2FAFD;
+  --accent-lime: #82C93D;
+  --accent-lime-soft: #A0D96A;
+  --accent-orange: #82C93D;
+  --accent-orange-soft: #A0D96A;
 
-  /* ── Gradients ── */
-  --gradient-primary: linear-gradient(135deg, #045184 0%, #0A6BAF 50%, #1E88C9 100%);
-  --gradient-hero: linear-gradient(135deg, #045184 0%, #033660 40%, #022A4A 100%);
-  --gradient-soft: linear-gradient(135deg, #E0F0F8 0%, #F1F5F9 50%, #FFFFFF 100%);
-  --gradient-card: linear-gradient(145deg, #F8FAFC 0%, #FFFFFF 100%);
-  --gradient-blue-wash: linear-gradient(180deg, #E0F0F8 0%, #FFFFFF 100%);
-  --gradient-diagonal: linear-gradient(135deg, #045184 0%, #1E88C9 100%);
+  /* ── Gradients — exact logo sweep: lime → cyan ── */
+  --gradient-primary: linear-gradient(135deg, #82C93D 0%, #35C8E0 100%);
+  --gradient-hero: linear-gradient(135deg, #35C8E0 0%, #58D8EB 50%, #82C93D 100%);
+  --gradient-soft: linear-gradient(135deg, #F2FCFE 0%, #EEF8FC 50%, #FFFFFF 100%);
+  --gradient-card: linear-gradient(145deg, #F2FAFD 0%, #FFFFFF 100%);
+  --gradient-cyan-wash: linear-gradient(180deg, #E5F9FC 0%, #FFFFFF 100%);
+  --gradient-diagonal: linear-gradient(135deg, #82C93D 0%, #35C8E0 100%);
 
   /* ── Shadows ── */
-  --shadow-sm: 0 1px 2px 0 rgba(4, 81, 132, 0.05);
-  --shadow-md: 0 4px 16px -2px rgba(4, 81, 132, 0.08);
-  --shadow-lg: 0 12px 32px -4px rgba(4, 81, 132, 0.10);
-  --shadow-xl: 0 24px 48px -8px rgba(4, 81, 132, 0.12);
+  --shadow-sm: 0 1px 2px 0 rgba(53, 200, 224, 0.06);
+  --shadow-md: 0 4px 16px -2px rgba(53, 200, 224, 0.10);
+  --shadow-lg: 0 12px 32px -4px rgba(53, 200, 224, 0.12);
+  --shadow-xl: 0 24px 48px -8px rgba(53, 200, 224, 0.14);
 
   /* ── shadcn required tokens — mapped to brand ── */
   --radius: 0rem;
   --background: #FFFFFF;
   --card: #FFFFFF;
-  --card-foreground: #0F172A;
+  --card-foreground: #111827;
   --popover: #FFFFFF;
-  --popover-foreground: #0F172A;
+  --popover-foreground: #111827;
   --primary-foreground: #FFFFFF;
-  --secondary: #F1F5F9;
-  --secondary-foreground: #0F172A;
-  --muted: #F1F5F9;
-  --muted-foreground: #64748B;
-  --accent-foreground: #0F172A;
+  --secondary: #EEF8FC;
+  --secondary-foreground: #111827;
+  --muted: #EEF8FC;
+  --muted-foreground: #6B7280;
+  --accent-foreground: #111827;
   --destructive: #EF4444;
-  --input: #CBD5E1;
-  --ring: #045184;
-  --chart-1: #045184;
-  --chart-2: #0A6BAF;
-  --chart-3: #1E88C9;
-  --chart-4: #4DA8DB;
-  --chart-5: #7EC4E8;
-  --sidebar: #F8FAFC;
-  --sidebar-foreground: #0F172A;
-  --sidebar-primary: #045184;
+  --input: #8ECFDC;
+  --ring: #35C8E0;
+  --chart-1: #35C8E0;
+  --chart-2: #82C93D;
+  --chart-3: #7EE5F2;
+  --chart-4: #A0D96A;
+  --chart-5: #1AAFCB;
+  --sidebar: #F2FAFD;
+  --sidebar-foreground: #111827;
+  --sidebar-primary: #35C8E0;
   --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: #F1F5F9;
-  --sidebar-accent-foreground: #0F172A;
-  --sidebar-border: #E2E8F0;
-  --sidebar-ring: #045184;
+  --sidebar-accent: #EEF8FC;
+  --sidebar-accent-foreground: #111827;
+  --sidebar-border: #B8EAF5;
+  --sidebar-ring: #35C8E0;
 }
 
 /* ── Theme inline — wire CSS vars to Tailwind ── */
@@ -116,6 +124,8 @@
   --color-foreground-subtle: var(--foreground-subtle);
   --color-surface: var(--surface);
   --color-surface-raised: var(--surface-raised);
+  --color-accent-lime: var(--accent-lime);
+  --color-accent-lime-soft: var(--accent-lime-soft);
   --color-accent-orange: var(--accent-orange);
   --color-accent-orange-soft: var(--accent-orange-soft);
   --font-heading: var(--font-inter);
@@ -268,7 +278,7 @@
   left: -50%;
   width: 200%;
   height: 200%;
-  background: linear-gradient(45deg, transparent 40%, rgba(4,81,132,0.03) 45%, rgba(4,81,132,0.06) 50%, rgba(4,81,132,0.03) 55%, transparent 60%);
+  background: linear-gradient(45deg, transparent 40%, rgba(43,168,74,0.03) 45%, rgba(43,168,74,0.06) 50%, rgba(43,168,74,0.03) 55%, transparent 60%);
   transform: translateX(-100%);
   transition: transform 0.8s cubic-bezier(0.23, 1, 0.32, 1);
   pointer-events: none;
@@ -278,8 +288,8 @@
 /* ═══ BACKGROUNDS ═══ */
 .grid-pattern {
   background-image:
-    linear-gradient(rgba(4, 81, 132, 0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(4, 81, 132, 0.04) 1px, transparent 1px);
+    linear-gradient(rgba(43, 168, 74, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(43, 168, 74, 0.04) 1px, transparent 1px);
   background-size: 60px 60px;
 }
 
@@ -391,7 +401,7 @@
   will-change: transform, filter;
   backface-visibility: hidden;
   transform-style: preserve-3d;
-  box-shadow: 0 0 30px rgba(4, 81, 132, 0.08);
+  box-shadow: 0 0 30px rgba(43, 168, 74, 0.08);
   width: 100%; margin: 30px 0; padding: 3rem;
   box-sizing: border-box;
   transform: translateZ(0);
@@ -419,7 +429,7 @@
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-heading, "Inter", sans-serif);
     font-weight: 700;
-    color: var(--primary);
+    color: var(--foreground);
     letter-spacing: -0.03em;
     line-height: 1.15;
   }

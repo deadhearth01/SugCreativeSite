@@ -101,7 +101,7 @@ const categories = ['All', 'Career Tips', 'Startup Guidance', 'Business Insights
 
 const categoryColors: Record<string, string> = {
   'Business Insights': 'bg-primary-dark text-white border-primary-dark',
-  'Career Tips': 'bg-[#4DA8DB] text-white border-[#4DA8DB]',
+  'Career Tips': 'bg-[#82C93D] text-white border-[#82C93D]',
   'Startup Guidance': 'bg-white text-primary-dark border-primary-dark',
 }
 
@@ -147,7 +147,7 @@ export default function BlogPage() {
               </div>
               <h1 className="hero-animate text-5xl sm:text-6xl md:text-7xl font-heading font-black text-primary-dark leading-[1.05] tracking-tight mb-6">
                 Insights to<br />
-                <span className="text-[#4DA8DB]">Fuel Your Growth</span>
+                <span className="text-[#82C93D]">Fuel Your Growth</span>
               </h1>
               <p className="hero-animate text-lg md:text-xl text-primary-dark/70 font-bold leading-relaxed border-l-4 border-primary pl-5">
                 Expert articles, guides, and actionable tips on business strategy,
@@ -225,7 +225,7 @@ export default function BlogPage() {
                       <span className="flex items-center gap-1.5"><Clock size={13} />{featuredPost.readTime}</span>
                       <span>{featuredPost.date}</span>
                     </div>
-                    <div className="inline-flex items-center gap-2 font-black text-xs uppercase tracking-widest text-primary-dark border-b-2 border-primary-dark group-hover:text-[#4DA8DB] group-hover:border-[#4DA8DB] transition-colors w-fit pb-1">
+                    <div className="inline-flex items-center gap-2 font-black text-xs uppercase tracking-widest text-primary-dark border-b-2 border-primary-dark group-hover:text-[#82C93D] group-hover:border-[#82C93D] transition-colors w-fit pb-1">
                       Read Full Article <ArrowRight size={14} />
                     </div>
                   </div>
@@ -280,7 +280,7 @@ export default function BlogPage() {
                       {/* Footer CTA */}
                       <div className="px-6 py-4 border-t-2 border-primary-dark/10 flex items-center justify-between bg-gray-50/80 group-hover:bg-primary-dark transition-colors duration-300">
                         <span className="text-[10px] font-black uppercase tracking-widest text-primary-dark/40 group-hover:text-white/50 transition-colors">{post.date}</span>
-                        <ArrowUpRight size={16} className="text-primary-dark/30 group-hover:text-[#4DA8DB] transition-colors" />
+                        <ArrowUpRight size={16} className="text-primary-dark/30 group-hover:text-[#82C93D] transition-colors" />
                       </div>
                     </div>
                   </Link>
@@ -306,7 +306,7 @@ export default function BlogPage() {
                   Stay Ahead
                 </div>
                 <h2 className="text-4xl md:text-5xl font-heading font-black text-white mb-4 leading-tight">
-                  Get Weekly<br /><span className="text-[#4DA8DB]">Growth Insights</span>
+                  Get Weekly<br /><span className="text-[#82C93D]">Growth Insights</span>
                 </h2>
                 <p className="text-white/50 font-bold">
                   Join 5,000+ professionals who get our weekly insights on business, career, and startups.
@@ -321,7 +321,7 @@ export default function BlogPage() {
                   />
                   <button
                     type="submit"
-                    className="bg-white text-primary-dark px-6 py-4 border-2 border-white hover:bg-[#4DA8DB] hover:border-[#4DA8DB] hover:text-white transition-all font-black text-xs uppercase tracking-widest flex items-center gap-2 shadow-[4px_4px_0px_rgba(255,255,255,0.1)] active:shadow-none active:translate-x-1 active:translate-y-1"
+                    className="bg-white text-primary-dark px-6 py-4 border-2 border-white hover:bg-[#82C93D] hover:border-[#82C93D] hover:text-white transition-all font-black text-xs uppercase tracking-widest flex items-center gap-2 shadow-[4px_4px_0px_rgba(255,255,255,0.1)] active:shadow-none active:translate-x-1 active:translate-y-1"
                   >
                     Subscribe
                     <ArrowUpRight size={16} />

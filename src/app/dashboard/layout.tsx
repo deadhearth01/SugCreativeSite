@@ -270,10 +270,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   )
 
   return (
-    <div className="min-h-screen bg-[#F4F6FA] flex">
+    <div className="min-h-screen bg-[#F3F4F6] flex">
       {/* Desktop Sidebar */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 bg-[#022A4A] flex flex-col transition-all duration-300 hidden lg:flex ${
+        className={`fixed inset-y-0 left-0 z-50 bg-[#1A9AB5] flex flex-col transition-all duration-300 hidden lg:flex ${
           sidebarCollapsed ? 'w-16' : 'w-64'
         }`}
       >
@@ -290,7 +290,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
       {/* Mobile Sidebar Drawer */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-64 bg-[#022A4A] flex flex-col transition-transform duration-300 lg:hidden ${
+        className={`fixed inset-y-0 left-0 z-50 w-64 bg-[#1A9AB5] flex flex-col transition-transform duration-300 lg:hidden ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
@@ -307,14 +307,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <header className="sticky top-0 z-30 bg-white border-b border-black/8 h-16 flex items-center px-4 sm:px-6 gap-3">
           <button
             onClick={() => setSidebarOpen(true)}
-            className="lg:hidden text-[#022A4A] hover:bg-black/5 p-2 transition-colors"
+            className="lg:hidden text-[#1A9AB5] hover:bg-black/5 p-2 transition-colors"
             aria-label="Open menu"
           >
             <Menu size={22} />
           </button>
 
           <div className="flex-1 min-w-0">
-            <h1 className="text-base font-black text-[#022A4A] uppercase tracking-wide truncate">
+            <h1 className="text-base font-black text-[#1A9AB5] uppercase tracking-wide truncate">
               {allItems.find(item => item.href === pathname)?.label || 'Dashboard'}
             </h1>
           </div>
@@ -325,7 +325,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 {userProfile.full_name}
               </span>
             )}
-            <div className="w-9 h-9 bg-[#045184] flex items-center justify-center text-white text-xs font-black border-2 border-[#022A4A] shadow-[2px_2px_0px_rgba(0,0,0,0.8)]">
+            <div className="w-9 h-9 bg-[#1A9AB5] flex items-center justify-center text-white text-xs font-black border-2 border-[#1580A0] shadow-[2px_2px_0px_rgba(0,0,0,0.15)]">
               {getInitials(userProfile?.full_name || null)}
             </div>
           </div>

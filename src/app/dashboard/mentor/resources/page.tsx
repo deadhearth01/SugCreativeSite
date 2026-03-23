@@ -87,7 +87,7 @@ export default function MentorResourcesPage() {
     }
   }
 
-  if (loading) return <div className="flex items-center justify-center py-32"><Loader2 size={28} className="animate-spin text-primary-bright" /></div>
+  if (loading) return <div className="flex items-center justify-center py-32"><Loader2 size={28} className="animate-spin text-[#1A9AB5]" /></div>
 
   return (
     <div>
@@ -113,8 +113,8 @@ export default function MentorResourcesPage() {
             return (
               <div key={r.id} className="bg-white border border-border rounded-xl p-5 hover:shadow-sm transition-shadow group">
                 <div className="flex items-start justify-between mb-3">
-                  <div className="w-10 h-10 bg-primary-bright/10 rounded-lg flex items-center justify-center">
-                    <Icon size={18} className="text-primary-bright" />
+                  <div className="w-10 h-10 bg-[#35C8E0]/20 rounded-lg flex items-center justify-center">
+                    <Icon size={18} className="text-[#1A9AB5]" />
                   </div>
                   <div className="flex items-center gap-2">
                     <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full flex items-center gap-1 ${r.is_public ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}`}>
@@ -158,7 +158,7 @@ export default function MentorResourcesPage() {
                   type="text"
                   value={form.title}
                   onChange={e => setForm({ ...form, title: e.target.value })}
-                  className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-primary-bright"
+                  className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-[#35C8E0]"
                   placeholder="Resource title"
                 />
               </div>
@@ -167,7 +167,7 @@ export default function MentorResourcesPage() {
                 <textarea
                   value={form.description}
                   onChange={e => setForm({ ...form, description: e.target.value })}
-                  className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-primary-bright resize-none"
+                  className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-[#35C8E0] resize-none"
                   rows={3}
                   placeholder="Brief description..."
                 />
@@ -177,7 +177,7 @@ export default function MentorResourcesPage() {
                 <select
                   value={form.resource_type}
                   onChange={e => setForm({ ...form, resource_type: e.target.value })}
-                  className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-primary-bright bg-white"
+                  className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-[#35C8E0] bg-white"
                 >
                   <option value="document">Document</option>
                   <option value="video">Video</option>

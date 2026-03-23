@@ -101,7 +101,7 @@ export default function StudentCoursesPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-32">
-        <Loader2 size={28} className="animate-spin text-primary-bright" />
+        <Loader2 size={28} className="animate-spin text-[#1A9AB5]" />
       </div>
     )
   }
@@ -119,7 +119,7 @@ export default function StudentCoursesPage() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search courses..."
-            className="w-full border border-border rounded-lg pl-9 pr-4 py-2.5 text-sm focus:outline-none focus:border-primary-bright"
+            className="w-full border border-border rounded-lg pl-9 pr-4 py-2.5 text-sm focus:outline-none focus:border-[#35C8E0]"
           />
         </div>
         <div className="flex border border-border rounded-lg overflow-hidden">

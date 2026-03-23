@@ -70,7 +70,7 @@ export default function MentorEarningsPage() {
   }
   const monthGroups = Array.from(monthMap.values())
 
-  if (loading) return <div className="flex items-center justify-center py-32"><Loader2 size={28} className="animate-spin text-primary-bright" /></div>
+  if (loading) return <div className="flex items-center justify-center py-32"><Loader2 size={28} className="animate-spin text-[#1A9AB5]" /></div>
 
   return (
     <div>

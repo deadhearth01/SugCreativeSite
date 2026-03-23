@@ -133,7 +133,7 @@ export default function BudgetPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-32">
-        <Loader2 size={28} className="animate-spin text-[#045184]" />
+        <Loader2 size={28} className="animate-spin text-[#35C8E0]" />
       </div>
     )
   }
@@ -143,16 +143,16 @@ export default function BudgetPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-2 bg-[#045184] text-white text-[10px] font-black uppercase tracking-widest px-3 py-1.5 border-2 border-[#022A4A] shadow-[2px_2px_0px_rgba(0,0,0,0.7)] mb-3">
+          <div className="inline-flex items-center gap-2 bg-[#35C8E0] text-white text-[10px] font-black uppercase tracking-widest px-3 py-1.5 border-2 border-[#1A9AB5] shadow-[2px_2px_0px_rgba(0,0,0,0.7)] mb-3">
             <Wallet size={12} />
             Finance
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black text-[#022A4A] uppercase tracking-tight leading-none">Budget &amp; Finances</h1>
+          <h1 className="text-2xl sm:text-3xl font-black text-[#1A9AB5] uppercase tracking-tight leading-none">Budget &amp; Finances</h1>
           <p className="text-sm text-foreground/50 font-semibold mt-1">Track company income, expenses, and net balance</p>
         </div>
         <button
           onClick={openCreate}
-          className="flex items-center gap-2 bg-[#022A4A] text-white text-xs font-black uppercase tracking-widest px-5 py-3 border-2 border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all flex-shrink-0"
+          className="flex items-center gap-2 bg-[#1A9AB5] text-white text-xs font-black uppercase tracking-widest px-5 py-3 border-2 border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all flex-shrink-0"
         >
           <Plus size={15} />
           Add Entry
@@ -183,12 +183,12 @@ export default function BudgetPage() {
         </div>
         <div className={`bg-white border-2 border-black shadow-[3px_3px_0px_rgba(0,0,0,0.8)] p-5`}>
           <div className="flex items-center gap-2 mb-3">
-            <div className={`w-8 h-8 border-2 border-black flex items-center justify-center shadow-[2px_2px_0px_rgba(0,0,0,0.5)] ${netBalance >= 0 ? 'bg-[#045184]' : 'bg-orange-500'}`}>
+            <div className={`w-8 h-8 border-2 border-black flex items-center justify-center shadow-[2px_2px_0px_rgba(0,0,0,0.5)] ${netBalance >= 0 ? 'bg-[#35C8E0]' : 'bg-orange-500'}`}>
               <Wallet size={16} className="text-white" />
             </div>
             <span className="text-xs font-black uppercase tracking-widest text-foreground/60">Net Balance</span>
           </div>
-          <div className={`text-3xl font-black ${netBalance >= 0 ? 'text-[#045184]' : 'text-orange-600'}`}>
+          <div className={`text-3xl font-black ${netBalance >= 0 ? 'text-[#35C8E0]' : 'text-orange-600'}`}>
             {netBalance < 0 ? '-' : ''}{fmt(Math.abs(netBalance))}
           </div>
           <div className="text-xs font-semibold text-foreground/40 mt-1">{netBalance < 0 ? 'Deficit' : 'Surplus'}</div>
@@ -203,7 +203,7 @@ export default function BudgetPage() {
             onClick={() => setFilter(f)}
             className={`px-4 py-2 text-xs font-black uppercase tracking-widest border-2 transition-all ${
               filter === f
-                ? 'bg-[#022A4A] text-white border-black shadow-[2px_2px_0px_rgba(0,0,0,0.7)]'
+                ? 'bg-[#1A9AB5] text-white border-black shadow-[2px_2px_0px_rgba(0,0,0,0.7)]'
                 : 'bg-white border-black/20 text-foreground/60 hover:border-black hover:shadow-[2px_2px_0px_rgba(0,0,0,0.5)]'
             }`}
           >
@@ -215,7 +215,7 @@ export default function BudgetPage() {
       {/* Entries Table */}
       <div className="bg-white border-2 border-black shadow-[3px_3px_0px_rgba(0,0,0,0.8)]">
         <div className="flex items-center justify-between px-5 py-4 border-b-2 border-black">
-          <h2 className="text-sm font-black uppercase tracking-widest text-[#022A4A]">
+          <h2 className="text-sm font-black uppercase tracking-widest text-[#1A9AB5]">
             {filter === 'all' ? 'All' : filter === 'income' ? 'Income' : 'Expense'} Entries
             <span className="ml-2 text-foreground/40">({filtered.length})</span>
           </h2>
@@ -239,11 +239,11 @@ export default function BudgetPage() {
                       {new Date(entry.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
                     </td>
                     <td className="py-3 px-4">
-                      <div className="font-bold text-[#022A4A]">{entry.title}</div>
+                      <div className="font-bold text-[#1A9AB5]">{entry.title}</div>
                       {entry.description && <div className="text-xs text-foreground/40 mt-0.5 truncate max-w-48">{entry.description}</div>}
                     </td>
                     <td className="py-3 px-4">
-                      <span className="text-[10px] bg-[#022A4A]/8 text-[#022A4A] px-2 py-1 font-black uppercase tracking-wide border border-[#022A4A]/20">
+                      <span className="text-[10px] bg-[#1A9AB5]/8 text-[#1A9AB5] px-2 py-1 font-black uppercase tracking-wide border border-[#1A9AB5]/20">
                         {categoryLabel(entry.category)}
                       </span>
                     </td>
@@ -257,7 +257,7 @@ export default function BudgetPage() {
                     </td>
                     <td className="py-3 px-4">
                       <div className="flex items-center gap-2">
-                        <button onClick={() => openEdit(entry)} className="text-foreground/30 hover:text-[#045184] transition-colors p-1 hover:bg-[#045184]/10">
+                        <button onClick={() => openEdit(entry)} className="text-foreground/30 hover:text-[#35C8E0] transition-colors p-1 hover:bg-[#35C8E0]/10">
                           <Edit size={14} />
                         </button>
                         <button onClick={() => handleDelete(entry.id)} className="text-foreground/30 hover:text-red-500 transition-colors p-1 hover:bg-red-50">
@@ -277,7 +277,7 @@ export default function BudgetPage() {
       {showModal && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
           <div className="bg-white w-full max-w-md border-2 border-black shadow-[8px_8px_0px_rgba(0,0,0,1)]">
-            <div className="flex items-center justify-between px-6 py-4 border-b-2 border-black bg-[#022A4A]">
+            <div className="flex items-center justify-between px-6 py-4 border-b-2 border-black bg-[#1A9AB5]">
               <h2 className="text-sm font-black uppercase tracking-widest text-white">{editEntry ? 'Edit Entry' : 'Add Budget Entry'}</h2>
               <button onClick={() => setShowModal(false)} className="text-white/60 hover:text-white">
                 <X size={18} />
@@ -290,7 +290,7 @@ export default function BudgetPage() {
                   type="text"
                   value={form.title}
                   onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
-                  className="w-full border-2 border-black/20 px-3 py-2 text-sm font-semibold focus:outline-none focus:border-[#045184] focus:shadow-[3px_3px_0px_rgba(4,81,132,0.3)]"
+                  className="w-full border-2 border-black/20 px-3 py-2 text-sm font-semibold focus:outline-none focus:border-[#35C8E0] focus:shadow-[3px_3px_0px_rgba(53,200,224,0.3)]"
                   placeholder="e.g. Google Ads Campaign"
                 />
               </div>
@@ -301,7 +301,7 @@ export default function BudgetPage() {
                     type="number"
                     value={form.amount}
                     onChange={e => setForm(f => ({ ...f, amount: e.target.value }))}
-                    className="w-full border-2 border-black/20 px-3 py-2 text-sm font-semibold focus:outline-none focus:border-[#045184]"
+                    className="w-full border-2 border-black/20 px-3 py-2 text-sm font-semibold focus:outline-none focus:border-[#35C8E0]"
                     placeholder="0"
                     min="0"
                   />
@@ -312,7 +312,7 @@ export default function BudgetPage() {
                     type="date"
                     value={form.date}
                     onChange={e => setForm(f => ({ ...f, date: e.target.value }))}
-                    className="w-full border-2 border-black/20 px-3 py-2 text-sm font-semibold focus:outline-none focus:border-[#045184]"
+                    className="w-full border-2 border-black/20 px-3 py-2 text-sm font-semibold focus:outline-none focus:border-[#35C8E0]"
                   />
                 </div>
               </div>
@@ -321,7 +321,7 @@ export default function BudgetPage() {
                 <select
                   value={form.category}
                   onChange={e => setForm(f => ({ ...f, category: e.target.value }))}
-                  className="w-full border-2 border-black/20 px-3 py-2 text-sm font-semibold focus:outline-none focus:border-[#045184]"
+                  className="w-full border-2 border-black/20 px-3 py-2 text-sm font-semibold focus:outline-none focus:border-[#35C8E0]"
                 >
                   {CATEGORIES.map(c => <option key={c} value={c}>{categoryLabel(c)}</option>)}
                 </select>
@@ -352,7 +352,7 @@ export default function BudgetPage() {
                 <textarea
                   value={form.description}
                   onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
-                  className="w-full border-2 border-black/20 px-3 py-2 text-sm font-semibold focus:outline-none focus:border-[#045184] resize-none"
+                  className="w-full border-2 border-black/20 px-3 py-2 text-sm font-semibold focus:outline-none focus:border-[#35C8E0] resize-none"
                   rows={2}
                   placeholder="Optional notes..."
                 />
@@ -368,7 +368,7 @@ export default function BudgetPage() {
               <button
                 onClick={handleSave}
                 disabled={saving}
-                className="flex-1 py-2.5 text-xs font-black uppercase tracking-widest bg-[#022A4A] text-white border-2 border-black shadow-[2px_2px_0px_rgba(0,0,0,0.7)] hover:shadow-[1px_1px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                className="flex-1 py-2.5 text-xs font-black uppercase tracking-widest bg-[#1A9AB5] text-white border-2 border-black shadow-[2px_2px_0px_rgba(0,0,0,0.7)] hover:shadow-[1px_1px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 {saving ? <Loader2 size={14} className="animate-spin" /> : <ArrowUpRight size={14} />}
                 {saving ? 'Saving...' : (editEntry ? 'Update' : 'Add Entry')}

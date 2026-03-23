@@ -123,7 +123,7 @@ export default function TestimonialsPage() {
             </div>
             <h1 ref={heroRef} className="text-5xl sm:text-6xl md:text-7xl font-heading font-black text-primary-dark leading-[1.05] tracking-tight mb-8">
               Real Results, <br />
-              <span className="text-[#4DA8DB]">Real Stories</span>
+              <span className="text-[#82C93D]">Real Stories</span>
             </h1>
             <p className="text-lg md:text-xl text-primary-dark/70 max-w-2xl leading-relaxed font-bold border-l-4 border-primary pl-5">
               Don&apos;t just take our word for it. Hear from the businesses we&apos;ve scaled, 
@@ -142,7 +142,7 @@ export default function TestimonialsPage() {
               <AnimatedSection key={item.label} delay={i * 0.08}>
                 <div className="text-center p-6 border-2 border-white/10 hover:border-white/30 transition-colors bg-white/5 backdrop-blur-sm shadow-[4px_4px_0px_rgba(0,0,0,0.5)]">
                   <div className="text-4xl font-heading font-black text-white mb-2 tabular-nums">{item.value}</div>
-                  <div className="text-[10px] font-black uppercase tracking-widest text-[#4DA8DB] mb-2">{item.label}</div>
+                  <div className="text-[10px] font-black uppercase tracking-widest text-[#82C93D] mb-2">{item.label}</div>
                   <div className="text-xs text-white/50 font-bold leading-tight">{item.desc}</div>
                 </div>
               </AnimatedSection>
@@ -161,7 +161,7 @@ export default function TestimonialsPage() {
                   <CardContent className="p-8 flex flex-col flex-1">
                     <div className="flex items-center gap-1 mb-6">
                       {Array.from({ length: item.rating }).map((_, j) => (
-                        <Star key={j} size={16} className="fill-[#4DA8DB] text-[#4DA8DB]" />
+                        <Star key={j} size={16} className="fill-[#82C93D] text-[#82C93D]" />
                       ))}
                     </div>
                     <Quote size={32} className="text-primary-dark/10 mb-4" />
@@ -201,7 +201,7 @@ export default function TestimonialsPage() {
                   Your Turn
                 </div>
                 <h2 className="text-4xl md:text-5xl font-heading font-black text-white mb-4 leading-tight">
-                  Your Success Story<br /><span className="text-[#4DA8DB]">Starts Here</span>
+                  Your Success Story<br /><span className="text-[#82C93D]">Starts Here</span>
                 </h2>
                 <p className="text-white/50 text-lg font-bold">
                   Join 3000+ professionals, businesses, and startups who chose to grow with Sug Creative.

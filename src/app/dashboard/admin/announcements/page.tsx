@@ -102,7 +102,7 @@ export default function AnnouncementsPage() {
     })
   }
 
-  if (loading) return <div className="flex items-center justify-center py-32"><Loader2 size={28} className="animate-spin text-primary-bright" /></div>
+  if (loading) return <div className="flex items-center justify-center py-32"><Loader2 size={28} className="animate-spin text-[#1A9AB5]" /></div>
 
   return (
     <div>
@@ -126,7 +126,7 @@ export default function AnnouncementsPage() {
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-2 flex-wrap">
                     {ann.is_pinned && (
-                      <span className="flex items-center gap-1 text-primary-bright text-xs font-semibold">
+                      <span className="flex items-center gap-1 text-[#1A9AB5] text-xs font-semibold">
                         <Pin size={12} /> Pinned
                       </span>
                     )}
@@ -135,7 +135,7 @@ export default function AnnouncementsPage() {
                     </span>
                     <div className="flex gap-1 flex-wrap">
                       {(ann.target_roles || ['all']).map(r => (
-                        <span key={r} className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-md font-medium capitalize">{r}</span>
+                        <span key={r} className="text-xs bg-[#35C8E0]/20 text-primary px-2 py-0.5 rounded-md font-medium capitalize">{r}</span>
                       ))}
                     </div>
                   </div>
@@ -164,11 +164,11 @@ export default function AnnouncementsPage() {
             <div className="p-6 space-y-4">
               <div>
                 <label className="block text-xs font-semibold text-foreground/60 mb-1.5 uppercase tracking-wide">Title *</label>
-                <input type="text" value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))} className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary-bright" />
+                <input type="text" value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))} className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#35C8E0]" />
               </div>
               <div>
                 <label className="block text-xs font-semibold text-foreground/60 mb-1.5 uppercase tracking-wide">Content *</label>
-                <textarea value={form.content} onChange={e => setForm(f => ({ ...f, content: e.target.value }))} className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary-bright resize-none" rows={5} />
+                <textarea value={form.content} onChange={e => setForm(f => ({ ...f, content: e.target.value }))} className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#35C8E0] resize-none" rows={5} />
               </div>
               <div>
                 <label className="block text-xs font-semibold text-foreground/60 mb-2 uppercase tracking-wide">Target Audience</label>

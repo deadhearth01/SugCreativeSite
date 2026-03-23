@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import SmoothScroll from "@/components/SmoothScroll";
+import HapticsProvider from "@/components/HapticsProvider";
 
 const jakarta = Plus_Jakarta_Sans({
   variable: "--font-inter", // keeping variable name for css compatibility
@@ -38,6 +39,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${jakarta.variable}`}>
       <body className="font-body antialiased" suppressHydrationWarning>
+        <HapticsProvider />
         <SmoothScroll>{children}</SmoothScroll>
       </body>
     </html>

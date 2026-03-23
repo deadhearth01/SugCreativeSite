@@ -50,12 +50,12 @@ export default function InternDashboard() {
 
   const completedMaterialIds = new Set(progress.map(p => p.material_id))
 
-  if (loading) return <div className="flex items-center justify-center py-32"><Loader2 size={28} className="animate-spin text-[#045184]" /></div>
+  if (loading) return <div className="flex items-center justify-center py-32"><Loader2 size={28} className="animate-spin text-[#35C8E0]" /></div>
 
   return (
     <div className="space-y-6">
-      <div className="bg-[#022A4A] border-2 border-black shadow-[3px_3px_0px_rgba(0,0,0,0.8)] p-6">
-        <div className="inline-flex items-center gap-2 bg-[#045184] text-white text-[10px] font-black uppercase tracking-widest px-3 py-1.5 border-2 border-white/20 shadow-[2px_2px_0px_rgba(0,0,0,0.5)] mb-3">Intern Portal</div>
+      <div className="bg-[#1A9AB5] border-2 border-black shadow-[3px_3px_0px_rgba(0,0,0,0.8)] p-6">
+        <div className="inline-flex items-center gap-2 bg-[#35C8E0] text-white text-[10px] font-black uppercase tracking-widest px-3 py-1.5 border-2 border-white/20 shadow-[2px_2px_0px_rgba(0,0,0,0.5)] mb-3">Intern Portal</div>
         <h2 className="text-xl font-black text-white">Welcome back, {userName}!</h2>
         <p className="text-white/60 text-sm font-semibold mt-1">
           {pendingTasksCount > 0 ? `You have ${pendingTasksCount} task${pendingTasksCount === 1 ? '' : 's'} pending.` : 'All tasks are up to date.'} Keep up the great work!
@@ -65,7 +65,7 @@ export default function InternDashboard() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[
           { label: 'Pending Tasks', value: String(pendingTasksCount), icon: ClipboardList, color: pendingTasksCount > 0 ? 'bg-amber-500' : 'bg-emerald-600' },
-          { label: 'Reports Submitted', value: String(reportsCount), icon: FileText, color: 'bg-[#045184]' },
+          { label: 'Reports Submitted', value: String(reportsCount), icon: FileText, color: 'bg-[#35C8E0]' },
           { label: 'Days Attended', value: String(attendanceCount), icon: Clock, color: 'bg-emerald-600' },
           { label: 'Learning Materials', value: String(materials.length), icon: BookOpen, color: 'bg-purple-600' },
         ].map((card) => (
@@ -74,7 +74,7 @@ export default function InternDashboard() {
               <div className={`w-9 h-9 ${card.color} border-2 border-black flex items-center justify-center shadow-[2px_2px_0px_rgba(0,0,0,0.5)]`}><card.icon size={16} className="text-white" /></div>
               <span className="text-[10px] font-black uppercase tracking-widest text-foreground/50 leading-tight">{card.label}</span>
             </div>
-            <div className="text-2xl font-black text-[#022A4A]">{card.value}</div>
+            <div className="text-2xl font-black text-[#1A9AB5]">{card.value}</div>
           </div>
         ))}
       </div>
@@ -87,16 +87,16 @@ export default function InternDashboard() {
           { label: 'Learning', href: '/dashboard/intern/learning', icon: BookOpen },
         ].map((a) => (
           <Link key={a.label} href={a.href} className="bg-white border-2 border-black shadow-[2px_2px_0px_rgba(0,0,0,0.7)] p-4 flex items-center gap-3 hover:shadow-[1px_1px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all group">
-            <div className="w-8 h-8 bg-[#022A4A] border border-black flex items-center justify-center flex-shrink-0"><a.icon size={15} className="text-white" /></div>
-            <span className="text-xs font-black uppercase tracking-wide text-[#022A4A]">{a.label}</span>
-            <ArrowUpRight size={13} className="ml-auto text-foreground/30 group-hover:text-[#045184] transition-colors" />
+            <div className="w-8 h-8 bg-[#1A9AB5] border border-black flex items-center justify-center flex-shrink-0"><a.icon size={15} className="text-white" /></div>
+            <span className="text-xs font-black uppercase tracking-wide text-[#1A9AB5]">{a.label}</span>
+            <ArrowUpRight size={13} className="ml-auto text-foreground/30 group-hover:text-[#35C8E0] transition-colors" />
           </Link>
         ))}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-white border-2 border-black shadow-[3px_3px_0px_rgba(0,0,0,0.8)]">
-          <div className="flex items-center justify-between px-5 py-4 border-b-2 border-black bg-[#022A4A]">
+          <div className="flex items-center justify-between px-5 py-4 border-b-2 border-black bg-[#1A9AB5]">
             <h3 className="text-sm font-black uppercase tracking-widest text-white">My Tasks</h3>
             <Link href="/dashboard/intern/tasks" className="text-[10px] font-black uppercase tracking-widest text-white/60 hover:text-white flex items-center gap-1">View All <ArrowUpRight size={12} /></Link>
           </div>
@@ -105,7 +105,7 @@ export default function InternDashboard() {
               <thead><tr className="bg-[#F4F6FA] border-b-2 border-black">{['Task', 'Priority', 'Status', 'Due'].map(h => <th key={h} className="text-left py-3 px-4 text-[10px] font-black text-foreground/50 uppercase tracking-widest">{h}</th>)}</tr></thead>
               <tbody>{recentTasks.map((t, i) => (
                 <tr key={i} className="border-b border-black/8 hover:bg-[#F4F6FA]">
-                  <td className="py-3 px-4 font-bold text-[#022A4A] text-xs">{t.title}</td>
+                  <td className="py-3 px-4 font-bold text-[#1A9AB5] text-xs">{t.title}</td>
                   <td className="py-3 px-4">
                     <span className={`text-[10px] px-2 py-1 font-black uppercase tracking-wide border-2 ${t.priority === 'urgent' ? 'bg-red-100 text-red-700 border-red-400' : t.priority === 'high' ? 'bg-orange-100 text-orange-700 border-orange-400' : t.priority === 'medium' ? 'bg-amber-100 text-amber-700 border-amber-400' : 'bg-gray-100 text-gray-600 border-gray-300'}`}>{t.priority}</span>
                   </td>
@@ -118,7 +118,7 @@ export default function InternDashboard() {
         </div>
 
         <div className="bg-white border-2 border-black shadow-[3px_3px_0px_rgba(0,0,0,0.8)]">
-          <div className="flex items-center justify-between px-5 py-4 border-b-2 border-black bg-[#022A4A]">
+          <div className="flex items-center justify-between px-5 py-4 border-b-2 border-black bg-[#1A9AB5]">
             <h3 className="text-sm font-black uppercase tracking-widest text-white">Learning Progress</h3>
             <Link href="/dashboard/intern/learning" className="text-[10px] font-black uppercase tracking-widest text-white/60 hover:text-white flex items-center gap-1">View All <ArrowUpRight size={12} /></Link>
           </div>
@@ -131,13 +131,13 @@ export default function InternDashboard() {
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
                         {isCompleted && <CheckCircle2 size={14} className="text-emerald-600 flex-shrink-0" />}
-                        <p className="text-sm font-bold text-[#022A4A]">{m.title}</p>
+                        <p className="text-sm font-bold text-[#1A9AB5]">{m.title}</p>
                       </div>
                       {m.material_type && <span className="text-[10px] text-foreground/40 font-bold uppercase tracking-wide">{m.material_type}</span>}
                     </div>
                     <div className="flex items-center gap-2">
                       <div className="flex-1 h-2 bg-[#F4F6FA] border border-black/10">
-                        <div className={`h-full ${isCompleted ? 'bg-emerald-500' : 'bg-[#045184]'} transition-all`} style={{ width: isCompleted ? '100%' : '0%' }} />
+                        <div className={`h-full ${isCompleted ? 'bg-emerald-500' : 'bg-[#35C8E0]'} transition-all`} style={{ width: isCompleted ? '100%' : '0%' }} />
                       </div>
                       <span className={`text-xs font-black ${isCompleted ? 'text-emerald-600' : 'text-foreground/40'}`}>{isCompleted ? '100%' : '0%'}</span>
                     </div>

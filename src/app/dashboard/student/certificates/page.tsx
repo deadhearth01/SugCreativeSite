@@ -39,7 +39,7 @@ export default function CertificatesPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-32">
-        <Loader2 size={28} className="animate-spin text-primary-bright" />
+        <Loader2 size={28} className="animate-spin text-[#1A9AB5]" />
       </div>
     )
   }
@@ -57,8 +57,8 @@ export default function CertificatesPage() {
               : '—'
             return (
               <div key={cert.id} className="bg-white border border-border rounded-xl p-6 hover:shadow-md transition-shadow text-center">
-                <div className="w-16 h-16 bg-primary-bright/10 mx-auto flex items-center justify-center mb-4 rounded-full">
-                  <Award size={28} className="text-primary-bright" />
+                <div className="w-16 h-16 bg-[#35C8E0]/20 mx-auto flex items-center justify-center mb-4 rounded-full">
+                  <Award size={28} className="text-[#1A9AB5]" />
                 </div>
                 {course?.category && (
                   <span className="inline-block text-xs bg-off-white px-2 py-1 rounded-md font-medium text-foreground/60 mb-2">

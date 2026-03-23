@@ -74,7 +74,7 @@ export default function SettingsPage() {
     } finally { setSavingPassword(false) }
   }
 
-  if (loading) return <div className="flex items-center justify-center py-32"><Loader2 size={28} className="animate-spin text-primary-bright" /></div>
+  if (loading) return <div className="flex items-center justify-center py-32"><Loader2 size={28} className="animate-spin text-[#1A9AB5]" /></div>
 
   return (
     <div>
@@ -85,7 +85,7 @@ export default function SettingsPage() {
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-foreground/70 mb-1">Full Name</label>
-              <input type="text" value={profile.full_name || ''} onChange={e => setProfile(p => ({ ...p, full_name: e.target.value }))} className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-primary-bright" />
+              <input type="text" value={profile.full_name || ''} onChange={e => setProfile(p => ({ ...p, full_name: e.target.value }))} className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-[#35C8E0]" />
             </div>
             <div>
               <label className="block text-sm font-medium text-foreground/70 mb-1">Email</label>
@@ -94,11 +94,11 @@ export default function SettingsPage() {
             </div>
             <div>
               <label className="block text-sm font-medium text-foreground/70 mb-1">Phone</label>
-              <input type="tel" value={profile.phone || ''} onChange={e => setProfile(p => ({ ...p, phone: e.target.value }))} className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-primary-bright" placeholder="+91 98765 43210" />
+              <input type="tel" value={profile.phone || ''} onChange={e => setProfile(p => ({ ...p, phone: e.target.value }))} className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-[#35C8E0]" placeholder="+91 98765 43210" />
             </div>
             <div>
               <label className="block text-sm font-medium text-foreground/70 mb-1">Bio</label>
-              <textarea value={profile.bio || ''} onChange={e => setProfile(p => ({ ...p, bio: e.target.value }))} className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-primary-bright resize-none" rows={3} placeholder="Brief bio..." />
+              <textarea value={profile.bio || ''} onChange={e => setProfile(p => ({ ...p, bio: e.target.value }))} className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-[#35C8E0] resize-none" rows={3} placeholder="Brief bio..." />
             </div>
             <button onClick={handleSaveProfile} disabled={savingProfile} className="bg-primary text-white px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-primary/90 transition-colors disabled:opacity-50 flex items-center gap-2">
               {savingProfile && <Loader2 size={14} className="animate-spin" />}
@@ -111,11 +111,11 @@ export default function SettingsPage() {
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-foreground/70 mb-1">New Password</label>
-              <input type="password" value={passwords.new_password} onChange={e => setPasswords(p => ({ ...p, new_password: e.target.value }))} className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-primary-bright" placeholder="Min. 8 characters" />
+              <input type="password" value={passwords.new_password} onChange={e => setPasswords(p => ({ ...p, new_password: e.target.value }))} className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-[#35C8E0]" placeholder="Min. 8 characters" />
             </div>
             <div>
               <label className="block text-sm font-medium text-foreground/70 mb-1">Confirm New Password</label>
-              <input type="password" value={passwords.confirm} onChange={e => setPasswords(p => ({ ...p, confirm: e.target.value }))} className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-primary-bright" />
+              <input type="password" value={passwords.confirm} onChange={e => setPasswords(p => ({ ...p, confirm: e.target.value }))} className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-[#35C8E0]" />
             </div>
             <button onClick={handleUpdatePassword} disabled={savingPassword} className="bg-primary text-white px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-primary/90 transition-colors disabled:opacity-50 flex items-center gap-2">
               {savingPassword && <Loader2 size={14} className="animate-spin" />}
@@ -151,7 +151,7 @@ export default function SettingsPage() {
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-foreground/70 mb-1">Timezone</label>
-              <select className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-primary-bright bg-white">
+              <select className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-[#35C8E0] bg-white">
                 <option>Asia/Kolkata (IST)</option>
                 <option>America/New_York (EST)</option>
                 <option>Europe/London (GMT)</option>
@@ -159,7 +159,7 @@ export default function SettingsPage() {
             </div>
             <div>
               <label className="block text-sm font-medium text-foreground/70 mb-1">Language</label>
-              <select className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-primary-bright bg-white">
+              <select className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-[#35C8E0] bg-white">
                 <option>English</option>
                 <option>Hindi</option>
                 <option>Telugu</option>
@@ -167,7 +167,7 @@ export default function SettingsPage() {
             </div>
             <div>
               <label className="block text-sm font-medium text-foreground/70 mb-1">Date Format</label>
-              <select className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-primary-bright bg-white">
+              <select className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-[#35C8E0] bg-white">
                 <option>DD/MM/YYYY</option>
                 <option>MM/DD/YYYY</option>
                 <option>YYYY-MM-DD</option>

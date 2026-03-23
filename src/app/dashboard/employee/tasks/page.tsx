@@ -109,7 +109,7 @@ export default function EmployeeTasksPage() {
       value={t.status}
       onChange={(e) => handleStatusUpdate(t.id, e.target.value)}
       disabled={updatingId === t.id}
-      className="text-xs border border-border rounded px-2 py-1 bg-white focus:outline-none focus:border-primary-bright disabled:opacity-60"
+      className="text-xs border border-border rounded px-2 py-1 bg-white focus:outline-none focus:border-[#35C8E0] disabled:opacity-60"
     >
       <option value="pending">Pending</option>
       <option value="in_progress">In Progress</option>
@@ -120,7 +120,7 @@ export default function EmployeeTasksPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-32">
-        <Loader2 size={28} className="animate-spin text-primary-bright" />
+        <Loader2 size={28} className="animate-spin text-[#1A9AB5]" />
       </div>
     )
   }

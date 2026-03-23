@@ -66,7 +66,7 @@ export default function EmployeeMeetingsPage() {
   })
 
   if (loading) {
-    return <div className="flex items-center justify-center py-32"><Loader2 size={28} className="animate-spin text-primary-bright" /></div>
+    return <div className="flex items-center justify-center py-32"><Loader2 size={28} className="animate-spin text-[#1A9AB5]" /></div>
   }
 
   return (
@@ -75,7 +75,7 @@ export default function EmployeeMeetingsPage() {
 
       <div className="flex gap-2">
         {(['upcoming', 'all', 'past'] as const).map(f => (
-          <button key={f} onClick={() => setFilter(f)} className={`px-4 py-2 rounded-lg text-sm font-semibold capitalize transition-colors ${filter === f ? 'bg-primary text-white' : 'bg-white border border-border text-foreground/60 hover:border-primary-bright'}`}>
+          <button key={f} onClick={() => setFilter(f)} className={`px-4 py-2 rounded-lg text-sm font-semibold capitalize transition-colors ${filter === f ? 'bg-primary text-white' : 'bg-white border border-border text-foreground/60 hover:border-[#35C8E0]'}`}>
             {f === 'upcoming' ? 'Upcoming' : f === 'past' ? 'Past' : 'All'}
           </button>
         ))}
@@ -91,7 +91,7 @@ export default function EmployeeMeetingsPage() {
         ) : (
           <div className="space-y-3">
             {filtered.map(m => (
-              <div key={m.id} className="border border-border rounded-xl p-4 hover:border-primary-bright/50 transition-colors">
+              <div key={m.id} className="border border-border rounded-xl p-4 hover:border-[#35C8E0]/50 transition-colors">
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">

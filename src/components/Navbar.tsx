@@ -150,8 +150,8 @@ export default function Navbar() {
           menuButtonColor={isLightHero ? "#000000" : "#ffffff"}
           openMenuButtonColor="#000000"
           changeMenuColorOnOpen={true}
-          colors={['#2563EB', '#4338CA', '#0F172A']}
-          accentColor="#2563EB"
+          colors={['#35C8E0', '#1A9AB5', '#1A9AB5']}
+          accentColor="#82C93D"
           isFixed={true}
           logo={
             <Link href="/" className="flex items-center gap-2 group relative z-[60] ml-4 mt-2">

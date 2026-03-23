@@ -20,11 +20,11 @@ export function StatCard({
   color?: 'teal' | 'navy' | 'mint' | 'sage' | 'sky'
 }) {
   const colorMap = {
-    teal: 'bg-primary-bright/10 text-primary-bright',
-    navy: 'bg-primary/10 text-primary',
-    mint: 'bg-mint/30 text-primary',
-    sage: 'bg-sage/30 text-primary',
-    sky: 'bg-sky/20 text-primary-bright',
+    teal: 'bg-[#35C8E0]/25 text-[#1A9AB5]',
+    navy: 'bg-[#1A9AB5]/20 text-[#1A9AB5]',
+    mint: 'bg-[#82C93D]/20 text-[#5A9A28]',
+    sage: 'bg-[#82C93D]/15 text-[#5A9A28]',
+    sky:  'bg-[#35C8E0]/25 text-[#1A9AB5]',
   }
 
   return (
@@ -124,14 +124,14 @@ export function StatusBadge({ status }: { status: string }) {
     completed: 'bg-green-100 text-green-700',
     paid: 'bg-green-100 text-green-700',
     pending: 'bg-yellow-100 text-yellow-700',
-    'in-progress': 'bg-sky/20 text-primary-bright',
-    'in progress': 'bg-sky/20 text-primary-bright',
+    'in-progress': 'bg-[#35C8E0]/20 text-[#1A9AB5]',
+    'in progress': 'bg-[#35C8E0]/20 text-[#1A9AB5]',
     overdue: 'bg-red-100 text-red-700',
     cancelled: 'bg-red-100 text-red-700',
     inactive: 'bg-gray-100 text-gray-600',
-    scheduled: 'bg-primary-bright/10 text-primary-bright',
+    scheduled: 'bg-[#35C8E0]/20 text-[#1A9AB5]',
     draft: 'bg-gray-100 text-gray-600',
-    open: 'bg-sky/20 text-primary-bright',
+    open: 'bg-[#35C8E0]/20 text-[#1A9AB5]',
     closed: 'bg-gray-100 text-gray-600',
     resolved: 'bg-green-100 text-green-700',
     present: 'bg-green-100 text-green-700',

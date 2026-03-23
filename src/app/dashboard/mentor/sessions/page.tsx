@@ -64,7 +64,7 @@ export default function MentorSessionsPage() {
     setTimeout(() => setCopied(null), 2000)
   }
 
-  if (loading) return <div className="flex items-center justify-center py-32"><Loader2 size={28} className="animate-spin text-primary-bright" /></div>
+  if (loading) return <div className="flex items-center justify-center py-32"><Loader2 size={28} className="animate-spin text-[#1A9AB5]" /></div>
 
   return (
     <div>
@@ -89,7 +89,7 @@ export default function MentorSessionsPage() {
               <div key={s.id} className="bg-white border border-border rounded-xl p-5 hover:shadow-sm transition-shadow">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div className="flex items-start gap-4">
-                    <div className={`w-11 h-11 rounded-lg flex items-center justify-center flex-shrink-0 ${isUpcoming ? 'bg-primary-bright/10 text-primary-bright' : 'bg-gray-100 text-gray-400'}`}>
+                    <div className={`w-11 h-11 rounded-lg flex items-center justify-center flex-shrink-0 ${isUpcoming ? 'bg-[#35C8E0]/20 text-[#1A9AB5]' : 'bg-gray-100 text-gray-400'}`}>
                       {isUpcoming ? <Video size={20} /> : <VideoOff size={20} />}
                     </div>
                     <div>
@@ -121,7 +121,7 @@ export default function MentorSessionsPage() {
                     </div>
                   </div>
                   <div className="flex items-center gap-2 sm:flex-shrink-0">
-                    <span className={`px-2.5 py-1 text-xs font-semibold uppercase tracking-wide rounded-md ${isUpcoming ? 'bg-primary-bright/10 text-primary-bright' : 'bg-green-100 text-green-700'}`}>
+                    <span className={`px-2.5 py-1 text-xs font-semibold uppercase tracking-wide rounded-md ${isUpcoming ? 'bg-[#35C8E0]/20 text-[#1A9AB5]' : 'bg-green-100 text-green-700'}`}>
                       {s.status}
                     </span>
                     {meetLink && isUpcoming && (

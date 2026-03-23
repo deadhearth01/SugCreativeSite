@@ -136,7 +136,7 @@ export default function AboutPage() {
               <h1 className="hero-animate text-5xl sm:text-6xl md:text-7xl font-heading font-black text-primary-dark leading-[1.05] tracking-tight mb-8">
                 We Don&apos;t<br />
                 Just Consult —<br />
-                <span className="text-[#4DA8DB]">We Transform</span>
+                <span className="text-[#82C93D]">We Transform</span>
               </h1>
               <div className="hero-animate text-lg md:text-xl text-primary-dark/70 max-w-xl leading-relaxed font-bold border-l-4 border-primary pl-5 mb-10">
                 Sug Creative was born from a simple belief: everyone deserves access to world-class
@@ -161,13 +161,13 @@ export default function AboutPage() {
                   <Image src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=600&h=500&fit=crop" alt="Team collaboration" fill className="object-cover grayscale hover:grayscale-0 transition-all duration-700" />
                   <div className="absolute inset-0 bg-primary-dark/20 group-hover:opacity-0 transition-opacity" />
                 </div>
-                <div className="hero-animate relative h-64 mt-8 border-2 border-primary-dark shadow-[8px_8px_0px_rgba(77,168,219,1)] overflow-hidden">
+                <div className="hero-animate relative h-64 mt-8 border-2 border-primary-dark shadow-[8px_8px_0px_rgba(130,201,61,1)] overflow-hidden">
                   <Image src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=600&h=500&fit=crop" alt="Business growth" fill className="object-cover grayscale hover:grayscale-0 transition-all duration-700" />
-                  <div className="absolute inset-0 bg-[#4DA8DB]/20 group-hover:opacity-0 transition-opacity" />
+                  <div className="absolute inset-0 bg-[#82C93D]/20 group-hover:opacity-0 transition-opacity" />
                 </div>
                 {/* Stat overlay box */}
-                <div className="hero-animate absolute -bottom-6 left-4 bg-primary-dark text-white border-2 border-primary-dark p-5 rounded-none shadow-[8px_8px_0px_rgba(77,168,219,1)] z-20">
-                  <div className="text-3xl font-black font-heading text-[#4DA8DB] mb-1">10+</div>
+                <div className="hero-animate absolute -bottom-6 left-4 bg-primary-dark text-white border-2 border-primary-dark p-5 rounded-none shadow-[8px_8px_0px_rgba(130,201,61,1)] z-20">
+                  <div className="text-3xl font-black font-heading text-[#82C93D] mb-1">10+</div>
                   <div className="text-[10px] uppercase tracking-widest font-black text-white/70">Years of Impact</div>
                 </div>
               </div>
@@ -182,14 +182,14 @@ export default function AboutPage() {
         <div className="container-wide relative z-10" ref={statsRef}>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
             {stats.map((stat, i) => (
-              <div key={stat.label} className="stat-card text-center p-8 border-2 border-white/10 hover:border-[#4DA8DB] bg-white/5 backdrop-blur-sm shadow-[4px_4px_0px_rgba(0,0,0,0.5)] transition-all duration-300 group hover:-translate-y-1">
-                <div className="w-12 h-12 mx-auto mb-4 bg-white/10 border border-white/20 flex items-center justify-center group-hover:bg-[#4DA8DB] transition-colors">
-                  <stat.icon size={22} className="text-[#4DA8DB] group-hover:text-white transition-colors" />
+              <div key={stat.label} className="stat-card text-center p-8 border-2 border-white/10 hover:border-[#82C93D] bg-white/5 backdrop-blur-sm shadow-[4px_4px_0px_rgba(0,0,0,0.5)] transition-all duration-300 group hover:-translate-y-1">
+                <div className="w-12 h-12 mx-auto mb-4 bg-white/10 border border-white/20 flex items-center justify-center group-hover:bg-[#82C93D] transition-colors">
+                  <stat.icon size={22} className="text-[#82C93D] group-hover:text-white transition-colors" />
                 </div>
                 <div className="text-4xl md:text-5xl font-heading font-black text-white mb-2 tabular-nums">
                   <NumberTicker value={stat.value} />{stat.suffix}
                 </div>
-                <div className="text-[10px] font-black uppercase tracking-widest text-[#4DA8DB]">{stat.label}</div>
+                <div className="text-[10px] font-black uppercase tracking-widest text-[#82C93D]">{stat.label}</div>
               </div>
             ))}
           </div>
@@ -213,10 +213,10 @@ export default function AboutPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <AnimatedSection direction="left">
               <div className="bg-primary-dark text-white border-2 border-primary-dark p-10 md:p-12 rounded-none shadow-[10px_10px_0px_rgba(0,0,0,1)] h-full group hover:-translate-y-1 hover:shadow-[14px_14px_0px_rgba(0,0,0,1)] transition-all duration-300">
-                <div className="w-16 h-16 flex items-center justify-center bg-[#4DA8DB] border-2 border-white/20 mb-8 shadow-[4px_4px_0px_rgba(77,168,219,0.5)]">
+                <div className="w-16 h-16 flex items-center justify-center bg-[#82C93D] border-2 border-white/20 mb-8 shadow-[4px_4px_0px_rgba(130,201,61,0.5)]">
                   <Target size={28} className="text-white" />
                 </div>
-                <div className="text-[10px] font-black uppercase tracking-widest text-[#4DA8DB] mb-3">Mission</div>
+                <div className="text-[10px] font-black uppercase tracking-widest text-[#82C93D] mb-3">Mission</div>
                 <h3 className="text-2xl md:text-3xl font-heading font-black text-white mb-6 leading-tight">
                   Democratize Premium Guidance
                 </h3>
@@ -229,9 +229,9 @@ export default function AboutPage() {
             </AnimatedSection>
 
             <AnimatedSection direction="right" delay={0.15}>
-              <div className="bg-white text-primary-dark border-2 border-primary-dark p-10 md:p-12 rounded-none shadow-[10px_10px_0px_rgba(77,168,219,1)] h-full group hover:-translate-y-1 hover:shadow-[14px_14px_0px_rgba(77,168,219,1)] transition-all duration-300">
+              <div className="bg-white text-primary-dark border-2 border-primary-dark p-10 md:p-12 rounded-none shadow-[10px_10px_0px_rgba(130,201,61,1)] h-full group hover:-translate-y-1 hover:shadow-[14px_14px_0px_rgba(130,201,61,1)] transition-all duration-300">
                 <div className="w-16 h-16 flex items-center justify-center bg-primary-dark border-2 border-primary-dark mb-8 shadow-[4px_4px_0px_rgba(0,0,0,1)]">
-                  <Eye size={28} className="text-[#4DA8DB]" />
+                  <Eye size={28} className="text-[#82C93D]" />
                 </div>
                 <div className="text-[10px] font-black uppercase tracking-widest text-primary mb-3">Vision</div>
                 <h3 className="text-2xl md:text-3xl font-heading font-black text-primary-dark mb-6 leading-tight">
@@ -273,14 +273,14 @@ export default function AboutPage() {
                   {/* Content side */}
                   <div className={`flex-1 ${i % 2 === 0 ? 'md:pr-16' : 'md:pl-16'} w-full md:w-auto mb-4 md:mb-0`}>
                     <div className={`bg-white border-2 border-primary-dark p-8 rounded-none shadow-[8px_8px_0px_rgba(0,0,0,1)] hover:-translate-y-1 hover:shadow-[12px_12px_0px_rgba(0,0,0,1)] transition-all duration-300 ${i % 2 === 0 ? 'md:ml-auto' : 'md:mr-auto'} max-w-lg`}>
-                      <div className="text-[10px] font-black uppercase tracking-widest text-[#4DA8DB] mb-2">{item.year}</div>
+                      <div className="text-[10px] font-black uppercase tracking-widest text-[#82C93D] mb-2">{item.year}</div>
                       <h3 className="text-xl md:text-2xl font-heading font-black text-primary-dark mb-3">{item.title}</h3>
                       <p className="text-primary-dark/70 font-bold leading-relaxed">{item.desc}</p>
                     </div>
                   </div>
 
                   {/* Year badge (center) */}
-                  <div className="w-16 h-16 bg-primary-dark text-white font-black flex items-center justify-center rounded-none border-2 border-primary-dark shadow-[4px_4px_0px_rgba(77,168,219,1)] z-10 shrink-0 text-lg">
+                  <div className="w-16 h-16 bg-primary-dark text-white font-black flex items-center justify-center rounded-none border-2 border-primary-dark shadow-[4px_4px_0px_rgba(130,201,61,1)] z-10 shrink-0 text-lg">
                     {item.year.slice(2)}
                   </div>
 
@@ -311,8 +311,8 @@ export default function AboutPage() {
             {values.map((value, i) => (
               <AnimatedSection key={value.title} delay={i * 0.1}>
                 <div className="bg-white border-2 border-primary-dark p-8 rounded-none shadow-[8px_8px_0px_rgba(0,0,0,1)] hover:-translate-y-2 hover:shadow-[12px_12px_0px_rgba(0,0,0,1)] transition-all duration-300 group h-full">
-                  <div className="w-14 h-14 flex items-center justify-center bg-primary-dark border-2 border-primary-dark mb-6 shadow-[4px_4px_0px_rgba(77,168,219,1)] group-hover:bg-[#4DA8DB] transition-colors">
-                    <value.icon size={24} className="text-[#4DA8DB] group-hover:text-white transition-colors" />
+                  <div className="w-14 h-14 flex items-center justify-center bg-primary-dark border-2 border-primary-dark mb-6 shadow-[4px_4px_0px_rgba(130,201,61,1)] group-hover:bg-[#82C93D] transition-colors">
+                    <value.icon size={24} className="text-[#82C93D] group-hover:text-white transition-colors" />
                   </div>
                   <h3 className="text-xl font-heading font-black text-primary-dark mb-3">{value.title}</h3>
                   <p className="text-primary-dark/70 font-bold text-sm leading-relaxed">{value.desc}</p>
@@ -356,7 +356,7 @@ export default function AboutPage() {
                     <div className="absolute inset-0 bg-gradient-to-t from-primary-dark/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                     {/* Hover overlay */}
                     <div className="absolute bottom-0 inset-x-0 p-6 translate-y-full group-hover:translate-y-0 transition-transform duration-500">
-                      <div className="w-10 h-10 bg-[#4DA8DB] border-2 border-white flex items-center justify-center rounded-none shadow-[2px_2px_0px_rgba(255,255,255,0.5)]">
+                      <div className="w-10 h-10 bg-[#82C93D] border-2 border-white flex items-center justify-center rounded-none shadow-[2px_2px_0px_rgba(255,255,255,0.5)]">
                         <ArrowUpRight size={18} className="text-white" />
                       </div>
                     </div>
@@ -385,7 +385,7 @@ export default function AboutPage() {
                   Behind the Scenes
                 </div>
                 <h2 className="text-4xl md:text-5xl font-heading font-black text-white tracking-tight">
-                  We Live What<br /><span className="text-[#4DA8DB]">We Preach</span>
+                  We Live What<br /><span className="text-[#82C93D]">We Preach</span>
                 </h2>
               </div>
               <p className="text-white/50 font-bold max-w-sm">Moments from our workshops, events, and team sessions.</p>
@@ -395,7 +395,7 @@ export default function AboutPage() {
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             {galleryImages.map((img, i) => (
               <AnimatedSection key={i} delay={i * 0.07}>
-                <div className="group relative border-2 border-white/10 overflow-hidden shadow-[4px_4px_0px_rgba(0,0,0,0.5)] hover:border-[#4DA8DB] hover:shadow-[8px_8px_0px_rgba(0,0,0,0.8)] transition-all duration-300 hover:-translate-y-1 aspect-[4/3]">
+                <div className="group relative border-2 border-white/10 overflow-hidden shadow-[4px_4px_0px_rgba(0,0,0,0.5)] hover:border-[#82C93D] hover:shadow-[8px_8px_0px_rgba(0,0,0,0.8)] transition-all duration-300 hover:-translate-y-1 aspect-[4/3]">
                   <Image
                     src={img}
                     alt={`Sug Creative event ${i + 1}`}
@@ -423,7 +423,7 @@ export default function AboutPage() {
                 </div>
                 <h2 className="text-4xl md:text-5xl font-heading font-black text-white mb-4 leading-tight">
                   Ready to Write Your <br />
-                  <span className="text-[#4DA8DB]">Success Story?</span>
+                  <span className="text-[#82C93D]">Success Story?</span>
                 </h2>
                 <p className="text-white/50 text-lg font-bold">
                   Let&apos;s create something extraordinary together.

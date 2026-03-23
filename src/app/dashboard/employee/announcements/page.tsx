@@ -42,7 +42,7 @@ export default function EmployeeAnnouncementsPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-32">
-        <Loader2 size={28} className="animate-spin text-primary-bright" />
+        <Loader2 size={28} className="animate-spin text-[#1A9AB5]" />
       </div>
     )
   }
@@ -65,7 +65,7 @@ export default function EmployeeAnnouncementsPage() {
               <div key={a.id} className="bg-white border border-border rounded-xl p-5 hover:shadow-sm transition-shadow">
                 <div className="flex items-center gap-2 mb-2 flex-wrap">
                   {a.is_pinned && (
-                    <span className="flex items-center gap-1 text-primary-bright text-xs font-semibold">
+                    <span className="flex items-center gap-1 text-[#1A9AB5] text-xs font-semibold">
                       <Pin size={12} /> Pinned
                     </span>
                   )}
@@ -87,7 +87,7 @@ export default function EmployeeAnnouncementsPage() {
                 {a.content && a.content.length > 150 && (
                   <button
                     onClick={() => toggleExpand(a.id)}
-                    className="mt-2 text-xs text-primary-bright font-semibold flex items-center gap-1 hover:underline"
+                    className="mt-2 text-xs text-[#1A9AB5] font-semibold flex items-center gap-1 hover:underline"
                   >
                     {isExpanded ? <><ChevronUp size={12} /> Show less</> : <><ChevronDown size={12} /> Read more</>}
                   </button>

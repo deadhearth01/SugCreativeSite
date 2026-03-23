@@ -110,7 +110,7 @@ export default function PaymentsPage() {
   const fmt = (v: number) => `₹${v.toLocaleString('en-IN')}`
 
   const statusColors: Record<string, string> = {
-    all: 'bg-[#022A4A] text-white border-black shadow-[2px_2px_0px_rgba(0,0,0,0.7)]',
+    all: 'bg-[#1A9AB5] text-white border-black shadow-[2px_2px_0px_rgba(0,0,0,0.7)]',
     pending: 'bg-amber-500 text-white border-black shadow-[2px_2px_0px_rgba(0,0,0,0.7)]',
     paid: 'bg-emerald-600 text-white border-black shadow-[2px_2px_0px_rgba(0,0,0,0.7)]',
     failed: 'bg-red-600 text-white border-black shadow-[2px_2px_0px_rgba(0,0,0,0.7)]',
@@ -119,7 +119,7 @@ export default function PaymentsPage() {
 
   if (loading) return (
     <div className="flex items-center justify-center py-32">
-      <Loader2 size={28} className="animate-spin text-[#045184]" />
+      <Loader2 size={28} className="animate-spin text-[#35C8E0]" />
     </div>
   )
 
@@ -128,16 +128,16 @@ export default function PaymentsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-2 bg-[#045184] text-white text-[10px] font-black uppercase tracking-widest px-3 py-1.5 border-2 border-[#022A4A] shadow-[2px_2px_0px_rgba(0,0,0,0.7)] mb-3">
+          <div className="inline-flex items-center gap-2 bg-[#35C8E0] text-white text-[10px] font-black uppercase tracking-widest px-3 py-1.5 border-2 border-[#1A9AB5] shadow-[2px_2px_0px_rgba(0,0,0,0.7)] mb-3">
             <CreditCard size={12} />
             Transactions
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black text-[#022A4A] uppercase tracking-tight leading-none">Payments</h1>
+          <h1 className="text-2xl sm:text-3xl font-black text-[#1A9AB5] uppercase tracking-tight leading-none">Payments</h1>
           <p className="text-sm text-foreground/50 font-semibold mt-1">Track all transactions &amp; revenue</p>
         </div>
         <button
           onClick={() => setShowModal(true)}
-          className="flex items-center gap-2 bg-[#022A4A] text-white text-xs font-black uppercase tracking-widest px-5 py-3 border-2 border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all flex-shrink-0"
+          className="flex items-center gap-2 bg-[#1A9AB5] text-white text-xs font-black uppercase tracking-widest px-5 py-3 border-2 border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all flex-shrink-0"
         >
           <Plus size={15} />
           Add Payment
@@ -147,10 +147,10 @@ export default function PaymentsPage() {
       {/* Summary Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[
-          { label: 'Total Revenue', value: fmt(totalRevenue), sub: 'All time paid', icon: CreditCard, color: 'bg-[#045184]' },
+          { label: 'Total Revenue', value: fmt(totalRevenue), sub: 'All time paid', icon: CreditCard, color: 'bg-[#35C8E0]' },
           { label: 'Pending', value: fmt(pendingAmount), sub: `${pending.length} transactions`, icon: ArrowDownRight, color: 'bg-amber-500' },
           { label: 'Refunded', value: fmt(refunded), sub: 'Total refunds', icon: TrendingUp, color: 'bg-purple-600' },
-          { label: 'All Transactions', value: String(payments.length), sub: 'Total records', icon: CreditCard, color: 'bg-[#022A4A]' },
+          { label: 'All Transactions', value: String(payments.length), sub: 'Total records', icon: CreditCard, color: 'bg-[#1A9AB5]' },
         ].map((card) => (
           <div key={card.label} className="bg-white border-2 border-black shadow-[3px_3px_0px_rgba(0,0,0,0.8)] p-4 sm:p-5">
             <div className="flex items-center gap-2 mb-3">
@@ -159,7 +159,7 @@ export default function PaymentsPage() {
               </div>
               <span className="text-[10px] font-black uppercase tracking-widest text-foreground/50 leading-tight">{card.label}</span>
             </div>
-            <div className="text-xl sm:text-2xl font-black text-[#022A4A]">{card.value}</div>
+            <div className="text-xl sm:text-2xl font-black text-[#1A9AB5]">{card.value}</div>
             <div className="text-xs font-semibold text-foreground/40 mt-0.5">{card.sub}</div>
           </div>
         ))}
@@ -174,7 +174,7 @@ export default function PaymentsPage() {
             placeholder="Search by user or invoice..."
             value={search}
             onChange={e => setSearch(e.target.value)}
-            className="w-full pl-9 pr-4 py-2.5 border-2 border-black/15 text-sm font-semibold focus:outline-none focus:border-[#045184] focus:shadow-[3px_3px_0px_rgba(4,81,132,0.2)]"
+            className="w-full pl-9 pr-4 py-2.5 border-2 border-black/15 text-sm font-semibold focus:outline-none focus:border-[#35C8E0] focus:shadow-[3px_3px_0px_rgba(53,200,224,0.2)]"
           />
         </div>
         <div className="flex gap-2 flex-wrap">
@@ -196,7 +196,7 @@ export default function PaymentsPage() {
 
       {/* Transactions Table */}
       <div className="bg-white border-2 border-black shadow-[3px_3px_0px_rgba(0,0,0,0.8)]">
-        <div className="px-5 py-4 border-b-2 border-black bg-[#022A4A]">
+        <div className="px-5 py-4 border-b-2 border-black bg-[#1A9AB5]">
           <h2 className="text-sm font-black uppercase tracking-widest text-white">
             Transactions <span className="text-white/40">({filtered.length})</span>
           </h2>
@@ -218,15 +218,15 @@ export default function PaymentsPage() {
                   <tr key={p.id} className={`border-b border-black/8 hover:bg-[#F4F6FA] ${i % 2 === 0 ? '' : 'bg-[#FAFBFC]'}`}>
                     <td className="py-3 px-4 font-mono text-xs text-foreground/50 font-semibold">{p.invoice_number || '—'}</td>
                     <td className="py-3 px-4">
-                      <div className="font-bold text-[#022A4A]">{p.user?.full_name || 'Unknown'}</div>
+                      <div className="font-bold text-[#1A9AB5]">{p.user?.full_name || 'Unknown'}</div>
                       <div className="text-xs text-foreground/40">{p.user?.email}</div>
                     </td>
                     <td className="py-3 px-4">
-                      <span className="text-[10px] bg-[#022A4A]/8 text-[#022A4A] px-2 py-1 font-black uppercase tracking-wide border border-[#022A4A]/20 whitespace-nowrap">
+                      <span className="text-[10px] bg-[#1A9AB5]/8 text-[#1A9AB5] px-2 py-1 font-black uppercase tracking-wide border border-[#1A9AB5]/20 whitespace-nowrap">
                         {typeLabel(p.payment_type)}
                       </span>
                     </td>
-                    <td className="py-3 px-4 font-black text-[#022A4A] whitespace-nowrap">{fmt(Number(p.amount))}</td>
+                    <td className="py-3 px-4 font-black text-[#1A9AB5] whitespace-nowrap">{fmt(Number(p.amount))}</td>
                     <td className="py-3 px-4"><StatusBadge status={p.status} /></td>
                     <td className="py-3 px-4 text-foreground/50 text-xs font-semibold whitespace-nowrap">
                       {new Date(p.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
@@ -269,7 +269,7 @@ export default function PaymentsPage() {
       {showModal && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
           <div className="bg-white w-full max-w-md border-2 border-black shadow-[8px_8px_0px_rgba(0,0,0,1)]">
-            <div className="flex items-center justify-between px-6 py-4 border-b-2 border-black bg-[#022A4A]">
+            <div className="flex items-center justify-between px-6 py-4 border-b-2 border-black bg-[#1A9AB5]">
               <h2 className="text-sm font-black uppercase tracking-widest text-white">Add Payment Record</h2>
               <button onClick={() => setShowModal(false)} className="text-white/60 hover:text-white">
                 <X size={18} />
@@ -281,7 +281,7 @@ export default function PaymentsPage() {
                 <select
                   value={form.user_id}
                   onChange={e => setForm(f => ({ ...f, user_id: e.target.value }))}
-                  className="w-full border-2 border-black/20 px-3 py-2.5 text-sm font-semibold focus:outline-none focus:border-[#045184]"
+                  className="w-full border-2 border-black/20 px-3 py-2.5 text-sm font-semibold focus:outline-none focus:border-[#35C8E0]"
                 >
                   <option value="">Select user...</option>
                   {users.map(u => (
@@ -296,7 +296,7 @@ export default function PaymentsPage() {
                     type="number"
                     value={form.amount}
                     onChange={e => setForm(f => ({ ...f, amount: e.target.value }))}
-                    className="w-full border-2 border-black/20 px-3 py-2.5 text-sm font-semibold focus:outline-none focus:border-[#045184]"
+                    className="w-full border-2 border-black/20 px-3 py-2.5 text-sm font-semibold focus:outline-none focus:border-[#35C8E0]"
                     min="0"
                     placeholder="0"
                   />
@@ -306,7 +306,7 @@ export default function PaymentsPage() {
                   <select
                     value={form.payment_type}
                     onChange={e => setForm(f => ({ ...f, payment_type: e.target.value }))}
-                    className="w-full border-2 border-black/20 px-3 py-2.5 text-sm font-semibold focus:outline-none focus:border-[#045184]"
+                    className="w-full border-2 border-black/20 px-3 py-2.5 text-sm font-semibold focus:outline-none focus:border-[#35C8E0]"
                   >
                     {PAYMENT_TYPES.map(t => <option key={t} value={t}>{typeLabel(t)}</option>)}
                   </select>
@@ -318,7 +318,7 @@ export default function PaymentsPage() {
                   type="text"
                   value={form.description}
                   onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
-                  className="w-full border-2 border-black/20 px-3 py-2.5 text-sm font-semibold focus:outline-none focus:border-[#045184]"
+                  className="w-full border-2 border-black/20 px-3 py-2.5 text-sm font-semibold focus:outline-none focus:border-[#35C8E0]"
                   placeholder="Optional description"
                 />
               </div>
@@ -354,7 +354,7 @@ export default function PaymentsPage() {
               <button
                 onClick={handleCreate}
                 disabled={saving}
-                className="flex-1 py-2.5 text-xs font-black uppercase tracking-widest bg-[#022A4A] text-white border-2 border-black shadow-[2px_2px_0px_rgba(0,0,0,0.7)] hover:shadow-[1px_1px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                className="flex-1 py-2.5 text-xs font-black uppercase tracking-widest bg-[#1A9AB5] text-white border-2 border-black shadow-[2px_2px_0px_rgba(0,0,0,0.7)] hover:shadow-[1px_1px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 {saving ? <Loader2 size={14} className="animate-spin" /> : <ArrowUpRight size={14} />}
                 {saving ? 'Creating...' : 'Create Record'}
