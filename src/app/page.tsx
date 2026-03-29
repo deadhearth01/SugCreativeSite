@@ -5,17 +5,29 @@ import Link from 'next/link'
 import { useRef, useEffect, useState } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { ArrowUpRight, Plus, CheckCircle2, TrendingUp } from 'lucide-react'
+import { ArrowUpRight, CheckCircle2, TrendingUp, GraduationCap, Award, Users, Clock, Play, Briefcase, Calendar, Star, Quote, Building2, Shield, Cpu, Globe, Server, Code2, Palette, Settings, Zap, Target, Rocket } from 'lucide-react'
 import Grainient from '@/components/Grainient'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import AnimatedSection from '@/components/AnimatedSection'
-import RotatingText from '@/components/RotatingText'
 import { Button } from '@/components/ui/button'
 import { NumberTicker } from '@/components/ui/number-ticker'
 
 gsap.registerPlugin(ScrollTrigger)
 
+// Placement companies where SUGians got placed
+const placementCompanies = [
+  { name: 'Google', logo: '/CompanyLogos/google.svg' },
+  { name: 'Bosch', logo: '/CompanyLogos/bosch.svg' },
+  { name: 'Accenture', logo: '/CompanyLogos/accenture.svg' },
+  { name: 'TCS', logo: '/CompanyLogos/tcs.svg' },
+  { name: 'Capgemini', logo: '/CompanyLogos/capgemini.svg' },
+  { name: 'Verizon', logo: '/CompanyLogos/verizon.svg' },
+  { name: 'WatchGuard', logo: '/CompanyLogos/watchguard.svg' },
+  { name: 'Coforge', logo: '/CompanyLogos/coforge.svg' },
+]
+
+// Collaborations
 const collaborations = [
   { name: 'GMUN', logo: '/CompanyLogos/gmun.svg' },
   { name: 'IETE', logo: '/CompanyLogos/iete.svg' },
@@ -26,52 +38,125 @@ const collaborations = [
   { name: 'GTech', logo: '/CompanyLogos/gtech.svg' },
 ]
 
-const services = [
+// Success stories / Testimonials
+const testimonials = [
   {
-    title: 'Business Consulting',
-    desc: 'Strategic insights to streamline operations, reduce bottlenecks, and maximize enterprise growth.',
-    href: '/services#business',
-    image: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&h=1200&fit=crop',
+    name: 'Tanvi Bansal',
+    company: 'WatchGuard',
+    domain: 'IoT',
+    quote: "Sug Creative's IoT domain training was exactly what I needed to enhance my skills and land a job at WatchGuard. The learning materials were spot-on, and the trainers helped me prepare for every interview.",
+    image: '/testimonials/tanvi.jpg',
   },
   {
-    title: 'Career Guidance',
-    desc: 'Professional training and mentorship designed to accelerate your individual journey to the top.',
-    href: '/services#career',
-    image: 'https://images.unsplash.com/photo-1521737711867-e3b97375f902?w=800&h=1200&fit=crop',
+    name: 'Shyam',
+    company: 'Bosch',
+    domain: 'IoT',
+    quote: "Thanks to Sug Creative's domain training, I gained the expertise in IoT that helped me get placed at Bosch. The course covered everything I needed to know, and the mentors were incredibly supportive.",
+    image: '/testimonials/shyam.jpg',
   },
   {
-    title: 'Startup Hub',
-    desc: 'From ideation to execution - everything you need to validate, fund, and scale your new venture.',
-    href: '/services#startup',
-    image: 'https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=800&h=1200&fit=crop',
+    name: 'Anusha',
+    company: 'Google',
+    domain: 'Full Stack',
+    quote: "I thank Sug Creative for the training I received. It gave me the practical skills and confidence needed to land a job at Google. The instructors were knowledgeable and always available.",
+    image: '/testimonials/anusha.jpg',
   },
   {
-    title: 'Edu Tech',
-    desc: 'Cutting-edge learning platforms and certified programs that keep you ahead of industry curves.',
-    href: '/services#edutech',
-    image: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&h=1200&fit=crop',
+    name: 'Pradeep',
+    company: 'Accenture',
+    domain: 'ML Engineer',
+    quote: "Sug Creative's Placement Prep gave me the edge I needed to land a role as a Machine Learning Engineer at Accenture. The hands-on training helped me become job-ready and confident.",
+    image: '/testimonials/pradeep.jpg',
+  },
+  {
+    name: 'Chandrasekhar',
+    company: 'TCS',
+    domain: 'Web Design',
+    quote: "The Web Designing Course provided by Sug Creative was a game-changer for my career. The detailed curriculum and hands-on experience helped me secure a role at TCS.",
+    image: '/testimonials/chandrasekhar.jpg',
+  },
+  {
+    name: 'Ruchita Patil',
+    company: 'Capgemini',
+    domain: 'UX Design',
+    quote: "The practical approach to learning UX design helped me develop a strong portfolio and secure a role at Capgemini. I'm thrilled with my new career!",
+    image: '/testimonials/ruchita.jpg',
+  },
+]
+
+// Courses data - matching poster exactly with professional icons
+const courses = [
+  {
+    title: 'DevOps Internship',
+    desc: 'Master CI/CD pipelines, container orchestration with Docker & Kubernetes, cloud automation & DevSecOps practices.',
+    href: '/courses/devops-internship',
+    image: '/courses/devops-hero.jpg',
+    price: 7999,
+    originalPrice: 12999,
+    savings: 5000,
+    color: 'violet',
+    tech: ['Docker', 'Kubernetes', 'Jenkins', 'Terraform', 'AWS / GCP', 'GitOps'],
+    Icon: Server,
+  },
+  {
+    title: 'Cyber Security Internship',
+    desc: 'Deep-dive into ethical hacking, penetration testing, network security, VAPT & threat intelligence with live CTF labs.',
+    href: '/courses/cyber-security-internship',
+    image: '/courses/cybersecurity-hero.jpg',
+    price: 4999,
+    originalPrice: 9999,
+    savings: 5000,
+    color: 'blue',
+    tech: ['Kali Linux', 'Metasploit', 'Wireshark', 'Burp Suite', 'SIEM', 'VAPT'],
+    Icon: Shield,
+  },
+  {
+    title: 'IoT & Embedded Systems',
+    desc: 'Go from circuit to cloud — learn embedded C, RTOS, microcontroller programming & build complete smart IoT solutions.',
+    href: '/courses/iot-embedded-internship',
+    image: '/courses/iot-hero.jpg',
+    price: 4999,
+    originalPrice: 9999,
+    savings: 5000,
+    color: 'green',
+    tech: ['Arduino', 'Raspberry Pi', 'Embedded C', 'RTOS', 'MQTT', 'AWS IoT'],
+    Icon: Cpu,
+  },
+  {
+    title: 'Full Stack Dev Internship',
+    desc: 'Build production-ready web apps end-to-end — master React, Node.js, REST APIs, databases & cloud deployment.',
+    href: '/courses/fullstack-dev-internship',
+    image: '/courses/fullstack-hero.jpg',
+    price: 5999,
+    originalPrice: 10999,
+    savings: 5000,
+    color: 'gold',
+    tech: ['React.js', 'Node.js', 'MongoDB', 'PostgreSQL', 'REST APIs', 'Vercel/AWS'],
+    Icon: Globe,
   }
 ]
+
+// Business services
+const businessServices = [
+  { Icon: Globe, title: 'Web Development', desc: 'Custom websites & web applications' },
+  { Icon: Palette, title: 'UI/UX Design', desc: 'User-centered design solutions' },
+  { Icon: Code2, title: 'Software Development', desc: 'Scalable enterprise software' },
+  { Icon: Settings, title: 'IT Consulting', desc: 'Digital transformation strategy' },
+]
+
+const courseColors: Record<string, { bg: string; accent: string; shadow: string; gradient: string }> = {
+  violet: { bg: 'bg-violet-500', accent: 'text-violet-500', shadow: 'shadow-[8px_8px_0px_rgba(139,92,246,1)]', gradient: 'from-violet-500 to-purple-600' },
+  blue: { bg: 'bg-blue-500', accent: 'text-blue-500', shadow: 'shadow-[8px_8px_0px_rgba(59,130,246,1)]', gradient: 'from-blue-500 to-cyan-600' },
+  green: { bg: 'bg-green-500', accent: 'text-green-500', shadow: 'shadow-[8px_8px_0px_rgba(34,197,94,1)]', gradient: 'from-green-500 to-emerald-600' },
+  gold: { bg: 'bg-amber-500', accent: 'text-amber-500', shadow: 'shadow-[8px_8px_0px_rgba(245,158,11,1)]', gradient: 'from-amber-500 to-orange-600' },
+}
 
 export default function HomePage() {
   const headlineRef = useRef<HTMLHeadingElement>(null)
   const subRef = useRef<HTMLParagraphElement>(null)
   const ctaRef = useRef<HTMLDivElement>(null)
-  const tagsRef = useRef<HTMLDivElement>(null)
-  const statsRef = useRef<HTMLDivElement>(null)
-
-  const SHIFT_TEXTS = ['Careers', 'Businesses', 'Startups', 'Students']
-  const [textIndex, setTextIndex] = useState(0)
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setTextIndex((prev) => (prev + 1) % SHIFT_TEXTS.length)
-    }, 2500)
-    return () => clearInterval(interval)
-  }, [])
-
-  useEffect(() => {
-    // Hero Animations
     const tl = gsap.timeline({ delay: 0.5 })
     if (headlineRef.current) {
       tl.from(headlineRef.current, { y: 60, opacity: 0, duration: 1.2, ease: 'power3.out' })
@@ -81,45 +166,6 @@ export default function HomePage() {
     }
     if (ctaRef.current) {
       tl.from(ctaRef.current, { y: 20, opacity: 0, duration: 0.6, ease: 'power3.out' }, '-=0.4')
-    }
-    
-    // Float main hero stat cards
-    if (statsRef.current) {
-      gsap.fromTo(statsRef.current.children, 
-        { y: 30, opacity: 0 },
-        { y: 0, opacity: 1, duration: 1, stagger: 0.2, ease: "back.out(1.5)", delay: 0.8 }
-      )
-    }
-
-    // Scroll trigger for floating tags in the Challenges section
-    if (tagsRef.current) {
-      const tags = tagsRef.current.querySelectorAll('.floating-tag')
-      gsap.fromTo(tags, 
-        { y: 50, opacity: 0 },
-        { 
-          y: 0, 
-          opacity: 1, 
-          duration: 0.8, 
-          stagger: 0.2, 
-          ease: "back.out(1.5)",
-          scrollTrigger: {
-            trigger: tagsRef.current,
-            start: "top 80%",
-          }
-        }
-      )
-
-      // Continuous subtle floating animation
-      tags.forEach((tag, i) => {
-        gsap.to(tag, {
-          y: "-=8",
-          duration: 1.5 + (i * 0.2),
-          yoyo: true,
-          repeat: -1,
-          ease: "sine.inOut",
-          delay: i * 0.2
-        })
-      })
     }
 
     return () => { 
@@ -132,10 +178,9 @@ export default function HomePage() {
     <>
       <Navbar />
 
-      {/* ═══ HERO ═══ */}
-      <section className="relative min-h-screen flex items-center bg-[#f2fafd] pt-32 pb-16 overflow-hidden border-b-2 border-black/10">
-        {/* Grainient brand background — subtle, fills the entire hero */}
-        <div className="absolute inset-0 opacity-[0.12]">
+      {/* ═══ HERO — CLEAN & MARKETING FOCUSED ═══ */}
+      <section className="relative min-h-[90vh] flex items-center bg-[#f2fafd] pt-32 pb-20 overflow-hidden border-b-2 border-black/10">
+        <div className="absolute inset-0 opacity-[0.08]">
           <Grainient
             color1="#82C93D"
             color2="#35C8E0"
@@ -152,300 +197,375 @@ export default function HomePage() {
             zoom={0.75}
           />
         </div>
-        {/* Subtle sharp grid background */}
         <div className="absolute inset-0" style={{ backgroundImage: 'linear-gradient(rgba(53,200,224,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(53,200,224,0.03) 1px, transparent 1px)', backgroundSize: '60px 60px' }} />
         
         <div className="container-wide relative z-10 w-full">
-          <div className="flex flex-col lg:flex-row items-center gap-16 lg:gap-12">
+          <div className="max-w-4xl mx-auto text-center">
+            <div className="inline-flex items-center gap-3 bg-[#82C93D] text-white font-black text-xs uppercase tracking-widest px-5 py-2.5 mb-8 rounded-none shadow-[4px_4px_0px_rgba(0,0,0,1)] border-2 border-primary-dark">
+              <Rocket size={16} />
+              Trusted by 550+ Professionals at Top MNCs
+            </div>
             
-            {/* Left Text */}
-            <div className="lg:w-[45%] relative z-20">
-              <div className="inline-flex items-center gap-3 bg-white text-primary font-black text-xs uppercase tracking-widest px-4 py-2 mb-6 rounded-none shadow-[4px_4px_0px_rgba(0,0,0,1)] border-2 border-primary-dark">
-                <div className="w-2 h-2 bg-green-500 rounded-none animate-pulse"></div>
-                Sug Creative Solutions
-              </div>
-              
-              <h1 ref={headlineRef} className="text-5xl sm:text-6xl md:text-7xl lg:text-[4.5rem] font-heading text-primary-dark leading-[1.05] tracking-tight mb-8">
-                Transforming<br />
-                <div className="flex items-center text-primary mt-2 mb-2">
-                  <RotatingText
-                    texts={SHIFT_TEXTS}
-                    mainClassName="px-2 sm:px-2 md:px-3 bg-[#35C8E0] text-white overflow-hidden py-0.5 sm:py-1 md:py-2 justify-center rounded-lg inline-block"
-                    staggerFrom={"last"}
-                    initial={{ y: "100%" }}
-                    animate={{ y: 0 }}
-                    exit={{ y: "-120%" }}
-                    staggerDuration={0.025}
-                    splitLevelClassName="overflow-hidden pb-0.5 sm:pb-1 md:pb-1"
-                    transition={{ type: "spring", damping: 30, stiffness: 400 }}
-                    rotationInterval={2000}
-                  />
-                </div>
-                Redefining Success
-              </h1>
-              
-              <div ref={subRef} className="text-lg md:text-xl text-primary-dark/70 max-w-xl leading-relaxed mb-10 font-bold border-l-4 border-primary pl-5">
-                We focus on delivering exceptional value through sustainable strategies that elevate your business, career, and startup ideas.
-              </div>
-              
-              <div ref={ctaRef} className="flex flex-wrap items-center gap-4">
-                <Button asChild size="lg" className="bg-primary-dark hover:bg-black text-white font-black text-sm uppercase tracking-widest rounded-none border-2 border-primary-dark px-10 h-16 shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-[6px_6px_0px_rgba(0,0,0,1)] hover:-translate-y-1 transition-all">
-                  <Link href="/contact" className="flex items-center gap-3">
-                    Book Consultation <ArrowUpRight size={20} />
-                  </Link>
-                </Button>
-              </div>
+            <h1 ref={headlineRef} className="text-5xl sm:text-6xl md:text-7xl font-heading text-primary-dark leading-[1.08] tracking-tight mb-8">
+              Launch Your <span className="text-primary">Tech Career</span><br />
+              With Industry Experts
+            </h1>
+            
+            <p ref={subRef} className="text-lg md:text-xl text-primary-dark/70 max-w-2xl mx-auto leading-relaxed mb-10 font-medium">
+              3-month intensive internships with <strong className="text-primary-dark">real MNC mentors</strong>, hands-on projects, and <strong className="text-primary-dark">placement support</strong>. Join our community at Google, Bosch, Accenture & more.
+            </p>
+            
+            <div ref={ctaRef} className="flex flex-wrap justify-center items-center gap-4 mb-12">
+              <Button asChild size="lg" className="bg-primary-dark hover:bg-black text-white font-black text-sm uppercase tracking-widest rounded-none border-2 border-primary-dark px-10 h-16 shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-[6px_6px_0px_rgba(0,0,0,1)] hover:-translate-y-1 transition-all">
+                <Link href="/courses" className="flex items-center gap-3">
+                  Explore Courses <ArrowUpRight size={20} />
+                </Link>
+              </Button>
+              <Button asChild variant="outline" size="lg" className="bg-white border-2 border-primary-dark text-primary-dark hover:bg-primary-dark hover:text-white font-black text-sm uppercase tracking-widest rounded-none px-8 h-16 shadow-[4px_4px_0px_rgba(0,0,0,1)] transition-all">
+                <Link href="/contact">Get Free Counselling</Link>
+              </Button>
             </div>
 
-            {/* Right Image + Stats */}
-            <div className="lg:w-[55%] relative w-full aspect-[4/3] lg:aspect-[4/3] mt-10 lg:mt-0 xl:max-w-[850px] ml-auto">
-              
-              {/* Main Image Container */}
-              <div className="absolute inset-0 border-2 border-primary-dark shadow-[16px_16px_0px_rgba(0,0,0,1)] rounded-none overflow-hidden group bg-primary-dark">
-                <Image 
-                  src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=1000&h=1200&fit=crop" 
-                  alt="Confident Business Professional" 
-                  fill 
-                  className="object-cover object-top grayscale hover:grayscale-0 transition-all duration-700"
-                  priority
-                />
-                {/* Overlay tint */}
-                <div className="absolute inset-0 bg-primary-dark/20 mix-blend-multiply transition-opacity duration-500 group-hover:opacity-0" />
-                
-                {/* Decorative scanner line */}
-                <div className="absolute top-0 bottom-0 left-1/3 w-[1px] bg-white/20 group-hover:bg-white/40 transition-colors pointer-events-none" />
-              </div>
-
-              {/* Floating Stat Boxes */}
-              <div ref={statsRef} className="absolute inset-x-[-1rem] md:inset-x-[-2rem] inset-y-8 pointer-events-none">
-                
-                {/* Overlapping Stat Box 1 (Bottom Left) */}
-                <div className="absolute bottom-4 -left-2 md:-left-8 bg-white/95 backdrop-blur-xl border-2 border-primary-dark p-6 rounded-none shadow-[8px_8px_0px_rgba(0,0,0,1)] z-30 pointer-events-auto max-w-[240px]">
-                  <div className="flex items-center gap-2 mb-3 text-primary-dark uppercase text-[10px] font-black tracking-widest border-b-2 border-black/10 pb-2">
-                    <TrendingUp size={14} className="text-[#82C93D]" />
-                    Performance
-                  </div>
-                  <div className="text-4xl font-heading font-black text-primary-dark mb-1 tabular-nums">
-                    <NumberTicker value={3000} />+
-                  </div>
-                  <div className="text-xs font-bold text-primary-dark/60 uppercase tracking-widest leading-tight">
-                    Careers & Businesses Scaled successfully
-                  </div>
+            {/* Trust Indicators */}
+            <div className="flex flex-wrap justify-center gap-6 md:gap-10 items-center">
+              <div className="flex items-center gap-2 text-primary-dark/70">
+                <div className="w-10 h-10 bg-white border-2 border-black shadow-[2px_2px_0px_rgba(0,0,0,1)] flex items-center justify-center">
+                  <Clock size={18} className="text-primary" />
                 </div>
-
-                {/* Overlapping Stat Box 2 (Top Right) */}
-                <div className="absolute top-10 right-0 md:-right-8 bg-primary-dark text-white border-2 border-primary-dark p-4 rounded-none shadow-[8px_8px_0px_rgba(130,201,61,1)] z-30 pointer-events-auto flex items-center gap-4">
-                  <div className="w-12 h-12 bg-white flex items-center justify-center rounded-none shadow-[2px_2px_0px_rgba(130,201,61,1)]">
-                    <CheckCircle2 size={24} className="text-primary-dark" />
-                  </div>
-                  <div>
-                    <div className="text-2xl font-black font-heading leading-none mb-1 text-[#82C93D]">98%</div>
-                    <div className="text-[10px] uppercase tracking-widest font-bold text-white/70">Success Rate</div>
-                  </div>
-                </div>
-
+                <span className="text-sm font-bold">3-Month Programs</span>
               </div>
-
+              <div className="flex items-center gap-2 text-primary-dark/70">
+                <div className="w-10 h-10 bg-white border-2 border-black shadow-[2px_2px_0px_rgba(0,0,0,1)] flex items-center justify-center">
+                  <Award size={18} className="text-[#82C93D]" />
+                </div>
+                <span className="text-sm font-bold">2 Certifications</span>
+              </div>
+              <div className="flex items-center gap-2 text-primary-dark/70">
+                <div className="w-10 h-10 bg-white border-2 border-black shadow-[2px_2px_0px_rgba(0,0,0,1)] flex items-center justify-center">
+                  <Briefcase size={18} className="text-violet-500" />
+                </div>
+                <span className="text-sm font-bold">Placement Support</span>
+              </div>
+              <div className="flex items-center gap-2 text-primary-dark/70">
+                <div className="w-10 h-10 bg-white border-2 border-black shadow-[2px_2px_0px_rgba(0,0,0,1)] flex items-center justify-center">
+                  <TrendingUp size={18} className="text-amber-500" />
+                </div>
+                <span className="text-sm font-bold">98% Success Rate</span>
+              </div>
             </div>
-
           </div>
         </div>
       </section>
 
-      {/* ═══ COLLABORATIONS LOGO BAND ═══ */}
-      <section className="py-20 bg-primary-dark border-b-2 border-black overflow-hidden relative">
-        <div className="absolute inset-0" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px)', backgroundSize: '80px 80px' }} />
-
-        <div className="container-wide mb-14 text-center relative z-10">
-          <div className="inline-block bg-white text-primary-dark font-black text-xs uppercase tracking-widest px-4 py-2 mb-6 rounded-none shadow-[4px_4px_0px_rgba(130,201,61,1)] border-2 border-white">
-            Our Collaborations
+      {/* ═══ TRUSTED BY LOGOS ═══ */}
+      <section className="py-10 bg-white border-b-2 border-black/10">
+        <div className="container-wide">
+          <div className="text-center text-xs font-bold uppercase tracking-widest text-primary-dark/50 mb-6">
+            Our SUGians Work At
           </div>
-          <h2 className="text-3xl md:text-5xl font-heading font-black text-white tracking-tight leading-tight">
-            Trusted by Leaders <br className="hidden md:block" /> Across Industries
-          </h2>
-        </div>
-
-        {/* Infinite Marquee — Styled Text Cards */}
-        <div className="relative overflow-hidden group z-10">
-          <style dangerouslySetInnerHTML={{__html: `
-            @keyframes marquee-scroll {
-              0% { transform: translateX(0%); }
-              100% { transform: translateX(-50%); }
-            }
-            .marquee-track {
-              animation: marquee-scroll 30s linear infinite;
-            }
-            .marquee-track:hover {
-              animation-play-state: paused;
-            }
-          `}} />
-
-          {/* Fade edges */}
-          <div className="absolute left-0 top-0 bottom-0 w-24 md:w-40 bg-gradient-to-r from-primary-dark to-transparent z-20 pointer-events-none" />
-          <div className="absolute right-0 top-0 bottom-0 w-24 md:w-40 bg-gradient-to-l from-primary-dark to-transparent z-20 pointer-events-none" />
-
-          <div className="marquee-track flex items-center gap-0 w-max border-y-2 border-white/10 py-5 bg-white/5 backdrop-blur-sm">
-            {/* Render 2 sets for seamless loop */}
-            {[...collaborations, ...collaborations].map((collab, i) => (
-              <div key={i} className="flex items-center shrink-0">
-                <div className="px-10 md:px-16 flex items-center justify-center group/item cursor-default opacity-60 hover:opacity-100 transition-all duration-300">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={collab.logo}
-                    alt={collab.name}
-                    className="h-10 md:h-14 w-auto object-contain brightness-0 invert group-hover/item:brightness-100 group-hover/item:invert-0 transition-all duration-300"
-                    loading="lazy"
-                  />
-                </div>
-                <div className="w-[2px] h-14 bg-white/10 shrink-0" />
+          <div className="flex flex-wrap justify-center gap-8 md:gap-12 items-center">
+            {['Google', 'Bosch', 'Accenture', 'TCS', 'Capgemini', 'Verizon', 'WatchGuard'].map((company) => (
+              <div key={company} className="text-primary-dark/40 text-sm md:text-base font-bold hover:text-primary-dark transition-colors">
+                {company}
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ═══ EXPERT SERVICES ═══ */}
+      {/* ═══ INTERNSHIP PROGRAMS ═══ */}
       <section className="py-24 md:py-32 bg-gray-50 border-b-2 border-black/10">
         <div className="container-wide">
           <div className="text-center mb-16 max-w-3xl mx-auto">
-            <div className="inline-block bg-primary text-white font-black text-xs uppercase tracking-widest px-4 py-2 mb-6 rounded-none shadow-[4px_4px_0px_rgba(0,0,0,1)] border-2 border-primary-dark">
-              Our Services
+            <div className="inline-block bg-[#82C93D] text-white font-black text-xs uppercase tracking-widest px-4 py-2 mb-6 rounded-none shadow-[4px_4px_0px_rgba(0,0,0,1)] border-2 border-primary-dark">
+              <GraduationCap size={14} className="inline mr-2" />
+              Career Programs
             </div>
-            <h2 className="text-4xl md:text-5xl font-heading font-black text-primary-dark tracking-tight leading-tight">
-              Our Expert Services to<br />Drive Growth
+            <h2 className="text-4xl md:text-5xl font-heading font-black text-primary-dark tracking-tight leading-tight mb-4">
+              Industry-Focused Internships<br />With Placement Support
             </h2>
+            <p className="text-primary-dark/70 text-lg font-bold">
+              3-month intensive programs designed by MNC mentors. Get certified, build real projects, and launch your career.
+            </p>
           </div>
 
-          {/* Grid of Tall Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-8">
-            {services.map((srv, index) => (
-              <AnimatedSection key={srv.title} delay={index * 0.1}>
-                <Link href={srv.href} className="group block relative h-[480px] md:h-[500px] border-2 border-primary-dark rounded-none overflow-hidden shadow-[8px_8px_0px_rgba(0,0,0,1)] transition-all duration-500 hover:-translate-y-2 hover:shadow-[16px_16px_0px_rgba(0,0,0,1)] bg-white focus:outline-none">
-                  {/* Background Image */}
-                  <div className="absolute inset-0">
-                    <Image src={srv.image} alt={srv.title} fill className="object-cover transition-transform duration-1000 group-hover:scale-105" />
-                  </div>
-                  
-                  {/* Gradient Overlay for Text */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-primary-dark via-primary-dark/80 to-primary-dark/20 opacity-90 group-hover:opacity-100 transition-opacity mix-blend-multiply" />
-                  
-                  {/* Top Right Button */}
-                  <div className="absolute top-5 right-5 w-12 h-12 bg-white/10 backdrop-blur-md border-2 border-white flex items-center justify-center rounded-none text-white group-hover:bg-primary group-hover:border-primary transition-all duration-500 shadow-[4px_4px_0px_rgba(0,0,0,0.5)]">
-                    <Plus size={24} className="group-hover:rotate-90 transition-transform duration-500" />
-                  </div>
+            {courses.map((course, index) => {
+              const colors = courseColors[course.color]
+              const IconComponent = course.Icon
+              return (
+                <AnimatedSection key={course.title} delay={index * 0.1}>
+                  <Link href={course.href} className={`group block relative h-[560px] border-2 border-primary-dark rounded-none overflow-hidden ${colors.shadow} transition-all duration-500 hover:-translate-y-2 hover:shadow-[12px_12px_0px_rgba(0,0,0,1)] bg-white focus:outline-none`}>
+                    <div className="absolute inset-0 bg-gradient-to-br from-gray-100 to-gray-200">
+                      <div className={`absolute inset-0 bg-gradient-to-br ${colors.gradient} opacity-20`} />
+                    </div>
+                    
+                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-transparent" />
+                    
+                    {/* Price Tag with Savings */}
+                    <div className="absolute top-4 right-4 bg-white border-2 border-black shadow-[2px_2px_0px_rgba(0,0,0,1)] p-3">
+                      <div className="text-[10px] font-bold uppercase text-red-500 bg-red-50 px-2 py-0.5 mb-1 border border-red-200 flex items-center gap-1">
+                        <Target size={10} /> Save ₹{course.savings.toLocaleString()}
+                      </div>
+                      <div className="text-xs text-gray-400 line-through">₹{course.originalPrice.toLocaleString()}</div>
+                      <div className="text-xl font-black text-primary-dark">₹{course.price.toLocaleString()}</div>
+                    </div>
 
-                  {/* Content Overlay */}
-                  <div className="absolute inset-x-0 bottom-0 p-8 flex flex-col justify-end border-t-4 border-transparent group-hover:border-[#82C93D] transition-colors duration-500">
-                    <h3 className="text-2xl font-heading font-black text-white mb-4 tracking-tight group-hover:text-[#82C93D] transition-colors duration-300 leading-tight">
-                      {srv.title}
-                    </h3>
-                    <p className="text-white/80 font-bold text-[14px] leading-relaxed">
-                      {srv.desc}
+                    {/* Icon & Duration Badge */}
+                    <div className="absolute top-4 left-4 flex flex-col gap-2">
+                      <div className={`w-14 h-14 ${colors.bg} border-2 border-black flex items-center justify-center text-white`}>
+                        <IconComponent size={28} />
+                      </div>
+                      <div className="bg-white text-primary-dark font-black text-[10px] uppercase tracking-widest px-3 py-1.5 border-2 border-black text-center">
+                        3 Months
+                      </div>
+                    </div>
+
+                    <div className="absolute inset-x-0 bottom-0 p-6 flex flex-col justify-end">
+                      {/* Tech Stack - all 6 pills */}
+                      <div className="flex flex-wrap gap-1 mb-4">
+                        {course.tech.map((t) => (
+                          <span key={t} className="bg-white/20 backdrop-blur-sm text-white text-[9px] font-bold px-2 py-1 border border-white/30">
+                            {t}
+                          </span>
+                        ))}
+                      </div>
+                      
+                      <h3 className="text-xl font-heading font-black text-white mb-2 tracking-tight group-hover:text-[#82C93D] transition-colors duration-300 leading-tight">
+                        {course.title}
+                      </h3>
+                      <p className="text-white/80 font-bold text-sm leading-relaxed mb-4 line-clamp-2">
+                        {course.desc}
+                      </p>
+                      
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2 text-[#82C93D] font-bold text-sm group-hover:gap-4 transition-all">
+                          View Details <ArrowUpRight size={16} />
+                        </div>
+                        <div className="text-[10px] text-white/60 font-bold flex items-center gap-1">
+                          <Calendar size={10} />
+                          Apr 20
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+                </AnimatedSection>
+              )
+            })}
+          </div>
+
+          <div className="text-center mt-12">
+            <Button asChild size="lg" className="bg-primary hover:bg-primary-dark text-white font-black text-sm uppercase tracking-widest rounded-none border-2 border-primary-dark px-10 h-14 shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-[6px_6px_0px_rgba(0,0,0,1)] hover:-translate-y-1 transition-all">
+              <Link href="/courses" className="flex items-center gap-3">
+                View All Programs <ArrowUpRight size={18} />
+              </Link>
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══ BUSINESS SOLUTIONS SECTION ═══ */}
+      <section className="py-24 md:py-32 bg-white border-b-2 border-black/10">
+        <div className="container-wide">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            <div>
+              <div className="inline-block bg-primary text-white font-black text-xs uppercase tracking-widest px-4 py-2 mb-6 rounded-none shadow-[4px_4px_0px_rgba(0,0,0,1)] border-2 border-primary-dark">
+                <Zap size={14} className="inline mr-2" />
+                Business Solutions
+              </div>
+              <h2 className="text-4xl md:text-5xl font-heading font-black text-primary-dark tracking-tight leading-tight mb-6">
+                We Also Excel In<br /><span className="text-primary">Digital Transformation</span>
+              </h2>
+              <p className="text-primary-dark/70 text-lg font-medium leading-relaxed mb-8">
+                Beyond education, we help businesses thrive with cutting-edge technology solutions. From web development to IT consulting, we've partnered with <strong className="text-primary-dark">200+ businesses</strong> across industries.
+              </p>
+              <div className="grid grid-cols-2 gap-4 mb-8">
+                {businessServices.map((service) => (
+                  <div key={service.title} className="flex items-start gap-3 p-4 bg-gray-50 border-2 border-black/10 hover:border-primary/30 transition-colors">
+                    <div className="w-10 h-10 bg-primary/10 flex items-center justify-center text-primary flex-shrink-0">
+                      <service.Icon size={20} />
+                    </div>
+                    <div>
+                      <div className="font-black text-primary-dark text-sm">{service.title}</div>
+                      <div className="text-xs text-primary-dark/60">{service.desc}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <Button asChild size="lg" className="bg-primary-dark hover:bg-black text-white font-black text-sm uppercase tracking-widest rounded-none border-2 border-primary-dark px-8 h-14 shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-[6px_6px_0px_rgba(0,0,0,1)] hover:-translate-y-1 transition-all">
+                <Link href="/services" className="flex items-center gap-3">
+                  Explore Services <ArrowUpRight size={18} />
+                </Link>
+              </Button>
+            </div>
+            
+            <div className="relative">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-primary-dark border-2 border-black p-6 shadow-[6px_6px_0px_rgba(130,201,61,1)]">
+                  <div className="text-4xl font-black text-white mb-1">
+                    <NumberTicker value={200} />+
+                  </div>
+                  <div className="text-xs font-bold text-white/60 uppercase tracking-widest">Business Clients</div>
+                </div>
+                <div className="bg-[#82C93D] border-2 border-black p-6 shadow-[6px_6px_0px_rgba(26,154,181,1)]">
+                  <div className="text-4xl font-black text-white mb-1">
+                    <NumberTicker value={8} />+
+                  </div>
+                  <div className="text-xs font-bold text-white/60 uppercase tracking-widest">Years Experience</div>
+                </div>
+                <div className="col-span-2 bg-gray-50 border-2 border-black p-6 shadow-[4px_4px_0px_rgba(0,0,0,1)]">
+                  <div className="flex items-center gap-4 mb-4">
+                    <div className="w-12 h-12 bg-primary/20 flex items-center justify-center text-primary">
+                      <CheckCircle2 size={24} />
+                    </div>
+                    <div>
+                      <div className="font-black text-primary-dark">End-to-End Solutions</div>
+                      <div className="text-sm text-primary-dark/60">From concept to deployment</div>
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {['Startups', 'SMEs', 'Enterprises', 'NGOs'].map((type) => (
+                      <span key={type} className="text-xs font-bold px-3 py-1 bg-white border border-black/10 text-primary-dark/70">
+                        {type}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══ PLACEMENT SUCCESS STORIES ═══ */}
+      <section className="py-24 md:py-32 bg-primary-dark border-b-2 border-black overflow-hidden relative">
+        <div className="absolute inset-0" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px)', backgroundSize: '60px 60px' }} />
+
+        <div className="container-wide relative z-10">
+          <div className="text-center mb-16 max-w-3xl mx-auto">
+            <div className="inline-block bg-[#82C93D] text-white font-black text-xs uppercase tracking-widest px-4 py-2 mb-6 rounded-none shadow-[4px_4px_0px_rgba(0,0,0,1)] border-2 border-black">
+              <Star size={14} className="inline mr-2" />
+              Success Stories
+            </div>
+            <h2 className="text-4xl md:text-5xl font-heading font-black text-white tracking-tight leading-tight mb-4">
+              Hear From Our<br />Placed SUGians
+            </h2>
+            <p className="text-white/70 text-lg font-bold">
+              Real stories from real students who launched their tech careers with us.
+            </p>
+          </div>
+
+          {/* Testimonials Grid */}
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {testimonials.slice(0, 6).map((t, i) => (
+              <AnimatedSection key={t.name} delay={i * 0.1}>
+                <div className="bg-white border-2 border-black shadow-[6px_6px_0px_rgba(130,201,61,1)] p-6 h-full flex flex-col">
+                  <div className="flex items-center gap-4 mb-4">
+                    <div className="w-14 h-14 bg-primary/20 rounded-none border-2 border-black flex items-center justify-center text-2xl font-black text-primary-dark">
+                      {t.name.charAt(0)}
+                    </div>
+                    <div>
+                      <div className="font-black text-primary-dark">{t.name}</div>
+                      <div className="text-sm font-bold text-primary">
+                        <Building2 size={12} className="inline mr-1" />
+                        {t.company}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex-1">
+                    <Quote size={24} className="text-primary/30 mb-2" />
+                    <p className="text-primary-dark/80 font-medium text-sm leading-relaxed">
+                      "{t.quote}"
                     </p>
                   </div>
-                </Link>
+                  <div className="mt-4 pt-4 border-t border-black/10">
+                    <span className="text-xs font-bold uppercase tracking-widest text-primary bg-primary/10 px-2 py-1">
+                      {t.domain}
+                    </span>
+                  </div>
+                </div>
               </AnimatedSection>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ═══ OUR APPROACH ═══ */}
-      <section className="py-24 md:py-32 bg-white border-b-2 border-black/10 relative">
+      {/* ═══ PROGRAM HIGHLIGHTS ═══ */}
+      <section className="py-24 md:py-32 bg-white border-b-2 border-black/10">
         <div className="container-wide">
-          <div className="flex flex-col lg:flex-row gap-16 lg:gap-24 relative">
-            
-            {/* Left: Sticky Header */}
-            <div className="lg:w-5/12 lg:sticky lg:top-32 h-fit mb-4">
-              <div className="inline-block bg-primary text-white font-black text-xs uppercase tracking-widest px-4 py-2 mb-6 rounded-none shadow-[4px_4px_0px_rgba(0,0,0,1)] border-2 border-primary-dark">
-                Our Approach
-              </div>
-              <h2 className="text-4xl md:text-5xl lg:text-[4rem] font-heading font-black text-primary-dark tracking-tight leading-[1.05] mb-10">
-                A Streamlined<br />Process for<br />Lasting Results
-              </h2>
-              <div className="flex flex-wrap gap-4">
-                <Button asChild size="lg" className="bg-primary hover:bg-primary-dark text-white font-black text-sm uppercase tracking-widest rounded-none border-2 border-primary-dark px-8 h-14 shadow-[4px_4px_0px_rgba(0,0,0,1)] transition-all hover:-translate-y-1 hover:shadow-[8px_8px_0px_rgba(0,0,0,1)]">
-                  <Link href="/contact">Let's Talk</Link>
-                </Button>
-                <Button asChild variant="outline" size="lg" className="bg-transparent border-2 border-primary-dark text-primary-dark hover:bg-primary-dark hover:text-white font-black text-sm uppercase tracking-widest rounded-none px-8 h-14 transition-all shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:-translate-y-1 hover:shadow-[8px_8px_0px_rgba(0,0,0,1)]">
-                  <Link href="/about">Learn More</Link>
-                </Button>
-              </div>
+          <div className="text-center mb-16 max-w-3xl mx-auto">
+            <div className="inline-block bg-primary text-white font-black text-xs uppercase tracking-widest px-4 py-2 mb-6 rounded-none shadow-[4px_4px_0px_rgba(0,0,0,1)] border-2 border-primary-dark">
+              Why Choose Us
             </div>
+            <h2 className="text-4xl md:text-5xl font-heading font-black text-primary-dark tracking-tight leading-tight">
+              Everything You Need to<br />Launch Your Career
+            </h2>
+          </div>
 
-            {/* Right: Scrolling Steps */}
-            <div className="lg:w-7/12 flex flex-col gap-8">
-              {[
-                { num: '1', title: 'Discovery & Strategy', desc: 'We start by understanding your goals and creating a clear, actionable plan tailored to your specific needs.' },
-                { num: '2', title: 'Design & Planning', desc: 'We develop a detailed roadmap to ensure smooth, efficient execution at every stage, avoiding common pitfalls.' },
-                { num: '3', title: 'Implementation', desc: 'Our expert team brings the plan to life, focusing strictly on precision, quality, and alignment with your vision.' },
-                { num: '4', title: 'Optimization & Growth', desc: 'We track outcomes, refine strategies, and support ongoing growth to guarantee lasting impact and maximum ROI.' }
-              ].map((step, i) => (
-                <div key={step.num} className="bg-white border-2 border-primary-dark p-8 md:p-10 rounded-none shadow-[8px_8px_0px_rgba(0,0,0,1)] hover:-translate-y-1 hover:shadow-[12px_12px_0px_rgba(0,0,0,1)] transition-all duration-300 flex flex-col sm:flex-row gap-6 sm:gap-8 items-start relative overflow-hidden group">
-                  <div className="absolute right-0 top-0 w-32 h-32 bg-primary/5 rounded-none -z-0 transition-transform duration-700 group-hover:scale-[2.5]" />
-                  
-                  <div className="w-14 h-14 flex-shrink-0 bg-primary-dark text-white font-black text-2xl flex items-center justify-center rounded-none shadow-[4px_4px_0px_rgba(130,201,61,1)] border-2 border-primary-dark relative z-10 group-hover:bg-primary transition-colors">
-                    {step.num}
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[
+              { icon: <Play size={32} />, title: 'Live Sessions', desc: 'Interactive classes with industry experts, not just recorded videos.' },
+              { icon: <Users size={32} />, title: 'MNC Mentors', desc: 'Learn from professionals working at Google, Microsoft, Amazon & more.' },
+              { icon: <Award size={32} />, title: '2 Certifications', desc: 'Get both course completion and internship certificates.' },
+              { icon: <Briefcase size={32} />, title: 'Placement Support', desc: 'Resume reviews, mock interviews & job referrals included.' },
+              { icon: <Clock size={32} />, title: '3-Month Intensive', desc: 'Focused learning with hands-on projects every week.' },
+              { icon: <CheckCircle2 size={32} />, title: 'Real Projects', desc: 'Build production-grade applications for your portfolio.' },
+              { icon: <TrendingUp size={32} />, title: '98% Success Rate', desc: 'Most of our students land jobs within 3 months of completion.' },
+              { icon: <Calendar size={32} />, title: 'Flexible Batches', desc: 'Weekend and weekday batches available.' },
+            ].map((item, i) => (
+              <AnimatedSection key={item.title} delay={i * 0.05}>
+                <div className="bg-white border-2 border-black p-6 shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-[8px_8px_0px_rgba(0,0,0,1)] hover:-translate-y-1 transition-all h-full">
+                  <div className="w-14 h-14 bg-primary/10 flex items-center justify-center mb-4 text-primary border-2 border-primary/20">
+                    {item.icon}
                   </div>
-                  <div className="relative z-10">
-                    <h3 className="text-2xl md:text-3xl font-heading font-black text-primary-dark mb-4">{step.title}</h3>
-                    <p className="text-primary-dark/80 font-bold text-[16px] leading-relaxed">
-                      {step.desc}
-                    </p>
-                  </div>
+                  <h3 className="text-lg font-black text-primary-dark mb-2">{item.title}</h3>
+                  <p className="text-primary-dark/70 font-medium text-sm">{item.desc}</p>
                 </div>
-              ))}
-            </div>
-
+              </AnimatedSection>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* ═══ CHALLENGES AND BARRIERS ═══ */}
-      <section className="py-24 md:py-32 bg-[#fdfaf6] overflow-hidden">
+      {/* ═══ STATS SECTION ═══ */}
+      <section className="py-20 bg-gradient-to-r from-[#82C93D] to-[#35C8E0] border-y-2 border-black">
         <div className="container-wide">
-          <div className="flex flex-col lg:flex-row items-center gap-16 lg:gap-24">
-            
-            {/* Text Left */}
-            <div className="lg:w-1/2 z-10 relative">
-              <div className="inline-block bg-primary text-white font-black text-xs uppercase tracking-widest px-4 py-2 mb-6 rounded-none shadow-[4px_4px_0px_rgba(0,0,0,1)] border-2 border-primary-dark">
-                Facing Challenges
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+            {[
+              { value: 3000, suffix: '+', label: 'Careers Transformed' },
+              { value: 550, suffix: '+', label: 'SUGians Placed' },
+              { value: 200, suffix: '+', label: 'Business Clients' },
+              { value: 15, suffix: '+', label: 'Collaborations' },
+            ].map((stat) => (
+              <div key={stat.label} className="bg-white/10 backdrop-blur-sm border-2 border-white/30 p-6">
+                <div className="text-4xl md:text-5xl font-black text-white mb-2">
+                  <NumberTicker value={stat.value} />{stat.suffix}
+                </div>
+                <div className="text-white/80 text-sm font-bold uppercase tracking-widest">{stat.label}</div>
               </div>
-              <h2 className="text-4xl md:text-5xl lg:text-[4.5rem] font-heading font-black text-primary-dark leading-[1.05] tracking-tight mb-8">
-                Overcoming<br />These Key Barriers<br />Starts Here Today
-              </h2>
-              <p className="text-primary-dark/70 text-lg md:text-xl font-bold leading-relaxed max-w-lg mb-10">
-                Don't let inefficiency block your success. We identify critical pain points and implement targeted strategies to propel you forward.
-              </p>
-              <Button asChild size="lg" className="bg-primary-dark hover:bg-black text-white font-black text-sm uppercase tracking-widest rounded-none border-2 border-primary-dark px-10 h-16 shadow-[4px_4px_0px_rgba(130,201,61,1)] transition-all hover:-translate-y-1 hover:shadow-[8px_8px_0px_rgba(130,201,61,1)]">
-                <Link href="/services">Discover Solutions</Link>
-              </Button>
-            </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
-            {/* Image & Floating Tags Right */}
-            <div className="lg:w-1/2 relative w-full aspect-square max-w-lg mx-auto" ref={tagsRef}>
-              <div className="absolute inset-0 border-2 border-primary-dark shadow-[16px_16px_0px_rgba(0,0,0,1)] rounded-none overflow-hidden group bg-white">
-                <Image 
-                  src="https://images.unsplash.com/photo-1573167507017-6c0e536551b6?w=800&h=800&fit=crop" 
-                  alt="Professional overcoming challenges" 
-                  fill
-                  className="object-cover grayscale hover:grayscale-0 transition-all duration-1000 group-hover:scale-105"
-                />
-                <div className="absolute inset-0 bg-primary-dark/10 mix-blend-multiply group-hover:opacity-0 transition-opacity duration-500" />
-              </div>
-
-              {/* Floating Tags (Boxy) */}
-              <div className="floating-tag absolute -right-6 md:-right-16 top-[20%] bg-primary text-white border-2 border-primary-dark font-black text-xs md:text-sm uppercase tracking-widest px-6 py-4 rounded-none shadow-[6px_6px_0px_rgba(0,0,0,1)] rotate-[-6deg] z-20 whitespace-nowrap">
-                Lost Opportunities
-              </div>
-              <div className="floating-tag absolute -left-6 md:-left-12 top-[45%] bg-[#35C8E0] text-primary-dark border-2 border-primary-dark font-black text-xs md:text-sm uppercase tracking-widest px-6 py-4 rounded-none shadow-[6px_6px_0px_rgba(0,0,0,1)] rotate-[4deg] z-20 whitespace-nowrap">
-                Lack of Expertise
-              </div>
-              <div className="floating-tag absolute -right-2 md:-right-8 bottom-[20%] bg-white text-primary-dark border-2 border-primary-dark font-black text-xs md:text-sm uppercase tracking-widest px-6 py-4 rounded-none shadow-[6px_6px_0px_rgba(130,201,61,1)] rotate-[-3deg] z-20 whitespace-nowrap">
-                Limited Success
-              </div>
-            </div>
-            
+      {/* ═══ CTA SECTION ═══ */}
+      <section className="py-24 md:py-32 bg-white">
+        <div className="container-wide text-center">
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-heading font-black text-primary-dark tracking-tight leading-tight mb-6">
+            Ready to Launch Your<br /><span className="text-primary">Tech Career?</span>
+          </h2>
+          <p className="text-primary-dark/70 text-lg md:text-xl font-bold max-w-2xl mx-auto mb-10">
+            Join our next batch and become part of the 550+ SUGians working at top MNCs. Limited seats available.
+          </p>
+          <div className="flex flex-wrap justify-center gap-4">
+            <Button asChild size="lg" className="bg-primary-dark hover:bg-black text-white font-black text-sm uppercase tracking-widest rounded-none border-2 border-primary-dark px-12 h-16 shadow-[6px_6px_0px_rgba(0,0,0,1)] hover:shadow-[8px_8px_0px_rgba(0,0,0,1)] hover:-translate-y-1 transition-all">
+              <Link href="/courses" className="flex items-center gap-3">
+                Explore Courses <ArrowUpRight size={20} />
+              </Link>
+            </Button>
+            <Button asChild variant="outline" size="lg" className="bg-transparent border-2 border-primary-dark text-primary-dark hover:bg-primary-dark hover:text-white font-black text-sm uppercase tracking-widest rounded-none px-12 h-16 shadow-[6px_6px_0px_rgba(0,0,0,1)] transition-all">
+              <Link href="/contact">Talk to Counsellor</Link>
+            </Button>
           </div>
         </div>
       </section>

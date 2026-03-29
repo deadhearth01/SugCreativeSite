@@ -2,17 +2,40 @@ import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { NextRequest, NextResponse } from 'next/server'
 
-// GET — List all active courses (all authenticated users can view)
+// GET — List all courses (public for active, auth required for all statuses)
 export async function GET(req: NextRequest) {
   try {
     const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-
     const { searchParams } = new URL(req.url)
+    
     const status = searchParams.get('status')
     const category = searchParams.get('category')
     const search = searchParams.get('search')
+    const featured = searchParams.get('featured')
+    const slug = searchParams.get('slug')
+    const isPublic = searchParams.get('public') === 'true'
+    
+    // For non-public requests, require auth
+    if (!isPublic) {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    // If fetching single course by slug
+    if (slug) {
+      const { data, error } = await supabase
+        .from('courses')
+        .select('*')
+        .eq('slug', slug)
+        .eq('status', 'active')
+        .single()
+      
+      if (error || !data) {
+        return NextResponse.json({ error: 'Course not found' }, { status: 404 })
+      }
+      
+      return NextResponse.json({ course: data })
+    }
 
     let query = supabase
       .from('courses')
@@ -23,9 +46,16 @@ export async function GET(req: NextRequest) {
       `)
       .order('created_at', { ascending: false })
 
-    if (status) query = query.eq('status', status)
+    // Public requests only get active courses
+    if (isPublic) {
+      query = query.eq('status', 'active')
+    } else if (status) {
+      query = query.eq('status', status)
+    }
+    
     if (category) query = query.eq('category', category)
     if (search) query = query.ilike('title', `%${search}%`)
+    if (featured === 'true') query = query.eq('is_featured', true)
 
     const { data, error } = await query
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })

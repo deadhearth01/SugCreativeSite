@@ -12,19 +12,19 @@ import StaggeredMenu from './StaggeredMenu'
 const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect
 
 const navLinks = [
+  { href: '/courses', label: 'Courses' },
   { href: '/services', label: 'Services' },
   { href: '/about', label: 'About' },
   { href: '/testimonials', label: 'Success Stories' },
-  { href: '/blog', label: 'Insights' },
   { href: '/contact', label: 'Contact' },
 ]
 
 const menuItems = [
   { label: 'Home', ariaLabel: 'Go to home page', link: '/' },
+  { label: 'Courses', ariaLabel: 'View our courses', link: '/courses' },
   { label: 'Services', ariaLabel: 'View our services', link: '/services' },
   { label: 'About', ariaLabel: 'Learn about us', link: '/about' },
   { label: 'Success Stories', ariaLabel: 'Success Stories', link: '/testimonials' },
-  { label: 'Insights', ariaLabel: 'Insights', link: '/blog' },
   { label: 'Contact', ariaLabel: 'Get in touch', link: '/contact' },
   { label: 'Login', ariaLabel: 'Login to portal', link: '/login' },
 ];

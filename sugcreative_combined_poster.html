@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sug Creative – All Internships 2025</title>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #f7f5ff;
+  --ink: #0c0618;
+  --violet: #5b21b6;
+  --violet-l: #7c3aed;
+  --cyan: #0e7490;
+  --cyan-l: #06b6d4;
+  --gold: #b45309;
+  --gold-l: #f59e0b;
+  --red: #dc2626;
+  --green: #047857;
+  --green-l: #10b981;
+  --blue: #1d4ed8;
+  --blue-l: #3b82f6;
+}
+
+body {
+  font-family: 'Outfit', sans-serif;
+  background: #1a1025;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+}
+
+/* ══════════════════════════════════
+   POSTER WRAPPER  — A2-ish ratio
+══════════════════════════════════ */
+.poster {
+  width: 900px;
+  background: var(--bg);
+  border-radius: 28px;
+  overflow: hidden;
+  box-shadow: 0 40px 120px rgba(0,0,0,0.6);
+  position: relative;
+}
+
+/* ────── TOP HERO STRIP ────── */
+.hero {
+  background: var(--ink);
+  padding: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+/* animated gradient beam */
+.hero-beam {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 60% 80% at 25% -20%, rgba(124,58,237,0.55) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 60% at 80% 110%, rgba(6,182,212,0.3) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+/* diagonal stripe pattern */
+.hero-stripes {
+  position: absolute;
+  inset: 0;
+  background-image: repeating-linear-gradient(
+    -55deg,
+    transparent,
+    transparent 18px,
+    rgba(255,255,255,0.018) 18px,
+    rgba(255,255,255,0.018) 36px
+  );
+  pointer-events: none;
+}
+
+.hero-inner {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 24px;
+  padding: 44px 52px 40px;
+}
+
+.hero-left {}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 100px;
+  padding: 7px 16px;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 1.8px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.55);
+  margin-bottom: 18px;
+}
+.badge-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: #22c55e;
+  animation: glow 1.8s ease-in-out infinite;
+}
+@keyframes glow {
+  0%,100% { box-shadow: 0 0 0 0 rgba(34,197,94,0.5); }
+  50%      { box-shadow: 0 0 0 5px rgba(34,197,94,0); }
+}
+
+.hero-title {
+  font-family: 'Black Han Sans', sans-serif;
+  font-size: 62px;
+  line-height: 0.95;
+  letter-spacing: 0px;
+  color: #fff;
+  margin-bottom: 16px;
+}
+.hero-title .grad {
+  background: linear-gradient(90deg, #c4b5fd, #67e8f9, #c4b5fd);
+  background-size: 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer 4s linear infinite;
+}
+@keyframes shimmer { 0%{background-position:0%} 100%{background-position:200%} }
+
+.hero-desc {
+  font-size: 14px;
+  color: rgba(255,255,255,0.42);
+  line-height: 1.75;
+  max-width: 440px;
+}
+
+/* batch pill */
+.hero-right {}
+.batch-box {
+  background: linear-gradient(135deg, rgba(245,158,11,0.15), rgba(245,158,11,0.06));
+  border: 2px solid rgba(245,158,11,0.55);
+  border-radius: 20px;
+  padding: 22px 26px;
+  text-align: center;
+  min-width: 190px;
+}
+.batch-fire { font-size: 30px; margin-bottom: 6px; display: block;
+  animation: bounce 1s ease-in-out infinite alternate;
+}
+@keyframes bounce { 0%{transform:translateY(0)} 100%{transform:translateY(-5px)} }
+.batch-label { font-size: 9px; font-weight: 700; letter-spacing: 2px;
+  text-transform: uppercase; color: rgba(245,158,11,0.7); margin-bottom: 5px; }
+.batch-date { font-family: 'Black Han Sans', sans-serif;
+  font-size: 28px; color: #fbbf24; line-height: 1.1; margin-bottom: 4px; }
+.batch-sub { font-size: 10px; color: rgba(255,255,255,0.35); font-weight: 500; }
+
+/* ────── PERKS RIBBON ────── */
+.perks-ribbon {
+  background: linear-gradient(90deg, var(--violet-l), #4338ca, var(--cyan));
+  padding: 0;
+  overflow: hidden;
+}
+.perks-inner {
+  display: flex;
+  align-items: center;
+  padding: 13px 0;
+  white-space: nowrap;
+  animation: scroll-x 25s linear infinite;
+}
+@keyframes scroll-x {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.perk-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 28px;
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.9);
+  letter-spacing: 0.3px;
+  border-right: 1px solid rgba(255,255,255,0.2);
+}
+.perk-item .pi { font-size: 14px; }
+
+/* ────── CARDS GRID ────── */
+.cards-section {
+  padding: 36px 36px 28px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.card {
+  border-radius: 20px;
+  overflow: hidden;
+  position: relative;
+  background: #fff;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+  transition: transform 0.25s, box-shadow 0.25s;
+}
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 16px 48px rgba(0,0,0,0.13);
+}
+
+/* coloured top bar */
+.card-top-bar {
+  height: 5px;
+  width: 100%;
+}
+.card.devops    .card-top-bar { background: linear-gradient(90deg, #5b21b6, #7c3aed, #a78bfa); }
+.card.cyber     .card-top-bar { background: linear-gradient(90deg, #1d4ed8, #3b82f6, #06b6d4); }
+.card.iot       .card-top-bar { background: linear-gradient(90deg, #047857, #10b981, #34d399); }
+.card.fullstack .card-top-bar { background: linear-gradient(90deg, #b45309, #f59e0b, #fcd34d); }
+
+.card-body {
+  padding: 24px 26px 22px;
+  position: relative;
+}
+
+/* watermark icon */
+.card-watermark {
+  position: absolute;
+  top: 16px; right: 20px;
+  font-size: 64px;
+  opacity: 0.06;
+  line-height: 1;
+  pointer-events: none;
+  user-select: none;
+}
+
+.card-track {
+  font-size: 9.5px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.card.devops    .card-track { color: var(--violet-l); }
+.card.cyber     .card-track { color: var(--blue-l); }
+.card.iot       .card-track { color: var(--green-l); }
+.card.fullstack .card-track { color: var(--gold-l); }
+
+.card-title {
+  font-family: 'Black Han Sans', sans-serif;
+  font-size: 26px;
+  color: var(--ink);
+  line-height: 1.1;
+  margin-bottom: 10px;
+}
+
+.card-desc {
+  font-size: 12px;
+  color: #666;
+  line-height: 1.65;
+  margin-bottom: 14px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+/* tech pills */
+.tech-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+.tech-pill {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 6px;
+}
+.card.devops    .tech-pill { background: #ede9fe; color: #5b21b6; }
+.card.cyber     .tech-pill { background: #dbeafe; color: #1d4ed8; }
+.card.iot       .tech-pill { background: #d1fae5; color: #047857; }
+.card.fullstack .tech-pill { background: #fef3c7; color: #b45309; }
+
+/* checklist */
+.card-perks {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin-bottom: 18px;
+}
+.cp-item {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 12px; font-weight: 500; color: #444;
+}
+.cp-check {
+  width: 18px; height: 18px; border-radius: 5px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; flex-shrink: 0; font-weight: 700;
+}
+.card.devops    .cp-check { background: #ede9fe; color: #5b21b6; }
+.card.cyber     .cp-check { background: #dbeafe; color: #1d4ed8; }
+.card.iot       .cp-check { background: #d1fae5; color: #047857; }
+.card.fullstack .cp-check { background: #fef3c7; color: #b45309; }
+
+/* pricing */
+.card-pricing {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  background: #fafafa;
+  border: 1px solid #eee;
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin-bottom: 14px;
+}
+.price-left { display: flex; flex-direction: column; gap: 4px; }
+.save-chip {
+  font-size: 9px; font-weight: 800; letter-spacing: 0.5px;
+  padding: 3px 9px; border-radius: 5px;
+  background: #fee2e2; color: var(--red);
+  width: fit-content;
+}
+.old-price {
+  font-size: 15px; font-weight: 600;
+  color: #bbb;
+  text-decoration: line-through;
+  text-decoration-color: var(--red);
+  text-decoration-thickness: 2px;
+}
+.offer-tag {
+  font-size: 9px; font-weight: 700; letter-spacing: 1px;
+  text-transform: uppercase; color: #999;
+}
+.offer-price {
+  font-family: 'Black Han Sans', sans-serif;
+  font-size: 36px;
+  line-height: 1;
+}
+.card.devops    .offer-price { color: var(--violet-l); }
+.card.cyber     .offer-price { color: var(--blue-l); }
+.card.iot       .offer-price { color: var(--green-l); }
+.card.fullstack .offer-price { color: var(--gold-l); }
+.inr { font-size: 13px; font-weight: 600; opacity: 0.6; margin-left: 2px; }
+
+/* CTA button */
+.cta {
+  display: block;
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 12px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 13.5px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  text-align: center;
+  transition: filter 0.2s, transform 0.15s;
+}
+.cta:hover { filter: brightness(1.08); transform: translateY(-2px); }
+.card.devops    .cta { background: linear-gradient(90deg, #5b21b6, #7c3aed); color: #fff; }
+.card.cyber     .cta { background: linear-gradient(90deg, #1d4ed8, #3b82f6); color: #fff; }
+.card.iot       .cta { background: linear-gradient(90deg, #047857, #10b981); color: #fff; }
+.card.fullstack .cta { background: linear-gradient(90deg, #b45309, #f59e0b); color: #fff; }
+
+/* ────── FOOTER ────── */
+.poster-footer {
+  background: var(--ink);
+  padding: 26px 52px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  position: relative;
+  overflow: hidden;
+}
+.poster-footer::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--violet-l), var(--cyan-l), var(--gold-l), var(--green-l));
+}
+
+.footer-brand {
+  display: flex; align-items: center; gap: 12px;
+}
+.footer-logo {
+  width: 44px; height: 44px;
+  background: linear-gradient(135deg, var(--violet-l), var(--cyan-l));
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Black Han Sans', sans-serif;
+  font-size: 22px; color: #fff;
+}
+.footer-name {
+  font-family: 'Black Han Sans', sans-serif;
+  font-size: 20px; color: #fff; letter-spacing: 0.5px;
+}
+.footer-tagline {
+  font-size: 11px; color: rgba(255,255,255,0.35);
+  font-weight: 500; margin-top: 2px;
+}
+
+.footer-contacts {
+  display: flex; gap: 28px; flex-wrap: wrap;
+}
+.fc-item {
+  display: flex; align-items: center; gap: 9px;
+}
+.fc-icon {
+  width: 32px; height: 32px;
+  background: rgba(255,255,255,0.07);
+  border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; flex-shrink: 0;
+}
+.fc-text strong {
+  display: block; font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.85);
+}
+.fc-text span { font-size: 10px; color: rgba(255,255,255,0.3); font-weight: 500; }
+
+.footer-batch {
+  background: rgba(245,158,11,0.12);
+  border: 1.5px solid rgba(245,158,11,0.4);
+  border-radius: 12px;
+  padding: 12px 18px;
+  text-align: center;
+}
+.fb-label { font-size: 9px; font-weight: 700; letter-spacing: 2px;
+  text-transform: uppercase; color: rgba(245,158,11,0.7); margin-bottom: 3px; }
+.fb-date { font-family: 'Black Han Sans', sans-serif;
+  font-size: 18px; color: #fbbf24; }
+</style>
+</head>
+<body>
+<div class="poster">
+
+  <!-- ══ HERO ══ -->
+  <div class="hero">
+    <div class="hero-beam"></div>
+    <div class="hero-stripes"></div>
+    <div class="hero-inner">
+      <div class="hero-left">
+        <div class="hero-badge"><span class="badge-dot"></span> Enrollments Open · April 2025 Batch</div>
+        <div class="hero-title">
+          4 TRACKS.<br>
+          ONE <span class="grad">FUTURE.</span>
+        </div>
+        <p class="hero-desc">
+          Industry-mentored internships across DevOps, Cyber Security, IoT &amp; Full Stack Development.
+          Live sessions · Top MNC mentors · Placement support · 2 certifications. 8 years of excellence.
+        </p>
+      </div>
+      <div class="hero-right">
+        <div class="batch-box">
+          <span class="batch-fire">🔥</span>
+          <div class="batch-label">Next Batch</div>
+          <div class="batch-date">April 20<br>2025</div>
+          <div class="batch-sub">Limited seats only</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SCROLLING PERKS RIBBON ══ -->
+  <div class="perks-ribbon">
+    <div class="perks-inner">
+      <!-- repeated twice for seamless loop -->
+      <span class="perk-item"><span class="pi">📡</span> Live Sessions</span>
+      <span class="perk-item"><span class="pi">🗓️</span> 3-Month Internship</span>
+      <span class="perk-item"><span class="pi">🏢</span> Top MNC Mentors</span>
+      <span class="perk-item"><span class="pi">💼</span> Placement Support</span>
+      <span class="perk-item"><span class="pi">📜</span> 2 Certifications</span>
+      <span class="perk-item"><span class="pi">⭐</span> 8 Years of Excellence</span>
+      <span class="perk-item"><span class="pi">🎯</span> Hands-On Projects</span>
+      <span class="perk-item"><span class="pi">🚀</span> Career Launchpad</span>
+      <!-- duplicate for loop -->
+      <span class="perk-item"><span class="pi">📡</span> Live Sessions</span>
+      <span class="perk-item"><span class="pi">🗓️</span> 3-Month Internship</span>
+      <span class="perk-item"><span class="pi">🏢</span> Top MNC Mentors</span>
+      <span class="perk-item"><span class="pi">💼</span> Placement Support</span>
+      <span class="perk-item"><span class="pi">📜</span> 2 Certifications</span>
+      <span class="perk-item"><span class="pi">⭐</span> 8 Years of Excellence</span>
+      <span class="perk-item"><span class="pi">🎯</span> Hands-On Projects</span>
+      <span class="perk-item"><span class="pi">🚀</span> Career Launchpad</span>
+    </div>
+  </div>
+
+  <!-- ══ CARDS ══ -->
+  <div class="cards-section">
+
+    <!-- ── DEVOPS ── -->
+    <div class="card devops">
+      <div class="card-top-bar"></div>
+      <div class="card-body">
+        <div class="card-watermark">⚙️</div>
+        <div class="card-track">DevOps Track</div>
+        <div class="card-title">DevOps<br>Internship</div>
+        <p class="card-desc">Master CI/CD pipelines, container orchestration with Docker &amp; Kubernetes, cloud automation, infrastructure-as-code &amp; DevSecOps practices that leading MNCs rely on every day.</p>
+        <div class="tech-pills">
+          <span class="tech-pill">Docker</span>
+          <span class="tech-pill">Kubernetes</span>
+          <span class="tech-pill">Jenkins</span>
+          <span class="tech-pill">Terraform</span>
+          <span class="tech-pill">AWS / GCP</span>
+          <span class="tech-pill">GitOps</span>
+        </div>
+        <div class="card-perks">
+          <div class="cp-item"><div class="cp-check">✓</div> CI/CD pipeline design &amp; automation</div>
+          <div class="cp-item"><div class="cp-check">✓</div> Cloud infra provisioning &amp; monitoring</div>
+          <div class="cp-item"><div class="cp-check">✓</div> DevSecOps &amp; compliance practices</div>
+          <div class="cp-item"><div class="cp-check">✓</div> Live production deployment experience</div>
+        </div>
+        <div class="card-pricing">
+          <div class="price-left">
+            <span class="save-chip">🏷 YOU SAVE ₹5,000</span>
+            <span class="old-price">₹12,999 INR</span>
+            <span class="offer-tag">Offer Price</span>
+          </div>
+          <div>
+            <div class="offer-price">₹7,999<span class="inr">INR</span></div>
+          </div>
+        </div>
+        <div class="cta">Enroll Now → Batch Starts Apr 20</div>
+      </div>
+    </div>
+
+    <!-- ── CYBER SECURITY ── -->
+    <div class="card cyber">
+      <div class="card-top-bar"></div>
+      <div class="card-body">
+        <div class="card-watermark">🛡️</div>
+        <div class="card-track">Cyber Security Track</div>
+        <div class="card-title">Cyber Security<br>Internship</div>
+        <p class="card-desc">Deep-dive into ethical hacking, penetration testing, network security, VAPT, and threat intelligence with live CTF labs designed by active cybersecurity professionals from top MNCs.</p>
+        <div class="tech-pills">
+          <span class="tech-pill">Kali Linux</span>
+          <span class="tech-pill">Metasploit</span>
+          <span class="tech-pill">Wireshark</span>
+          <span class="tech-pill">Burp Suite</span>
+          <span class="tech-pill">SIEM</span>
+          <span class="tech-pill">VAPT</span>
+        </div>
+        <div class="card-perks">
+          <div class="cp-item"><div class="cp-check">✓</div> Ethical hacking &amp; penetration testing</div>
+          <div class="cp-item"><div class="cp-check">✓</div> Network defence &amp; threat analysis</div>
+          <div class="cp-item"><div class="cp-check">✓</div> Web application security audits</div>
+          <div class="cp-item"><div class="cp-check">✓</div> Real-world CTF &amp; live lab challenges</div>
+        </div>
+        <div class="card-pricing">
+          <div class="price-left">
+            <span class="save-chip">🏷 YOU SAVE ₹5,000</span>
+            <span class="old-price">₹9,999 INR</span>
+            <span class="offer-tag">Offer Price</span>
+          </div>
+          <div>
+            <div class="offer-price">₹4,999<span class="inr">INR</span></div>
+          </div>
+        </div>
+        <div class="cta">Enroll Now → Batch Starts Apr 20</div>
+      </div>
+    </div>
+
+    <!-- ── IoT ── -->
+    <div class="card iot">
+      <div class="card-top-bar"></div>
+      <div class="card-body">
+        <div class="card-watermark">🔌</div>
+        <div class="card-track">IoT &amp; Embedded Track</div>
+        <div class="card-title">IoT &amp; Embedded<br>Systems Internship</div>
+        <p class="card-desc">Go from circuit to cloud — learn embedded C, RTOS, microcontroller programming, sensor integration and build complete smart IoT solutions from prototype all the way to live deployment.</p>
+        <div class="tech-pills">
+          <span class="tech-pill">Arduino</span>
+          <span class="tech-pill">Raspberry Pi</span>
+          <span class="tech-pill">Embedded C</span>
+          <span class="tech-pill">RTOS</span>
+          <span class="tech-pill">MQTT</span>
+          <span class="tech-pill">AWS IoT</span>
+        </div>
+        <div class="card-perks">
+          <div class="cp-item"><div class="cp-check">✓</div> Microcontroller &amp; sensor programming</div>
+          <div class="cp-item"><div class="cp-check">✓</div> Real-time OS &amp; firmware development</div>
+          <div class="cp-item"><div class="cp-check">✓</div> IoT protocol design &amp; integration</div>
+          <div class="cp-item"><div class="cp-check">✓</div> End-to-end smart system projects</div>
+        </div>
+        <div class="card-pricing">
+          <div class="price-left">
+            <span class="save-chip">🏷 YOU SAVE ₹5,000</span>
+            <span class="old-price">₹9,999 INR</span>
+            <span class="offer-tag">Offer Price</span>
+          </div>
+          <div>
+            <div class="offer-price">₹4,999<span class="inr">INR</span></div>
+          </div>
+        </div>
+        <div class="cta">Enroll Now → Batch Starts Apr 20</div>
+      </div>
+    </div>
+
+    <!-- ── FULL STACK ── -->
+    <div class="card fullstack">
+      <div class="card-top-bar"></div>
+      <div class="card-body">
+        <div class="card-watermark">🌐</div>
+        <div class="card-track">Full Stack Track</div>
+        <div class="card-title">Full Stack Dev<br>Internship</div>
+        <p class="card-desc">Build production-ready web apps end-to-end — master React, Node.js, REST APIs, SQL &amp; NoSQL databases, user authentication and deploy real apps to cloud platforms with CI/CD workflows.</p>
+        <div class="tech-pills">
+          <span class="tech-pill">React.js</span>
+          <span class="tech-pill">Node.js</span>
+          <span class="tech-pill">MongoDB</span>
+          <span class="tech-pill">PostgreSQL</span>
+          <span class="tech-pill">REST APIs</span>
+          <span class="tech-pill">Vercel/AWS</span>
+        </div>
+        <div class="card-perks">
+          <div class="cp-item"><div class="cp-check">✓</div> Responsive UI with React &amp; Tailwind</div>
+          <div class="cp-item"><div class="cp-check">✓</div> Backend APIs, auth &amp; database design</div>
+          <div class="cp-item"><div class="cp-check">✓</div> Full-stack cloud deployment</div>
+          <div class="cp-item"><div class="cp-check">✓</div> GitHub portfolio &amp; code reviews</div>
+        </div>
+        <div class="card-pricing">
+          <div class="price-left">
+            <span class="save-chip">🏷 YOU SAVE ₹5,000</span>
+            <span class="old-price">₹10,999 INR</span>
+            <span class="offer-tag">Offer Price</span>
+          </div>
+          <div>
+            <div class="offer-price">₹5,999<span class="inr">INR</span></div>
+          </div>
+        </div>
+        <div class="cta">Enroll Now → Batch Starts Apr 20</div>
+      </div>
+    </div>
+
+  </div><!-- /cards-section -->
+
+  <!-- ══ FOOTER ══ -->
+  <div class="poster-footer">
+    <div class="footer-brand">
+      <div class="footer-logo">S</div>
+      <div>
+        <div class="footer-name">Sug Creative</div>
+        <div class="footer-tagline">8 Years of Excellence in Tech Education</div>
+      </div>
+    </div>
+
+    <div class="footer-contacts">
+      <div class="fc-item">
+        <div class="fc-icon">📞</div>
+        <div class="fc-text">
+          <strong>+91 99666 47219</strong>
+          <span>Call / WhatsApp</span>
+        </div>
+      </div>
+      <div class="fc-item">
+        <div class="fc-icon">✉️</div>
+        <div class="fc-text">
+          <strong>support@sugcreative.com</strong>
+          <span>Email us</span>
+        </div>
+      </div>
+      <div class="fc-item">
+        <div class="fc-icon">🌐</div>
+        <div class="fc-text">
+          <strong>www.sugcreative.com</strong>
+          <span>Enroll online</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-batch">
+      <div class="fb-label">🔥 Batch Starts</div>
+      <div class="fb-date">April 20, 2025</div>
+    </div>
+  </div>
+
+</div><!-- /poster -->
+</body>
+</html>

@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import Image from 'next/image'
 import {
   User, Mail, Phone, MapPin, Briefcase, Edit2, Save, X,
-  Camera, CheckCircle, AlertCircle, Loader2, Shield, Calendar, Trash2,
+  Camera, CheckCircle, AlertCircle, Loader2, Shield, Calendar, Trash2, AtSign,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 
@@ -17,6 +17,8 @@ type Profile = {
   phone: string | null
   avatar_url: string | null
   bio: string | null
+  username: string | null
+  avatar_id: number | null
   created_at: string
   updated_at: string
 }
@@ -279,6 +281,7 @@ export default function ProfilePage() {
 
           {/* Info grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <InfoRow icon={<AtSign size={15} />} label="Username" value={profile.username ? `@${profile.username}` : '—'} />
             <InfoRow icon={<Mail size={15} />} label="Email" value={profile.email} />
             <InfoRow
               icon={<Phone size={15} />}

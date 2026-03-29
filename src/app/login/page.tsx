@@ -9,15 +9,6 @@ import { Eye, EyeOff, ArrowRight } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import Squares from '@/components/Squares'
 
-const roles = [
-  { id: 'admin', label: 'Admin' },
-  { id: 'student', label: 'Student' },
-  { id: 'client', label: 'Client' },
-  { id: 'mentor', label: 'Mentor' },
-  { id: 'employee', label: 'Employee' },
-  { id: 'intern', label: 'Intern' },
-]
-
 function LoginFallback() {
   return (
     <div className="min-h-screen bg-white flex items-center justify-center">
@@ -36,7 +27,6 @@ export default function LoginPage() {
 
 function LoginContent() {
   const searchParams = useSearchParams()
-  const [selectedRole, setSelectedRole] = useState(searchParams.get('role') || 'client')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -44,6 +34,9 @@ function LoginContent() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [fullName, setFullName] = useState('')
+
+  // Check for redirect param (e.g., after email confirmation)
+  const redirectTo = searchParams.get('redirect')
 
   useEffect(() => {
     // GSAP entry animations
@@ -60,11 +53,6 @@ function LoginContent() {
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!selectedRole) {
-      setError('Please select a role')
-      return
-    }
-
     setLoading(true)
     setError('')
 
@@ -72,38 +60,51 @@ function LoginContent() {
 
     try {
       if (isSignUp) {
+        // Sign up - role will be set to 'student' by default for new users
         const { error: signUpError } = await supabase.auth.signUp({
           email,
           password,
           options: {
             data: {
               full_name: fullName,
-              role: selectedRole,
+              role: 'student', // Default role for new signups
             },
           },
         })
         if (signUpError) throw signUpError
         setError('Check your email for the confirmation link!')
       } else {
+        // Sign in - auto-detect role from database
         const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
           email,
           password,
         })
         if (signInError) throw signInError
 
-        // Fetch the actual role from the database
-        let redirectRole = selectedRole
         if (signInData.user) {
+          // Fetch user's profile to get role and username
           const { data: profile } = await supabase
             .from('profiles')
-            .select('role')
+            .select('role, username')
             .eq('id', signInData.user.id)
             .single()
-          if (profile?.role) {
-            redirectRole = profile.role
+
+          if (!profile?.role) {
+            // No profile found - shouldn't happen but handle gracefully
+            setError('Account setup incomplete. Please contact support.')
+            return
           }
+
+          // Check if username is set - if not, redirect to setup
+          if (!profile.username) {
+            window.location.href = '/setup-profile'
+            return
+          }
+
+          // Redirect to user's dashboard based on their role
+          const targetPath = redirectTo || `/dashboard/${profile.role}`
+          window.location.href = targetPath
         }
-        window.location.href = `/dashboard/${redirectRole}`
       }
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'An error occurred'
@@ -193,26 +194,6 @@ function LoginContent() {
           )}
 
           <form onSubmit={handleAuth} className="space-y-6 flex flex-col">
-            
-            {/* Minimal Role Selection Dropdown instead of large buttons */}
-            <div>
-              <label className="block text-xs font-black uppercase tracking-widest text-primary-dark mb-2">Access Role</label>
-              <div className="relative">
-                <select
-                  value={selectedRole}
-                  onChange={(e) => setSelectedRole(e.target.value)}
-                  className="w-full appearance-none px-4 py-4 bg-white border-2 border-black/10 text-primary-dark font-bold text-sm focus:border-primary-dark focus:ring-0 focus:outline-none transition-colors rounded-none cursor-pointer"
-                >
-                  <option value="" disabled>Select Role...</option>
-                  {roles.map(r => (
-                    <option key={r.id} value={r.id}>{r.label} Portal</option>
-                  ))}
-                </select>
-                <div className="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-primary-dark">
-                  <svg className="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" fillRule="evenodd"></path></svg>
-                </div>
-              </div>
-            </div>
 
             {isSignUp && (
               <div>
