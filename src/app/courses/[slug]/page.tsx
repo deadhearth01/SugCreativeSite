@@ -5,7 +5,7 @@ import { notFound } from "next/navigation";
 import { 
   Clock, Award, Users, Calendar, ArrowRight, ArrowLeft, 
   CheckCircle2, Sparkles, GraduationCap, BookOpen, Target,
-  Briefcase, Play
+  Briefcase, Play, Code2, FileCheck2, Handshake, UserCheck
 } from "lucide-react";
 
 // Color theme mapping
@@ -285,18 +285,20 @@ export default async function CourseDetailPage({ params }: PageProps) {
             <h2 className="text-3xl font-black text-center mb-12">Why Choose This Program?</h2>
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {[
-                { icon: "🎓", title: "Industry Curriculum", desc: "Designed by professionals from top MNCs" },
-                { icon: "💻", title: "Hands-on Projects", desc: "Build real-world applications from scratch" },
-                { icon: "🎯", title: "Live Sessions", desc: "Interactive classes with Q&A support" },
-                { icon: "📜", title: "Dual Certification", desc: "Get both completion & internship certificates" },
-                { icon: "💼", title: "Placement Support", desc: "Resume reviews & mock interviews" },
-                { icon: "🤝", title: "1:1 Mentorship", desc: "Personal guidance throughout the program" },
+                { Icon: GraduationCap, title: "Industry Curriculum", desc: "Designed by professionals from top MNCs" },
+                { Icon: Code2, title: "Hands-on Projects", desc: "Build real-world applications from scratch" },
+                { Icon: Play, title: "Live Sessions", desc: "Interactive classes with Q&A support" },
+                { Icon: FileCheck2, title: "Dual Certification", desc: "Get both completion & internship certificates" },
+                { Icon: Briefcase, title: "Placement Support", desc: "Resume reviews & mock interviews" },
+                { Icon: UserCheck, title: "1:1 Mentorship", desc: "Personal guidance throughout the program" },
               ].map((feature, i) => (
                 <div
                   key={i}
                   className="p-6 bg-white border-2 border-black shadow-[4px_4px_0px_rgba(0,0,0,1)]"
                 >
-                  <div className="text-3xl mb-4">{feature.icon}</div>
+                  <div className={`w-12 h-12 mb-4 ${theme.bg} border-2 border-black flex items-center justify-center`}>
+                    <feature.Icon className={`w-6 h-6 ${theme.accent}`} />
+                  </div>
                   <h3 className="font-bold mb-2">{feature.title}</h3>
                   <p className="text-sm text-gray-600">{feature.desc}</p>
                 </div>

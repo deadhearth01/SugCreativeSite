@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
+import { createMeetSpace, refreshAccessToken, getValidAccessToken } from '@/lib/google-meet'
 
 // GET — List meetings for the current user
 export async function GET(_req: NextRequest) {
@@ -43,6 +44,42 @@ export async function GET(_req: NextRequest) {
   }
 }
 
+// Helper: Get valid Google access token for user
+async function getGoogleAccessToken(supabase: Awaited<ReturnType<typeof createClient>>, userId: string): Promise<string | null> {
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('google_access_token, google_refresh_token, google_token_expires_at')
+    .eq('id', userId)
+    .single()
+
+  if (!profile?.google_access_token) {
+    return null
+  }
+
+  // Check if token is expired
+  const expiresAt = profile.google_token_expires_at ? new Date(profile.google_token_expires_at) : null
+  const isExpired = !expiresAt || expiresAt <= new Date()
+
+  if (isExpired && profile.google_refresh_token) {
+    try {
+      const tokens = await refreshAccessToken(profile.google_refresh_token)
+      
+      // Update tokens in database
+      await supabase.from('profiles').update({
+        google_access_token: tokens.access_token,
+        google_token_expires_at: new Date(Date.now() + tokens.expires_in * 1000).toISOString(),
+      }).eq('id', userId)
+
+      return tokens.access_token
+    } catch {
+      console.error('Failed to refresh Google token')
+      return null
+    }
+  }
+
+  return profile.google_access_token
+}
+
 // POST — Create a meeting (admin or mentor)
 export async function POST(req: NextRequest) {
   try {
@@ -56,10 +93,50 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json()
-    const { title, description, meeting_type, meeting_link, scheduled_at, duration, duration_minutes, participant_ids, notes } = body
+    const { 
+      title, 
+      description, 
+      meeting_type, 
+      meeting_link, 
+      scheduled_at, 
+      duration, 
+      duration_minutes, 
+      participant_ids, 
+      notes,
+      create_google_meet = false // Flag to create Google Meet
+    } = body
 
     if (!title || !scheduled_at) {
       return NextResponse.json({ error: 'Title and scheduled time are required' }, { status: 400 })
+    }
+
+    let finalMeetingLink = meeting_link
+    let googleMeetSpaceName: string | null = null
+    let googleMeetCode: string | null = null
+    let isGoogleMeet = false
+
+    // Create Google Meet if requested
+    if (create_google_meet) {
+      const accessToken = await getGoogleAccessToken(supabase, user.id)
+      
+      if (!accessToken) {
+        return NextResponse.json({ 
+          error: 'Google Meet not connected. Please connect your Google account first.',
+          needsGoogleAuth: true
+        }, { status: 400 })
+      }
+
+      const meetResult = await createMeetSpace(accessToken)
+      
+      if (meetResult.success && meetResult.meetingLink) {
+        finalMeetingLink = meetResult.meetingLink
+        googleMeetSpaceName = meetResult.spaceName || null
+        googleMeetCode = meetResult.meetingCode || null
+        isGoogleMeet = true
+      } else {
+        console.error('Failed to create Google Meet:', meetResult.error)
+        // Continue with meeting creation but without Google Meet link
+      }
     }
 
     const { data: meeting, error: meetingError } = await supabase
@@ -69,11 +146,14 @@ export async function POST(req: NextRequest) {
         description,
         meeting_type: meeting_type || 'general',
         organizer_id: user.id,
-        meeting_link,
+        meeting_link: finalMeetingLink,
         scheduled_at,
         duration_minutes: duration_minutes || duration || 60,
         status: 'scheduled',
         notes,
+        is_google_meet: isGoogleMeet,
+        google_meet_space_name: googleMeetSpaceName,
+        google_meet_code: googleMeetCode,
       })
       .select()
       .single()
@@ -93,7 +173,10 @@ export async function POST(req: NextRequest) {
       await supabase.from('meeting_participants').insert(participants)
     }
 
-    return NextResponse.json({ data: meeting }, { status: 201 })
+    return NextResponse.json({ 
+      data: meeting,
+      googleMeetCreated: isGoogleMeet 
+    }, { status: 201 })
   } catch (err) {
     console.error('POST /api/meetings error:', err)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })

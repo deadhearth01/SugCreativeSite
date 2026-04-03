@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
-import { Sparkles, Clock, Award, Users, Calendar, ArrowRight, GraduationCap } from "lucide-react";
+import { Sparkles, Clock, Award, Users, Calendar, ArrowRight, GraduationCap, Play, Briefcase, FileCheck2, Trophy } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Courses | Sug Creative",
@@ -196,16 +196,18 @@ export default async function CoursesPage() {
             <h2 className="text-3xl font-black text-center mb-12">Why Choose Our Programs?</h2>
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {[
-                { icon: "🎯", title: "Live Sessions", desc: "Interactive classes with industry experts" },
-                { icon: "💼", title: "Placement Support", desc: "Resume building & interview prep" },
-                { icon: "📜", title: "2 Certifications", desc: "Industry-recognized certificates" },
-                { icon: "🏆", title: "8+ Years Excellence", desc: "Proven track record of success" },
+                { Icon: Play, title: "Live Sessions", desc: "Interactive classes with industry experts" },
+                { Icon: Briefcase, title: "Placement Support", desc: "Resume building & interview prep" },
+                { Icon: FileCheck2, title: "2 Certifications", desc: "Industry-recognized certificates" },
+                { Icon: Trophy, title: "8+ Years Excellence", desc: "Proven track record of success" },
               ].map((feature, i) => (
                 <div
                   key={i}
                   className="p-6 bg-white border-2 border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] text-center"
                 >
-                  <div className="text-4xl mb-4">{feature.icon}</div>
+                  <div className="w-12 h-12 mx-auto mb-4 bg-gradient-to-br from-[#82C93D]/20 to-[#35C8E0]/20 border-2 border-black flex items-center justify-center">
+                    <feature.Icon className="w-6 h-6 text-[#1A9AB5]" />
+                  </div>
                   <h3 className="font-bold mb-2">{feature.title}</h3>
                   <p className="text-sm text-gray-600">{feature.desc}</p>
                 </div>
