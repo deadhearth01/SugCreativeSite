@@ -50,7 +50,7 @@ export default function Footer() {
             </h2>
           </div>
           <div>
-            <Link href="/contact" className="group relative inline-flex items-center justify-center bg-white text-primary-dark px-10 py-6 font-bold uppercase tracking-widest text-sm hover:text-white border-2 border-white transition-all duration-300 rounded-none overflow-hidden hover:shadow-[10px_10px_0px_rgba(255,255,255,1)]">
+            <Link href="/contact" className="group relative inline-flex items-center justify-center bg-white text-primary-dark px-10 py-6 font-bold uppercase tracking-widest text-sm hover:text-white border-2 border-white transition-all duration-300 rounded-3xl overflow-hidden hover:shadow-[10px_10px_0px_rgba(255,255,255,1)]">
               <span className="relative z-10 flex items-center gap-3">
                 <span className="group-hover:-translate-y-10 transition-transform duration-300 block">Start a Project</span>
                 <span className="absolute inset-0 translate-y-10 group-hover:translate-y-0 transition-transform duration-300 flex items-center justify-center">Start a Project</span>
@@ -86,9 +86,9 @@ export default function Footer() {
                   type="email" 
                   id="newsletter" 
                   placeholder="Enter your email" 
-                  className="bg-white/5 border border-white/20 text-white placeholder:text-white/40 px-5 py-4 w-full focus:outline-none focus:border-white focus:bg-white/10 transition-all rounded-none font-medium text-sm"
+                  className="bg-white/5 border border-white/20 text-white placeholder:text-white/40 px-5 py-4 w-full focus:outline-none focus:border-white focus:bg-white/10 transition-all rounded-3xl font-medium text-sm"
                 />
-                <button type="submit" className="bg-white text-primary-dark px-6 py-4 border border-white hover:bg-primary-pale hover:border-primary-pale hover:text-black transition-colors flex items-center justify-center rounded-none group shadow-[4px_4px_0px_rgba(255,255,255,0.1)] active:shadow-none active:translate-x-[4px] active:translate-y-[4px]">
+                <button type="submit" className="bg-white text-primary-dark px-6 py-4 border border-white hover:bg-primary-pale hover:border-primary-pale hover:text-black transition-colors flex items-center justify-center rounded-3xl group shadow-[4px_4px_0px_rgba(255,255,255,0.1)] active:shadow-none active:translate-x-[4px] active:translate-y-[4px]">
                   <ArrowUpRight size={20} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
                 </button>
               </div>
@@ -129,19 +129,19 @@ export default function Footer() {
         <div className="py-8 border-t border-white/10 flex flex-col lg:flex-row justify-between items-center gap-6 text-white/60 text-sm font-medium">
           <div className="flex flex-wrap items-center justify-center gap-8 lg:gap-12">
             <a href="mailto:hello@sugcreative.com" className="flex items-center gap-3 hover:text-white transition-colors group">
-              <span className="w-10 h-10 rounded-none border border-white/20 flex items-center justify-center group-hover:bg-white group-hover:text-primary-dark transition-all shadow-[2px_2px_0px_rgba(255,255,255,0.1)] group-hover:shadow-[4px_4px_0px_rgba(255,255,255,1)]">
+              <span className="w-10 h-10 rounded-3xl border border-white/20 flex items-center justify-center group-hover:bg-white group-hover:text-primary-dark transition-all shadow-[2px_2px_0px_rgba(255,255,255,0.1)] group-hover:shadow-[4px_4px_0px_rgba(255,255,255,1)]">
                 <Mail size={16} />
               </span> 
               hello@sugcreative.com
             </a>
             <a href="tel:+919876543210" className="flex items-center gap-3 hover:text-white transition-colors group">
-              <span className="w-10 h-10 rounded-none border border-white/20 flex items-center justify-center group-hover:bg-white group-hover:text-primary-dark transition-all shadow-[2px_2px_0px_rgba(255,255,255,0.1)] group-hover:shadow-[4px_4px_0px_rgba(255,255,255,1)]">
+              <span className="w-10 h-10 rounded-3xl border border-white/20 flex items-center justify-center group-hover:bg-white group-hover:text-primary-dark transition-all shadow-[2px_2px_0px_rgba(255,255,255,0.1)] group-hover:shadow-[4px_4px_0px_rgba(255,255,255,1)]">
                 <Phone size={16} />
               </span> 
               +91 98765 43210
             </a>
             <span className="flex items-center gap-3 group">
-              <span className="w-10 h-10 rounded-none border border-white/20 flex items-center justify-center shadow-[2px_2px_0px_rgba(255,255,255,0.1)]">
+              <span className="w-10 h-10 rounded-3xl border border-white/20 flex items-center justify-center shadow-[2px_2px_0px_rgba(255,255,255,0.1)]">
                 <MapPin size={16} />
               </span> 
               Chennai, India
@@ -164,7 +164,7 @@ export default function Footer() {
               <a 
                 key={idx} 
                 href={social.href} 
-                className="w-12 h-12 border border-white/10 flex items-center justify-center text-white/50 hover:bg-white hover:text-primary-dark hover:border-white transition-all duration-300 rounded-none shadow-[2px_2px_0px_rgba(255,255,255,0.05)] hover:shadow-[4px_4px_0px_rgba(255,255,255,1)]"
+                className="w-12 h-12 border border-white/10 flex items-center justify-center text-white/50 hover:bg-white hover:text-primary-dark hover:border-white transition-all duration-300 rounded-3xl shadow-[2px_2px_0px_rgba(255,255,255,0.05)] hover:shadow-[4px_4px_0px_rgba(255,255,255,1)]"
                 aria-label="Social Link"
               >
                 <social.icon size={18} />

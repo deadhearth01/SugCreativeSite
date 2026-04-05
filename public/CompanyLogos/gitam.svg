@@ -1,6 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 80">
-  <rect width="220" height="80" fill="none"/>
-  <text x="110" y="50" font-family="Arial, sans-serif" font-weight="900" font-size="36" fill="white" text-anchor="middle" letter-spacing="4">GITAM</text>
-  <line x1="20" y1="60" x2="200" y2="60" stroke="white" stroke-width="1.5" opacity="0.4"/>
-  <text x="110" y="72" font-family="Arial, sans-serif" font-weight="400" font-size="8" fill="white" text-anchor="middle" letter-spacing="2" opacity="0.6">DEEMED UNIVERSITY</text>
-</svg>

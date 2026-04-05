@@ -84,10 +84,11 @@ export async function refreshAccessToken(refreshToken: string): Promise<GoogleTo
   }
 
   const tokens = await response.json()
-  cachedTokens = { ...tokens, refresh_token: refreshToken }
+  const updatedTokens: GoogleTokens = { ...tokens, refresh_token: refreshToken }
+  cachedTokens = updatedTokens
   tokenExpiresAt = Date.now() + tokens.expires_in * 1000
 
-  return cachedTokens
+  return updatedTokens
 }
 
 /**

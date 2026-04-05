@@ -129,8 +129,8 @@ export default function AboutPage() {
           <div className="flex flex-col lg:flex-row items-center gap-16 lg:gap-12">
             {/* Left Text */}
             <div className="lg:w-[50%]">
-              <div className="hero-animate inline-flex items-center gap-3 bg-white text-primary font-black text-xs uppercase tracking-widest px-4 py-2 mb-6 rounded-none shadow-[4px_4px_0px_rgba(0,0,0,1)] border-2 border-primary-dark">
-                <div className="w-2 h-2 bg-green-500 rounded-none animate-pulse" />
+              <div className="hero-animate inline-flex items-center gap-3 bg-white text-primary font-black text-xs uppercase tracking-widest px-4 py-2 mb-6 rounded-3xl shadow-[4px_4px_0px_rgba(0,0,0,1)] border-2 border-primary-dark">
+                <div className="w-2 h-2 bg-green-500 rounded-3xl animate-pulse" />
                 Our Story
               </div>
               <h1 className="hero-animate text-5xl sm:text-6xl md:text-7xl font-heading font-black text-primary-dark leading-[1.05] tracking-tight mb-8">
@@ -143,12 +143,12 @@ export default function AboutPage() {
                 guidance — whether they&apos;re building a business, launching a startup, or shaping a career.
               </div>
               <div className="hero-animate flex flex-wrap gap-4">
-                <Button asChild size="lg" className="bg-primary-dark hover:bg-black text-white font-black text-sm uppercase tracking-widest rounded-none border-2 border-primary-dark px-10 h-16 shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-[8px_8px_0px_rgba(0,0,0,1)] hover:-translate-y-1 transition-all">
+                <Button asChild size="lg" className="bg-primary-dark hover:bg-black text-white font-black text-sm uppercase tracking-widest rounded-3xl border-2 border-primary-dark px-10 h-16 shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-[8px_8px_0px_rgba(0,0,0,1)] hover:-translate-y-1 transition-all">
                   <Link href="/contact" className="flex items-center gap-3">
                     Work With Us <ArrowUpRight size={20} />
                   </Link>
                 </Button>
-                <Button asChild variant="outline" size="lg" className="bg-transparent border-2 border-primary-dark text-primary-dark hover:bg-primary-dark hover:text-white font-black text-sm uppercase tracking-widest rounded-none px-10 h-16 transition-all shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:-translate-y-1 hover:shadow-[8px_8px_0px_rgba(0,0,0,1)]">
+                <Button asChild variant="outline" size="lg" className="bg-transparent border-2 border-primary-dark text-primary-dark hover:bg-primary-dark hover:text-white font-black text-sm uppercase tracking-widest rounded-3xl px-10 h-16 transition-all shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:-translate-y-1 hover:shadow-[8px_8px_0px_rgba(0,0,0,1)]">
                   <Link href="/services">View Services</Link>
                 </Button>
               </div>
@@ -166,7 +166,7 @@ export default function AboutPage() {
                   <div className="absolute inset-0 bg-[#82C93D]/20 group-hover:opacity-0 transition-opacity" />
                 </div>
                 {/* Stat overlay box */}
-                <div className="hero-animate absolute -bottom-6 left-4 bg-primary-dark text-white border-2 border-primary-dark p-5 rounded-none shadow-[8px_8px_0px_rgba(130,201,61,1)] z-20">
+                <div className="hero-animate absolute -bottom-6 left-4 bg-primary-dark text-white border-2 border-primary-dark p-5 rounded-3xl shadow-[8px_8px_0px_rgba(130,201,61,1)] z-20">
                   <div className="text-3xl font-black font-heading text-[#82C93D] mb-1">10+</div>
                   <div className="text-[10px] uppercase tracking-widest font-black text-white/70">Years of Impact</div>
                 </div>
@@ -201,7 +201,7 @@ export default function AboutPage() {
         <div className="container-wide">
           <AnimatedSection>
             <div className="text-center mb-16">
-              <div className="inline-block bg-primary text-white font-black text-xs uppercase tracking-widest px-4 py-2 mb-6 rounded-none shadow-[4px_4px_0px_rgba(0,0,0,1)] border-2 border-primary-dark">
+              <div className="inline-block bg-primary text-white font-black text-xs uppercase tracking-widest px-4 py-2 mb-6 rounded-3xl shadow-[4px_4px_0px_rgba(0,0,0,1)] border-2 border-primary-dark">
                 Our Foundation
               </div>
               <h2 className="text-4xl md:text-5xl font-heading font-black text-primary-dark tracking-tight">
@@ -212,7 +212,7 @@ export default function AboutPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <AnimatedSection direction="left">
-              <div className="bg-primary-dark text-white border-2 border-primary-dark p-10 md:p-12 rounded-none shadow-[10px_10px_0px_rgba(0,0,0,1)] h-full group hover:-translate-y-1 hover:shadow-[14px_14px_0px_rgba(0,0,0,1)] transition-all duration-300">
+              <div className="bg-primary-dark text-white border-2 border-primary-dark p-10 md:p-12 rounded-3xl shadow-[10px_10px_0px_rgba(0,0,0,1)] h-full group hover:-translate-y-1 hover:shadow-[14px_14px_0px_rgba(0,0,0,1)] transition-all duration-300">
                 <div className="w-16 h-16 flex items-center justify-center bg-[#82C93D] border-2 border-white/20 mb-8 shadow-[4px_4px_0px_rgba(130,201,61,0.5)]">
                   <Target size={28} className="text-white" />
                 </div>
@@ -229,7 +229,7 @@ export default function AboutPage() {
             </AnimatedSection>
 
             <AnimatedSection direction="right" delay={0.15}>
-              <div className="bg-white text-primary-dark border-2 border-primary-dark p-10 md:p-12 rounded-none shadow-[10px_10px_0px_rgba(130,201,61,1)] h-full group hover:-translate-y-1 hover:shadow-[14px_14px_0px_rgba(130,201,61,1)] transition-all duration-300">
+              <div className="bg-white text-primary-dark border-2 border-primary-dark p-10 md:p-12 rounded-3xl shadow-[10px_10px_0px_rgba(130,201,61,1)] h-full group hover:-translate-y-1 hover:shadow-[14px_14px_0px_rgba(130,201,61,1)] transition-all duration-300">
                 <div className="w-16 h-16 flex items-center justify-center bg-primary-dark border-2 border-primary-dark mb-8 shadow-[4px_4px_0px_rgba(0,0,0,1)]">
                   <Eye size={28} className="text-[#82C93D]" />
                 </div>
@@ -254,7 +254,7 @@ export default function AboutPage() {
         <div className="container-wide relative z-10">
           <AnimatedSection>
             <div className="text-center mb-20">
-              <div className="inline-block bg-primary text-white font-black text-xs uppercase tracking-widest px-4 py-2 mb-6 rounded-none shadow-[4px_4px_0px_rgba(0,0,0,1)] border-2 border-primary-dark">
+              <div className="inline-block bg-primary text-white font-black text-xs uppercase tracking-widest px-4 py-2 mb-6 rounded-3xl shadow-[4px_4px_0px_rgba(0,0,0,1)] border-2 border-primary-dark">
                 Company History
               </div>
               <h2 className="text-4xl md:text-5xl font-heading font-black text-primary-dark tracking-tight">
@@ -272,7 +272,7 @@ export default function AboutPage() {
                 <div key={item.year} className={`timeline-item flex flex-col md:flex-row items-center gap-0 md:gap-0 ${i % 2 === 0 ? '' : 'md:flex-row-reverse'}`}>
                   {/* Content side */}
                   <div className={`flex-1 ${i % 2 === 0 ? 'md:pr-16' : 'md:pl-16'} w-full md:w-auto mb-4 md:mb-0`}>
-                    <div className={`bg-white border-2 border-primary-dark p-8 rounded-none shadow-[8px_8px_0px_rgba(0,0,0,1)] hover:-translate-y-1 hover:shadow-[12px_12px_0px_rgba(0,0,0,1)] transition-all duration-300 ${i % 2 === 0 ? 'md:ml-auto' : 'md:mr-auto'} max-w-lg`}>
+                    <div className={`bg-white border-2 border-primary-dark p-8 rounded-3xl shadow-[8px_8px_0px_rgba(0,0,0,1)] hover:-translate-y-1 hover:shadow-[12px_12px_0px_rgba(0,0,0,1)] transition-all duration-300 ${i % 2 === 0 ? 'md:ml-auto' : 'md:mr-auto'} max-w-lg`}>
                       <div className="text-[10px] font-black uppercase tracking-widest text-[#82C93D] mb-2">{item.year}</div>
                       <h3 className="text-xl md:text-2xl font-heading font-black text-primary-dark mb-3">{item.title}</h3>
                       <p className="text-primary-dark/70 font-bold leading-relaxed">{item.desc}</p>
@@ -280,7 +280,7 @@ export default function AboutPage() {
                   </div>
 
                   {/* Year badge (center) */}
-                  <div className="w-16 h-16 bg-primary-dark text-white font-black flex items-center justify-center rounded-none border-2 border-primary-dark shadow-[4px_4px_0px_rgba(130,201,61,1)] z-10 shrink-0 text-lg">
+                  <div className="w-16 h-16 bg-primary-dark text-white font-black flex items-center justify-center rounded-3xl border-2 border-primary-dark shadow-[4px_4px_0px_rgba(130,201,61,1)] z-10 shrink-0 text-lg">
                     {item.year.slice(2)}
                   </div>
 
@@ -298,7 +298,7 @@ export default function AboutPage() {
         <div className="container-wide">
           <AnimatedSection>
             <div className="text-center mb-16">
-              <div className="inline-block bg-primary text-white font-black text-xs uppercase tracking-widest px-4 py-2 mb-6 rounded-none shadow-[4px_4px_0px_rgba(0,0,0,1)] border-2 border-primary-dark">
+              <div className="inline-block bg-primary text-white font-black text-xs uppercase tracking-widest px-4 py-2 mb-6 rounded-3xl shadow-[4px_4px_0px_rgba(0,0,0,1)] border-2 border-primary-dark">
                 Core Principles
               </div>
               <h2 className="text-4xl md:text-5xl font-heading font-black text-primary-dark tracking-tight">
@@ -310,7 +310,7 @@ export default function AboutPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {values.map((value, i) => (
               <AnimatedSection key={value.title} delay={i * 0.1}>
-                <div className="bg-white border-2 border-primary-dark p-8 rounded-none shadow-[8px_8px_0px_rgba(0,0,0,1)] hover:-translate-y-2 hover:shadow-[12px_12px_0px_rgba(0,0,0,1)] transition-all duration-300 group h-full">
+                <div className="bg-white border-2 border-primary-dark p-8 rounded-3xl shadow-[8px_8px_0px_rgba(0,0,0,1)] hover:-translate-y-2 hover:shadow-[12px_12px_0px_rgba(0,0,0,1)] transition-all duration-300 group h-full">
                   <div className="w-14 h-14 flex items-center justify-center bg-primary-dark border-2 border-primary-dark mb-6 shadow-[4px_4px_0px_rgba(130,201,61,1)] group-hover:bg-[#82C93D] transition-colors">
                     <value.icon size={24} className="text-[#82C93D] group-hover:text-white transition-colors" />
                   </div>
@@ -328,7 +328,7 @@ export default function AboutPage() {
         <div className="container-wide">
           <AnimatedSection>
             <div className="text-center mb-16">
-              <div className="inline-block bg-primary text-white font-black text-xs uppercase tracking-widest px-4 py-2 mb-6 rounded-none shadow-[4px_4px_0px_rgba(0,0,0,1)] border-2 border-primary-dark">
+              <div className="inline-block bg-primary text-white font-black text-xs uppercase tracking-widest px-4 py-2 mb-6 rounded-3xl shadow-[4px_4px_0px_rgba(0,0,0,1)] border-2 border-primary-dark">
                 The Team
               </div>
               <h2 className="text-4xl md:text-5xl font-heading font-black text-primary-dark tracking-tight mb-6">
@@ -344,7 +344,7 @@ export default function AboutPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {team.map((member, i) => (
               <AnimatedSection key={member.name} delay={i * 0.1}>
-                <div className="group border-2 border-primary-dark rounded-none shadow-[8px_8px_0px_rgba(0,0,0,1)] hover:-translate-y-2 hover:shadow-[16px_16px_0px_rgba(0,0,0,1)] transition-all duration-300 overflow-hidden bg-white">
+                <div className="group border-2 border-primary-dark rounded-3xl shadow-[8px_8px_0px_rgba(0,0,0,1)] hover:-translate-y-2 hover:shadow-[16px_16px_0px_rgba(0,0,0,1)] transition-all duration-300 overflow-hidden bg-white">
                   <div className="relative h-72 overflow-hidden border-b-2 border-primary-dark">
                     <Image
                       src={member.image}
@@ -356,7 +356,7 @@ export default function AboutPage() {
                     <div className="absolute inset-0 bg-gradient-to-t from-primary-dark/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                     {/* Hover overlay */}
                     <div className="absolute bottom-0 inset-x-0 p-6 translate-y-full group-hover:translate-y-0 transition-transform duration-500">
-                      <div className="w-10 h-10 bg-[#82C93D] border-2 border-white flex items-center justify-center rounded-none shadow-[2px_2px_0px_rgba(255,255,255,0.5)]">
+                      <div className="w-10 h-10 bg-[#82C93D] border-2 border-white flex items-center justify-center rounded-3xl shadow-[2px_2px_0px_rgba(255,255,255,0.5)]">
                         <ArrowUpRight size={18} className="text-white" />
                       </div>
                     </div>
@@ -381,7 +381,7 @@ export default function AboutPage() {
           <AnimatedSection>
             <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-6 mb-12">
               <div>
-                <div className="inline-block bg-white text-primary-dark font-black text-xs uppercase tracking-widest px-4 py-2 mb-6 rounded-none shadow-[4px_4px_0px_rgba(255,255,255,0.2)] border-2 border-white/30">
+                <div className="inline-block bg-white text-primary-dark font-black text-xs uppercase tracking-widest px-4 py-2 mb-6 rounded-3xl shadow-[4px_4px_0px_rgba(255,255,255,0.2)] border-2 border-white/30">
                   Behind the Scenes
                 </div>
                 <h2 className="text-4xl md:text-5xl font-heading font-black text-white tracking-tight">
@@ -418,7 +418,7 @@ export default function AboutPage() {
           <AnimatedSection>
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-10">
               <div className="max-w-2xl">
-                <div className="inline-block bg-white text-primary-dark font-black text-xs uppercase tracking-widest px-4 py-2 mb-6 rounded-none shadow-[4px_4px_0px_rgba(255,255,255,0.2)] border-2 border-white/30">
+                <div className="inline-block bg-white text-primary-dark font-black text-xs uppercase tracking-widest px-4 py-2 mb-6 rounded-3xl shadow-[4px_4px_0px_rgba(255,255,255,0.2)] border-2 border-white/30">
                   Join the Sug Family
                 </div>
                 <h2 className="text-4xl md:text-5xl font-heading font-black text-white mb-4 leading-tight">
@@ -430,7 +430,7 @@ export default function AboutPage() {
                 </p>
               </div>
               <div className="shrink-0">
-                <Link href="/contact" className="group relative inline-flex items-center justify-center bg-white text-primary-dark px-10 py-6 font-black uppercase tracking-widest text-sm hover:text-white border-2 border-white transition-all duration-300 rounded-none overflow-hidden hover:shadow-[10px_10px_0px_rgba(255,255,255,0.3)]">
+                <Link href="/contact" className="group relative inline-flex items-center justify-center bg-white text-primary-dark px-10 py-6 font-black uppercase tracking-widest text-sm hover:text-white border-2 border-white transition-all duration-300 rounded-3xl overflow-hidden hover:shadow-[10px_10px_0px_rgba(255,255,255,0.3)]">
                   <span className="relative z-10 flex items-center gap-3">
                     Get In Touch
                     <ArrowUpRight size={20} className="transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />

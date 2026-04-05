@@ -184,7 +184,7 @@ function LoginContent() {
           </div>
 
           {error && (
-            <div className={`p-4 mb-6 text-sm font-bold border-2 rounded-none shadow-[2px_2px_0px_currentColor] ${
+            <div className={`p-4 mb-6 text-sm font-bold border-2 rounded-3xl shadow-[2px_2px_0px_currentColor] ${
               error.includes('Check your email') 
                 ? 'bg-blue-50 text-blue-800 border-blue-800'
                 : 'bg-red-50 text-red-600 border-red-600'
@@ -203,7 +203,7 @@ function LoginContent() {
                   required
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  className="w-full px-4 py-4 bg-white border-2 border-black/10 text-primary-dark font-medium text-sm focus:border-primary-dark focus:shadow-[4px_4px_0px_rgba(0,0,0,1)] focus:outline-none transition-all rounded-none placeholder:text-black/30"
+                  className="w-full px-4 py-4 bg-white border-2 border-black/10 text-primary-dark font-medium text-sm focus:border-primary-dark focus:shadow-[4px_4px_0px_rgba(0,0,0,1)] focus:outline-none transition-all rounded-3xl placeholder:text-black/30"
                   placeholder="JOHN DOE"
                 />
               </div>
@@ -216,7 +216,7 @@ function LoginContent() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-4 bg-white border-2 border-black/10 text-primary-dark font-medium text-sm focus:border-primary-dark focus:shadow-[4px_4px_0px_rgba(0,0,0,1)] focus:outline-none transition-all rounded-none placeholder:text-black/30"
+                className="w-full px-4 py-4 bg-white border-2 border-black/10 text-primary-dark font-medium text-sm focus:border-primary-dark focus:shadow-[4px_4px_0px_rgba(0,0,0,1)] focus:outline-none transition-all rounded-3xl placeholder:text-black/30"
                 placeholder="YOU@COMPANY.COM"
               />
             </div>
@@ -229,7 +229,7 @@ function LoginContent() {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-4 bg-white border-2 border-black/10 text-primary-dark font-medium text-sm focus:border-primary-dark focus:shadow-[4px_4px_0px_rgba(0,0,0,1)] focus:outline-none transition-all rounded-none placeholder:text-black/30 pr-12"
+                  className="w-full px-4 py-4 bg-white border-2 border-black/10 text-primary-dark font-medium text-sm focus:border-primary-dark focus:shadow-[4px_4px_0px_rgba(0,0,0,1)] focus:outline-none transition-all rounded-3xl placeholder:text-black/30 pr-12"
                   placeholder="••••••••"
                 />
                 <button
@@ -245,7 +245,7 @@ function LoginContent() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full group mt-4 flex items-center justify-center gap-3 px-6 py-5 bg-primary-dark text-white font-black text-sm uppercase tracking-widest border-2 border-primary-dark hover:bg-white hover:text-primary-dark hover:shadow-[4px_4px_0px_rgba(0,0,0,1)] transition-all rounded-none disabled:opacity-50 disabled:pointer-events-none active:translate-y-1 active:shadow-none"
+              className="w-full group mt-4 flex items-center justify-center gap-3 px-6 py-5 bg-primary-dark text-white font-black text-sm uppercase tracking-widest border-2 border-primary-dark hover:bg-white hover:text-primary-dark hover:shadow-[4px_4px_0px_rgba(0,0,0,1)] transition-all rounded-3xl disabled:opacity-50 disabled:pointer-events-none active:translate-y-1 active:shadow-none"
             >
               {loading ? 'Processing...' : (isSignUp ? 'Initialize Account' : 'Authenticate')}
               {!loading && <ArrowRight size={18} className="transition-transform group-hover:translate-x-1" />}

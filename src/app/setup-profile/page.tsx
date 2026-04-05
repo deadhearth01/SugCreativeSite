@@ -343,7 +343,7 @@ export default function SetupProfilePage() {
                   placeholder="yourname"
                   minLength={3}
                   maxLength={20}
-                  className="w-full pl-10 pr-12 py-4 bg-white border-2 border-black/10 text-primary-dark font-medium text-sm focus:border-primary-dark focus:shadow-[4px_4px_0px_rgba(0,0,0,1)] focus:outline-none transition-all rounded-none placeholder:text-black/30"
+                  className="w-full pl-10 pr-12 py-4 bg-white border-2 border-black/10 text-primary-dark font-medium text-sm focus:border-primary-dark focus:shadow-[4px_4px_0px_rgba(0,0,0,1)] focus:outline-none transition-all rounded-3xl placeholder:text-black/30"
                 />
                 <div className="absolute right-4 top-1/2 -translate-y-1/2">
                   {checking && <Loader2 className="w-5 h-5 text-gray-400 animate-spin" />}

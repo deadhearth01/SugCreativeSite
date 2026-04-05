@@ -5,26 +5,39 @@ import dynamic from 'next/dynamic'
 
 const SugLogoAnimation = dynamic(() => import('./SugLogoAnimation'), { ssr: false })
 
+const STORAGE_KEY = 'siteLoaderPlayed'
+
 export default function SiteLoader() {
+  // Start false on both server and client — no hydration mismatch
   const [show, setShow] = useState(false)
   const overlayRef = useRef<HTMLDivElement>(null)
   const cleanedUp = useRef(false)
+  const didRun = useRef(false)
 
   function cleanup() {
     if (cleanedUp.current) return
     cleanedUp.current = true
+    try { sessionStorage.setItem(STORAGE_KEY, '1') } catch { /* noop */ }
     setShow(false)
     document.body.style.overflow = ''
   }
 
   useEffect(() => {
-    // Only show on the homepage — never on sub-pages
+    if (didRun.current) return
+    didRun.current = true
+
+    // Only on homepage
     if (window.location.pathname !== '/') return
+
+    // Only once per session
+    try {
+      if (sessionStorage.getItem(STORAGE_KEY) === '1') return
+    } catch { /* noop */ }
 
     setShow(true)
     document.body.style.overflow = 'hidden'
 
-    // Safety: force-close after 9 s if animation hangs on a slow device
+    // Safety: force-close after 9s
     const safetyTimer = setTimeout(cleanup, 9000)
     return () => clearTimeout(safetyTimer)
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -34,14 +47,12 @@ export default function SiteLoader() {
     const el = overlayRef.current
     if (!el) { cleanup(); return }
 
-    // Direct DOM fade-out — avoids React re-render racing with GSAP's
-    // inline opacity on the white-bg child element.
     el.style.transition = 'opacity 1.1s cubic-bezier(0.4, 0, 0.2, 1)'
-    void el.offsetHeight          // force reflow so transition registers
+    void el.offsetHeight
     el.style.opacity = '0'
 
     el.addEventListener('transitionend', cleanup, { once: true })
-    setTimeout(cleanup, 1400)     // fallback if transitionend doesn't fire
+    setTimeout(cleanup, 1400)
   }
 
   if (!show) return null
@@ -54,8 +65,6 @@ export default function SiteLoader() {
         inset: 0,
         zIndex: 9999,
         opacity: 1,
-        // Solid dark bg prevents flash of site content before the dynamic
-        // import of SugLogoAnimation resolves
         background: '#041520',
       }}
     >

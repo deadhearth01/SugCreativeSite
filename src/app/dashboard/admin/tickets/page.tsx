@@ -68,7 +68,7 @@ export default function TicketsPage() {
     const supabase = createClient()
     const { data } = await supabase
       .from('ticket_replies')
-      .select('*, author:author_id(full_name, role)')
+      .select('*, author:user_id(full_name, role)')
       .eq('ticket_id', ticketId)
       .order('created_at', { ascending: true })
     setReplies(data || [])

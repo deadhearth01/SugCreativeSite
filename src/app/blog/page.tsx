@@ -141,8 +141,8 @@ export default function BlogPage() {
         <div className="container-wide relative z-10" ref={heroRef}>
           <div className="flex flex-col lg:flex-row items-end justify-between gap-10">
             <div className="max-w-3xl">
-              <div className="hero-animate inline-flex items-center gap-3 bg-white text-primary font-black text-xs uppercase tracking-widest px-4 py-2 mb-6 rounded-none shadow-[4px_4px_0px_rgba(0,0,0,1)] border-2 border-primary-dark">
-                <div className="w-2 h-2 bg-green-500 rounded-none animate-pulse" />
+              <div className="hero-animate inline-flex items-center gap-3 bg-white text-primary font-black text-xs uppercase tracking-widest px-4 py-2 mb-6 rounded-3xl shadow-[4px_4px_0px_rgba(0,0,0,1)] border-2 border-primary-dark">
+                <div className="w-2 h-2 bg-green-500 rounded-3xl animate-pulse" />
                 Blog & Insights
               </div>
               <h1 className="hero-animate text-5xl sm:text-6xl md:text-7xl font-heading font-black text-primary-dark leading-[1.05] tracking-tight mb-6">
@@ -172,7 +172,7 @@ export default function BlogPage() {
               <button
                 key={cat}
                 onClick={() => setActiveCategory(cat)}
-                className={`whitespace-nowrap font-black text-xs uppercase tracking-widest px-6 py-3 border-2 rounded-none transition-all duration-200 ${
+                className={`whitespace-nowrap font-black text-xs uppercase tracking-widest px-6 py-3 border-2 rounded-3xl transition-all duration-200 ${
                   activeCategory === cat
                     ? 'bg-primary-dark text-white border-primary-dark shadow-[3px_3px_0px_rgba(0,0,0,1)]'
                     : 'bg-white text-primary-dark border-primary-dark/30 hover:border-primary-dark hover:shadow-[3px_3px_0px_rgba(0,0,0,0.5)]'
@@ -191,7 +191,7 @@ export default function BlogPage() {
           <div className="container-wide">
             <AnimatedSection>
               <Link href="#" className="group block">
-                <div className="flex flex-col lg:flex-row border-2 border-primary-dark rounded-none shadow-[12px_12px_0px_rgba(0,0,0,1)] hover:-translate-y-1 hover:shadow-[16px_16px_0px_rgba(0,0,0,1)] transition-all duration-300 overflow-hidden bg-white">
+                <div className="flex flex-col lg:flex-row border-2 border-primary-dark rounded-3xl shadow-[12px_12px_0px_rgba(0,0,0,1)] hover:-translate-y-1 hover:shadow-[16px_16px_0px_rgba(0,0,0,1)] transition-all duration-300 overflow-hidden bg-white">
                   {/* Image */}
                   <div className="relative lg:w-[55%] h-64 lg:h-auto min-h-[380px] overflow-hidden border-b-2 lg:border-b-0 lg:border-r-2 border-primary-dark">
                     <Image
@@ -244,7 +244,7 @@ export default function BlogPage() {
               {gridPosts.map((post, i) => (
                 <AnimatedSection key={post.title} delay={i * 0.08}>
                   <Link href="#" className="group block h-full">
-                    <div className="border-2 border-primary-dark rounded-none shadow-[6px_6px_0px_rgba(0,0,0,1)] hover:-translate-y-2 hover:shadow-[10px_10px_0px_rgba(0,0,0,1)] transition-all duration-300 overflow-hidden bg-white h-full flex flex-col">
+                    <div className="border-2 border-primary-dark rounded-3xl shadow-[6px_6px_0px_rgba(0,0,0,1)] hover:-translate-y-2 hover:shadow-[10px_10px_0px_rgba(0,0,0,1)] transition-all duration-300 overflow-hidden bg-white h-full flex flex-col">
                       {/* Image */}
                       <div className="relative h-52 overflow-hidden border-b-2 border-primary-dark shrink-0">
                         <Image
@@ -302,7 +302,7 @@ export default function BlogPage() {
           <AnimatedSection>
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-10">
               <div className="max-w-xl">
-                <div className="inline-block bg-white text-primary-dark font-black text-xs uppercase tracking-widest px-4 py-2 mb-6 rounded-none shadow-[4px_4px_0px_rgba(255,255,255,0.2)] border-2 border-white/30">
+                <div className="inline-block bg-white text-primary-dark font-black text-xs uppercase tracking-widest px-4 py-2 mb-6 rounded-3xl shadow-[4px_4px_0px_rgba(255,255,255,0.2)] border-2 border-white/30">
                   Stay Ahead
                 </div>
                 <h2 className="text-4xl md:text-5xl font-heading font-black text-white mb-4 leading-tight">
@@ -317,7 +317,7 @@ export default function BlogPage() {
                   <input
                     type="email"
                     placeholder="Enter your email"
-                    className="flex-1 bg-white/5 border-2 border-white/20 text-white placeholder:text-white/40 px-5 py-4 focus:outline-none focus:border-white focus:bg-white/10 transition-all rounded-none font-bold text-sm"
+                    className="flex-1 bg-white/5 border-2 border-white/20 text-white placeholder:text-white/40 px-5 py-4 focus:outline-none focus:border-white focus:bg-white/10 transition-all rounded-3xl font-bold text-sm"
                   />
                   <button
                     type="submit"

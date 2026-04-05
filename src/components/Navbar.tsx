@@ -1,15 +1,11 @@
 'use client'
 
-import { useState, useEffect, useLayoutEffect, useRef } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import { ArrowUpRight, ChevronDown, Server, Shield, Cpu, Globe, Code2, Palette, Settings, Rocket, Megaphone, Users } from 'lucide-react'
-import { gsap } from 'gsap'
 import StaggeredMenu from './StaggeredMenu'
-
-// SSR-safe layout effect
-const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect
 
 // Navigation with submenus
 interface SubMenuItem {
@@ -69,7 +65,8 @@ const socialItems = [
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
-  const navRef = useRef<HTMLElement>(null)
+  const [openMenu, setOpenMenu] = useState<string | null>(null)
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const pathname = usePathname();
   const isDarkBg = false
@@ -82,56 +79,54 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  // Set initial position before paint to prevent flash
-  useIsomorphicLayoutEffect(() => {
-    if (navRef.current) {
-      gsap.set(navRef.current, { y: -80, autoAlpha: 0 })
-    }
-  }, [pathname])
+  function handleEnter(label: string) {
+    if (closeTimer.current) { clearTimeout(closeTimer.current); closeTimer.current = null }
+    setOpenMenu(label)
+  }
 
-  // Animate in after paint
-  useEffect(() => {
-    const el = navRef.current
-    if (!el) return
-    gsap.killTweensOf(el)
-    gsap.to(el, { y: 0, autoAlpha: 1, duration: 0.75, ease: 'power3.out', delay: 0.1 })
-  }, [pathname])
+  function handleLeave() {
+    closeTimer.current = setTimeout(() => setOpenMenu(null), 150)
+  }
 
   return (
     <>
       <nav
-        ref={navRef}
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 hidden xl:block ${
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 hidden xl:flex items-center justify-between ${
           scrolled
-            ? 'bg-white/95 backdrop-blur-xl border-b border-black/5 py-4 shadow-sm'
-            : 'bg-transparent py-8'
+            ? 'bg-white/95 backdrop-blur-xl border-b border-black/5 py-3 shadow-sm px-6'
+            : 'bg-transparent py-5 px-10'
         }`}
       >
-        <div className="container-wide flex items-center justify-between">
-          
-          {/* Logo */}
-          <Link href="/" className="flex items-center gap-3 group relative z-[60]">
-            <Image
-              src="/sug-new-log.svg"
-              alt="Sug Creative Logo"
-              width={44}
-              height={44}
-              className="flex-shrink-0 transition-transform duration-300 group-hover:scale-105"
-            />
-            <span className={`text-2xl font-heading font-black tracking-tight transition-colors duration-300 ${
-              isDarkBg ? 'text-white' : 'text-foreground'
-            }`}>
-              SUG CREATIVE
-            </span>
-          </Link>
+        {/* Logo — Far Left */}
+        <Link href="/" className="flex items-center gap-3 flex-shrink-0 group">
+          <Image
+            src="/sug-new-log.svg"
+            alt="Sug Creative Logo"
+            width={40}
+            height={40}
+            className="flex-shrink-0 transition-transform duration-300 group-hover:scale-105"
+          />
+          <span className={`text-xl font-heading font-black tracking-tight transition-colors duration-300 ${
+            isDarkBg ? 'text-white' : 'text-foreground'
+          }`}>
+            SUG CREATIVE
+          </span>
+        </Link>
 
-          {/* Desktop Navigation (Center) */}
-          <div className="hidden xl:flex items-center absolute left-1/2 -translate-x-1/2 gap-6">
-            {navLinks.map((link) => (
-              <div key={link.href} className="relative group">
+        {/* Navigation — Center */}
+        <div className="flex items-center gap-1">
+          {navLinks.map((link) => {
+            const isOpen = openMenu === link.label
+            return (
+              <div
+                key={link.href}
+                className="relative"
+                onMouseEnter={() => link.subItems ? handleEnter(link.label) : undefined}
+                onMouseLeave={link.subItems ? handleLeave : undefined}
+              >
                 <Link
                   href={link.href}
-                  className={`relative py-2 text-sm font-bold uppercase tracking-widest transition-colors duration-300 flex items-center gap-1 ${
+                  className={`relative py-2 px-3 text-[13px] font-bold uppercase tracking-widest transition-colors duration-300 flex items-center gap-1 whitespace-nowrap ${
                     isDarkBg
                       ? 'text-white/80 hover:text-white'
                       : 'text-foreground/70 hover:text-primary-dark'
@@ -139,17 +134,20 @@ export default function Navbar() {
                 >
                   {link.label}
                   {link.subItems && (
-                    <ChevronDown size={14} className="transition-transform duration-300 group-hover:rotate-180" />
+                    <ChevronDown size={14} className={`transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
                   )}
-                  {/* Underline Hover Animation */}
-                  <span className={`absolute bottom-0 left-0 w-full h-[2px] origin-left scale-x-0 transition-transform duration-300 ease-out group-hover:scale-x-100 ${
+                  <span className={`absolute bottom-0 left-3 right-3 h-[2px] origin-left transition-transform duration-300 ease-out ${
                     isDarkBg ? 'bg-white' : 'bg-primary-dark'
-                  }`} />
+                  } ${isOpen ? 'scale-x-100' : 'scale-x-0 hover:scale-x-100'}`} />
                 </Link>
-                
+
                 {/* Dropdown Menu */}
                 {link.subItems && (
-                  <div className="absolute top-full left-1/2 -translate-x-1/2 pt-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
+                  <div
+                    className={`absolute top-full left-1/2 -translate-x-1/2 pt-3 z-[100] transition-all duration-200 ${
+                      isOpen ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible -translate-y-2 pointer-events-none'
+                    }`}
+                  >
                     <div className="bg-white border-2 border-black shadow-[6px_6px_0px_rgba(0,0,0,1)] min-w-[280px] p-2">
                       {link.subItems.map((subItem) => {
                         const IconComponent = subItem.icon
@@ -157,15 +155,15 @@ export default function Navbar() {
                           <Link
                             key={subItem.href}
                             href={subItem.href}
-                            className="flex items-start gap-3 p-3 hover:bg-gray-50 transition-colors group/item"
+                            className="flex items-start gap-3 p-3 hover:bg-gray-50 transition-colors"
                           >
                             {IconComponent && (
-                              <div className="w-10 h-10 bg-primary/10 flex items-center justify-center text-primary flex-shrink-0 group-hover/item:bg-primary group-hover/item:text-white transition-colors">
+                              <div className="w-10 h-10 bg-primary/10 flex items-center justify-center text-primary flex-shrink-0 hover:bg-primary hover:text-white transition-colors">
                                 <IconComponent size={20} />
                               </div>
                             )}
                             <div>
-                              <div className="font-bold text-primary-dark text-sm group-hover/item:text-primary transition-colors">
+                              <div className="font-bold text-primary-dark text-sm hover:text-primary transition-colors">
                                 {subItem.label}
                               </div>
                               {subItem.desc && (
@@ -190,34 +188,34 @@ export default function Navbar() {
                   </div>
                 )}
               </div>
-            ))}
-          </div>
+            )
+          })}
+        </div>
 
-          {/* Desktop CTA & Portal (Right) */}
-          <div className="hidden xl:flex items-center gap-4 relative z-[60]">
-            <Link
-              href="/login"
-              className={`flex items-center justify-center font-bold uppercase text-xs tracking-widest px-6 py-4 border-2 transition-all duration-300 rounded-none min-w-[100px] ${
-                isDarkBg
-                  ? 'border-white/30 text-white hover:border-white focus:outline-none'
-                  : 'border-black/10 text-primary-dark hover:border-primary-dark hover:bg-black/5 focus:outline-none'
-              }`}
-            >
-              Login
-            </Link>
+        {/* Login + Start Project — Far Right */}
+        <div className="flex items-center gap-3 flex-shrink-0">
+          <Link
+            href="/login"
+            className={`flex items-center justify-center font-bold uppercase text-xs tracking-widest px-5 py-3 border-2 transition-all duration-300 rounded-3xl ${
+              isDarkBg
+                ? 'border-white/30 text-white hover:border-white focus:outline-none'
+                : 'border-black/10 text-primary-dark hover:border-primary-dark hover:bg-black/5 focus:outline-none'
+            }`}
+          >
+            Login
+          </Link>
 
-            <Link 
-              href="/contact" 
-              className={`font-bold uppercase text-xs tracking-widest px-6 py-4 border-2 transition-all duration-300 rounded-none inline-flex items-center justify-center gap-2 hover:-translate-y-[2px] min-w-[140px] ${
-                isDarkBg 
-                  ? 'bg-white text-primary-dark border-white hover:shadow-[4px_4px_0px_rgba(255,255,255,0.4)]' 
-                  : 'bg-primary-dark text-white border-primary-dark hover:bg-white hover:text-primary-dark hover:shadow-[4px_4px_0px_rgba(0,0,0,1)]'
-              }`}
-            >
-              Start Project
-              <ArrowUpRight size={16} />
-            </Link>
-          </div>
+          <Link
+            href="/contact"
+            className={`font-bold uppercase text-xs tracking-widest px-5 py-3 border-2 transition-all duration-300 rounded-3xl inline-flex items-center justify-center gap-2 hover:-translate-y-[2px] ${
+              isDarkBg
+                ? 'bg-white text-primary-dark border-white hover:shadow-[4px_4px_0px_rgba(255,255,255,0.4)]'
+                : 'bg-primary-dark text-white border-primary-dark hover:bg-white hover:text-primary-dark hover:shadow-[4px_4px_0px_rgba(0,0,0,1)]'
+            }`}
+          >
+            Start Project
+            <ArrowUpRight size={16} />
+          </Link>
         </div>
       </nav>
 

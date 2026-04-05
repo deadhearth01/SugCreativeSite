@@ -235,7 +235,7 @@ export function ProfileSetup({ onComplete, isLoading = false }: ProfileSetupProp
   const avatarRGB = selectedAvatar ? AVATAR_RGB[selectedAvatar.id] : "53, 200, 224";
 
   return (
-    <Card className="w-full max-w-md mx-auto border-2 border-black rounded-none shadow-[4px_4px_0px_rgba(0,0,0,1)] bg-white">
+    <Card className="w-full max-w-md mx-auto border-2 border-black rounded-3xl shadow-[4px_4px_0px_rgba(0,0,0,1)] bg-white">
       <CardContent className="p-6">
         <AnimatePresence mode="wait">
           {step === "avatar" && (
@@ -263,7 +263,7 @@ export function ProfileSetup({ onComplete, isLoading = false }: ProfileSetupProp
                     whileHover={{ scale: prefersReducedMotion ? 1 : 1.1 }}
                     whileTap={{ scale: prefersReducedMotion ? 1 : 0.95 }}
                     className={cn(
-                      "relative p-3 rounded-none border-2 border-black transition-all",
+                      "relative p-3 rounded-3xl border-2 border-black transition-all",
                       "hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]",
                       "focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
                     )}
@@ -339,7 +339,7 @@ export function ProfileSetup({ onComplete, isLoading = false }: ProfileSetupProp
                     value={username}
                     onChange={handleUsernameChange}
                     className={cn(
-                      "pl-10 h-12 rounded-none border-2 border-black",
+                      "pl-10 h-12 rounded-3xl border-2 border-black",
                       "focus:ring-2 focus:ring-primary focus:border-black",
                       usernameError && "border-red-500"
                     )}
@@ -358,7 +358,7 @@ export function ProfileSetup({ onComplete, isLoading = false }: ProfileSetupProp
                 onClick={handleComplete}
                 disabled={!username || !!usernameError || isLoading}
                 className={cn(
-                  "w-full h-12 rounded-none border-2 border-black",
+                  "w-full h-12 rounded-3xl border-2 border-black",
                   "bg-primary hover:bg-primary/90",
                   "shadow-[4px_4px_0px_rgba(0,0,0,1)]",
                   "hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]",

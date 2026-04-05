@@ -9,7 +9,7 @@ type TicketReply = {
   id: string
   message: string
   created_at: string
-  author_id: string
+  user_id: string
   author?: { full_name: string } | null
 }
 
@@ -70,7 +70,7 @@ export default function InternSupportPage() {
     const supabase = createClient()
     const { data } = await supabase
       .from('ticket_replies')
-      .select('id, message, created_at, author_id, author:author_id(full_name)')
+      .select('id, message, created_at, user_id, author:user_id(full_name)')
       .eq('ticket_id', ticketId)
       .order('created_at')
 

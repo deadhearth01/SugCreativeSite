@@ -1,6 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 80">
-  <rect width="200" height="80" fill="none"/>
-  <text x="100" y="52" font-family="Arial, sans-serif" font-weight="900" font-size="34" fill="white" text-anchor="middle" letter-spacing="6">IETE</text>
-  <line x1="20" y1="62" x2="180" y2="62" stroke="white" stroke-width="1.5" opacity="0.4"/>
-  <text x="100" y="74" font-family="Arial, sans-serif" font-weight="400" font-size="8" fill="white" text-anchor="middle" letter-spacing="2" opacity="0.6">TECH SOCIETY</text>
-</svg>

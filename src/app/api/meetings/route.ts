@@ -117,26 +117,9 @@ export async function POST(req: NextRequest) {
 
     // Create Google Meet if requested
     if (create_google_meet) {
-      const accessToken = await getGoogleAccessToken(supabase, user.id)
-      
-      if (!accessToken) {
-        return NextResponse.json({ 
-          error: 'Google Meet not connected. Please connect your Google account first.',
-          needsGoogleAuth: true
-        }, { status: 400 })
-      }
-
-      const meetResult = await createMeetSpace(accessToken)
-      
-      if (meetResult.success && meetResult.meetingLink) {
-        finalMeetingLink = meetResult.meetingLink
-        googleMeetSpaceName = meetResult.spaceName || null
-        googleMeetCode = meetResult.meetingCode || null
-        isGoogleMeet = true
-      } else {
-        console.error('Failed to create Google Meet:', meetResult.error)
-        // Continue with meeting creation but without Google Meet link
-      }
+      // Just provide an instant meeting link without requiring OAuth login     
+      finalMeetingLink = 'https://meet.google.com/new'
+      isGoogleMeet = true
     }
 
     const { data: meeting, error: meetingError } = await supabase

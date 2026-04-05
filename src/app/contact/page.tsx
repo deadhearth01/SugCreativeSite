@@ -60,7 +60,7 @@ export default function ContactPage() {
   }
 
   const inputClass = (field: string) =>
-    `w-full px-5 py-4 border-2 rounded-none text-sm font-bold transition-all outline-none bg-white ${
+    `w-full px-5 py-4 border-2 rounded-3xl text-sm font-bold transition-all outline-none bg-white ${
       focused === field
         ? 'border-primary-dark shadow-[4px_4px_0px_rgba(0,0,0,1)]'
         : 'border-primary-dark/20 hover:border-primary-dark/50'
@@ -77,8 +77,8 @@ export default function ContactPage() {
         <div className="container-wide relative z-10" ref={heroRef}>
           <div className="flex flex-col lg:flex-row items-end justify-between gap-10">
             <div className="max-w-3xl">
-              <div className="hero-animate inline-flex items-center gap-3 bg-white text-primary font-black text-xs uppercase tracking-widest px-4 py-2 mb-6 rounded-none shadow-[4px_4px_0px_rgba(0,0,0,1)] border-2 border-primary-dark">
-                <div className="w-2 h-2 bg-green-500 rounded-none animate-pulse" />
+              <div className="hero-animate inline-flex items-center gap-3 bg-white text-primary font-black text-xs uppercase tracking-widest px-4 py-2 mb-6 rounded-3xl shadow-[4px_4px_0px_rgba(0,0,0,1)] border-2 border-primary-dark">
+                <div className="w-2 h-2 bg-green-500 rounded-3xl animate-pulse" />
                 Contact Us
               </div>
               <h1 className="hero-animate text-5xl sm:text-6xl md:text-7xl font-heading font-black text-primary-dark leading-[1.05] tracking-tight mb-6">
@@ -91,7 +91,7 @@ export default function ContactPage() {
               </p>
             </div>
             <div className="hero-animate shrink-0 hidden lg:block">
-              <div className="bg-primary-dark text-white border-2 border-primary-dark p-6 rounded-none shadow-[8px_8px_0px_rgba(130,201,61,1)]">
+              <div className="bg-primary-dark text-white border-2 border-primary-dark p-6 rounded-3xl shadow-[8px_8px_0px_rgba(130,201,61,1)]">
                 <MessageSquare size={32} className="text-[#82C93D] mb-3" />
                 <div className="text-3xl font-heading font-black text-white mb-1">24h</div>
                 <div className="text-xs font-black uppercase tracking-widest text-white/60">Average Response Time</div>
@@ -135,7 +135,7 @@ export default function ContactPage() {
             <div className="lg:col-span-2">
               <AnimatedSection direction="left">
                 <div className="mb-12">
-                  <div className="inline-block bg-primary text-white font-black text-xs uppercase tracking-widest px-4 py-2 mb-6 rounded-none shadow-[4px_4px_0px_rgba(0,0,0,1)] border-2 border-primary-dark">
+                  <div className="inline-block bg-primary text-white font-black text-xs uppercase tracking-widest px-4 py-2 mb-6 rounded-3xl shadow-[4px_4px_0px_rgba(0,0,0,1)] border-2 border-primary-dark">
                     Why Choose Us
                   </div>
                   <div className="space-y-5">
@@ -158,12 +158,12 @@ export default function ContactPage() {
 
                 {/* FAQ */}
                 <div>
-                  <div className="inline-block bg-primary text-white font-black text-xs uppercase tracking-widest px-4 py-2 mb-6 rounded-none shadow-[4px_4px_0px_rgba(0,0,0,1)] border-2 border-primary-dark">
+                  <div className="inline-block bg-primary text-white font-black text-xs uppercase tracking-widest px-4 py-2 mb-6 rounded-3xl shadow-[4px_4px_0px_rgba(0,0,0,1)] border-2 border-primary-dark">
                     Quick Answers
                   </div>
                   <div className="space-y-4">
                     {faqItems.map((faq, i) => (
-                      <div key={i} className="border-2 border-primary-dark p-5 rounded-none shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:-translate-y-0.5 hover:shadow-[6px_6px_0px_rgba(0,0,0,1)] transition-all">
+                      <div key={i} className="border-2 border-primary-dark p-5 rounded-3xl shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:-translate-y-0.5 hover:shadow-[6px_6px_0px_rgba(0,0,0,1)] transition-all">
                         <div className="font-black text-primary-dark text-sm mb-2">{faq.q}</div>
                         <div className="text-primary-dark/60 text-sm font-bold leading-relaxed">{faq.a}</div>
                       </div>
@@ -176,7 +176,7 @@ export default function ContactPage() {
             {/* Right: Form */}
             <div className="lg:col-span-3">
               <AnimatedSection direction="right" delay={0.15}>
-                <div className="border-2 border-primary-dark rounded-none shadow-[12px_12px_0px_rgba(0,0,0,1)]">
+                <div className="border-2 border-primary-dark rounded-3xl shadow-[12px_12px_0px_rgba(0,0,0,1)]">
                   {/* Form header */}
                   <div className="bg-primary-dark text-white px-8 py-6 border-b-2 border-primary-dark">
                     <div className="flex items-center justify-between">
@@ -202,7 +202,7 @@ export default function ContactPage() {
                         </p>
                         <button
                           onClick={() => setSubmitted(false)}
-                          className="mt-8 bg-primary-dark text-white font-black text-xs uppercase tracking-widest px-8 py-4 border-2 border-primary-dark rounded-none shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:-translate-y-1 hover:shadow-[6px_6px_0px_rgba(0,0,0,1)] transition-all"
+                          className="mt-8 bg-primary-dark text-white font-black text-xs uppercase tracking-widest px-8 py-4 border-2 border-primary-dark rounded-3xl shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:-translate-y-1 hover:shadow-[6px_6px_0px_rgba(0,0,0,1)] transition-all"
                         >
                           Send Another Message
                         </button>
@@ -298,7 +298,7 @@ export default function ContactPage() {
                         <Button
                           type="submit"
                           size="lg"
-                          className="w-full bg-primary-dark hover:bg-black text-white font-black text-sm uppercase tracking-widest rounded-none border-2 border-primary-dark h-16 shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-[8px_8px_0px_rgba(0,0,0,1)] hover:-translate-y-1 transition-all"
+                          className="w-full bg-primary-dark hover:bg-black text-white font-black text-sm uppercase tracking-widest rounded-3xl border-2 border-primary-dark h-16 shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-[8px_8px_0px_rgba(0,0,0,1)] hover:-translate-y-1 transition-all"
                         >
                           <span className="flex items-center justify-center gap-3">
                             Send Message
@@ -328,7 +328,7 @@ export default function ContactPage() {
         <div className="absolute inset-0 bg-primary-dark/75" />
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="text-center text-white">
-            <div className="inline-block bg-white text-primary-dark font-black text-xs uppercase tracking-widest px-4 py-2 mb-6 rounded-none shadow-[4px_4px_0px_rgba(255,255,255,0.3)] border-2 border-white/50">
+            <div className="inline-block bg-white text-primary-dark font-black text-xs uppercase tracking-widest px-4 py-2 mb-6 rounded-3xl shadow-[4px_4px_0px_rgba(255,255,255,0.3)] border-2 border-white/50">
               Our Office
             </div>
             <h3 className="text-3xl md:text-4xl font-heading font-black mb-4">Visit Us in Person</h3>

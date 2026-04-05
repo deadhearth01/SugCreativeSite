@@ -153,8 +153,8 @@ export default function ServicesPage() {
         <div className="container-wide relative z-10 w-full" ref={heroRef}>
           <div className="flex flex-col lg:flex-row items-center gap-16">
             <div className="lg:w-[55%]">
-              <div className="hero-animate inline-flex items-center gap-3 bg-white text-primary font-black text-xs uppercase tracking-widest px-4 py-2 mb-6 rounded-none shadow-[4px_4px_0px_rgba(0,0,0,1)] border-2 border-primary-dark">
-                <div className="w-2 h-2 bg-green-500 rounded-none animate-pulse" />
+              <div className="hero-animate inline-flex items-center gap-3 bg-white text-primary font-black text-xs uppercase tracking-widest px-4 py-2 mb-6 rounded-3xl shadow-[4px_4px_0px_rgba(0,0,0,1)] border-2 border-primary-dark">
+                <div className="w-2 h-2 bg-green-500 rounded-3xl animate-pulse" />
                 Our Services
               </div>
               <h1 className="hero-animate text-5xl sm:text-6xl md:text-7xl font-heading font-black text-primary-dark leading-[1.05] tracking-tight mb-8">
@@ -171,7 +171,7 @@ export default function ServicesPage() {
                   <a
                     key={s.id}
                     href={`#${s.id}`}
-                    className="flex items-center gap-2 bg-white border-2 border-primary-dark text-primary-dark font-black text-xs uppercase tracking-wider px-4 py-2 rounded-none shadow-[3px_3px_0px_rgba(0,0,0,1)] hover:bg-primary-dark hover:text-white transition-all hover:-translate-y-0.5 hover:shadow-[5px_5px_0px_rgba(0,0,0,1)]"
+                    className="flex items-center gap-2 bg-white border-2 border-primary-dark text-primary-dark font-black text-xs uppercase tracking-wider px-4 py-2 rounded-3xl shadow-[3px_3px_0px_rgba(0,0,0,1)] hover:bg-primary-dark hover:text-white transition-all hover:-translate-y-0.5 hover:shadow-[5px_5px_0px_rgba(0,0,0,1)]"
                   >
                     <span className="text-[#82C93D] font-black">{s.num}</span>
                     {s.title}
@@ -212,7 +212,7 @@ export default function ServicesPage() {
                     <div className="w-16 h-16 flex items-center justify-center bg-primary-dark border-2 border-primary-dark shadow-[4px_4px_0px_rgba(130,201,61,1)]">
                       <cat.icon size={26} className="text-[#82C93D]" />
                     </div>
-                    <div className="inline-block bg-primary text-white font-black text-xs uppercase tracking-widest px-4 py-2 rounded-none shadow-[4px_4px_0px_rgba(0,0,0,1)] border-2 border-primary-dark">
+                    <div className="inline-block bg-primary text-white font-black text-xs uppercase tracking-widest px-4 py-2 rounded-3xl shadow-[4px_4px_0px_rgba(0,0,0,1)] border-2 border-primary-dark">
                       {cat.num} — {cat.tagline}
                     </div>
                   </div>
@@ -234,7 +234,7 @@ export default function ServicesPage() {
             <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12`}>
               {cat.items.map((item, i) => (
                 <AnimatedSection key={item.title} delay={i * 0.08}>
-                  <div className="bg-white border-2 border-primary-dark p-8 rounded-none shadow-[6px_6px_0px_rgba(0,0,0,1)] hover:-translate-y-1 hover:shadow-[10px_10px_0px_rgba(0,0,0,1)] transition-all duration-300 group h-full">
+                  <div className="bg-white border-2 border-primary-dark p-8 rounded-3xl shadow-[6px_6px_0px_rgba(0,0,0,1)] hover:-translate-y-1 hover:shadow-[10px_10px_0px_rgba(0,0,0,1)] transition-all duration-300 group h-full">
                     <div className="w-12 h-12 flex items-center justify-center bg-primary-dark border-2 border-primary-dark mb-6 shadow-[3px_3px_0px_rgba(130,201,61,1)] group-hover:bg-[#82C93D] transition-colors">
                       <item.icon size={20} className="text-[#82C93D] group-hover:text-white transition-colors" />
                     </div>
@@ -251,7 +251,7 @@ export default function ServicesPage() {
 
             {/* CTA */}
             <AnimatedSection delay={0.3}>
-              <Button asChild size="lg" className="bg-primary-dark hover:bg-black text-white font-black text-sm uppercase tracking-widest rounded-none border-2 border-primary-dark px-10 h-16 shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-[8px_8px_0px_rgba(0,0,0,1)] hover:-translate-y-1 transition-all">
+              <Button asChild size="lg" className="bg-primary-dark hover:bg-black text-white font-black text-sm uppercase tracking-widest rounded-3xl border-2 border-primary-dark px-10 h-16 shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-[8px_8px_0px_rgba(0,0,0,1)] hover:-translate-y-1 transition-all">
                 <Link href="/contact" className="flex items-center gap-3">
                   {cat.cta}
                   <ArrowUpRight size={20} />
@@ -269,7 +269,7 @@ export default function ServicesPage() {
           <AnimatedSection>
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-10">
               <div className="max-w-2xl">
-                <div className="inline-block bg-white text-primary-dark font-black text-xs uppercase tracking-widest px-4 py-2 mb-6 rounded-none shadow-[4px_4px_0px_rgba(255,255,255,0.2)] border-2 border-white/30">
+                <div className="inline-block bg-white text-primary-dark font-black text-xs uppercase tracking-widest px-4 py-2 mb-6 rounded-3xl shadow-[4px_4px_0px_rgba(255,255,255,0.2)] border-2 border-white/30">
                   Not Sure Where to Start?
                 </div>
                 <h2 className="text-4xl md:text-5xl font-heading font-black text-white mb-4 leading-tight">
@@ -281,7 +281,7 @@ export default function ServicesPage() {
                 </p>
               </div>
               <div className="shrink-0">
-                <Link href="/contact" className="group relative inline-flex items-center justify-center bg-white text-primary-dark px-10 py-6 font-black uppercase tracking-widest text-sm hover:text-white border-2 border-white transition-all duration-300 rounded-none overflow-hidden hover:shadow-[10px_10px_0px_rgba(255,255,255,0.3)]">
+                <Link href="/contact" className="group relative inline-flex items-center justify-center bg-white text-primary-dark px-10 py-6 font-black uppercase tracking-widest text-sm hover:text-white border-2 border-white transition-all duration-300 rounded-3xl overflow-hidden hover:shadow-[10px_10px_0px_rgba(255,255,255,0.3)]">
                   <span className="relative z-10 flex items-center gap-3">
                     Book Free Consultation
                     <ArrowUpRight size={20} className="transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />

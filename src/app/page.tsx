@@ -2,18 +2,31 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { useRef, useEffect, useState } from 'react'
-import { gsap } from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { ArrowUpRight, CheckCircle2, TrendingUp, GraduationCap, Award, Users, Clock, Play, Briefcase, Calendar, Star, Quote, Building2, Shield, Cpu, Globe, Server, Code2, Palette, Settings, Zap, Target, Rocket } from 'lucide-react'
-import Grainient from '@/components/Grainient'
+import { ArrowUpRight, CheckCircle2, TrendingUp, GraduationCap, Award, Users, Clock, Play, Briefcase, Calendar, Star, Quote, Building2, Shield, Cpu, Globe, Server, Code2, Palette, Settings, Zap, Target, Rocket, Sparkles, BadgeCheck, ArrowRight } from 'lucide-react'
+import dynamic from 'next/dynamic'
 import Navbar from '@/components/Navbar'
+
+const Aurora = dynamic(() => import('@/components/Aurora'), { ssr: false })
 import Footer from '@/components/Footer'
 import AnimatedSection from '@/components/AnimatedSection'
 import { Button } from '@/components/ui/button'
 import { NumberTicker } from '@/components/ui/number-ticker'
+import { LogoLoop } from '@/components/LogoLoop'
 
-gsap.registerPlugin(ScrollTrigger)
+// Company logos for placement showcase
+const companyLogos = [
+  { src: '/companyPlacementLogo/google.png', alt: 'Google' },
+  { src: '/companyPlacementLogo/bosch.png', alt: 'Bosch' },
+  { src: '/companyPlacementLogo/accenture.png', alt: 'Accenture' },
+  { src: '/companyPlacementLogo/tcs.png', alt: 'TCS' },
+  { src: '/companyPlacementLogo/capgemini.png', alt: 'Capgemini' },
+  { src: '/companyPlacementLogo/verizon.png', alt: 'Verizon' },
+  { src: '/companyPlacementLogo/watchGuard.png', alt: 'WatchGuard' },
+  { src: '/companyPlacementLogo/coforge.png', alt: 'Coforge' },
+  { src: '/companyPlacementLogo/icic.png', alt: 'ICICI' },
+  { src: '/companyPlacementLogo/muSigma.png', alt: 'Mu Sigma' },
+  { src: '/companyPlacementLogo/vi.png', alt: 'Vi' },
+]
 
 // Placement companies where SUGians got placed
 const placementCompanies = [
@@ -152,124 +165,246 @@ const courseColors: Record<string, { bg: string; accent: string; shadow: string;
 }
 
 export default function HomePage() {
-  const headlineRef = useRef<HTMLHeadingElement>(null)
-  const subRef = useRef<HTMLParagraphElement>(null)
-  const ctaRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    const tl = gsap.timeline({ delay: 0.5 })
-    if (headlineRef.current) {
-      tl.from(headlineRef.current, { y: 60, opacity: 0, duration: 1.2, ease: 'power3.out' })
-    }
-    if (subRef.current) {
-      tl.from(subRef.current, { y: 30, opacity: 0, duration: 0.8, ease: 'power3.out' }, '-=0.6')
-    }
-    if (ctaRef.current) {
-      tl.from(ctaRef.current, { y: 20, opacity: 0, duration: 0.6, ease: 'power3.out' }, '-=0.4')
-    }
-
-    return () => { 
-      ScrollTrigger.getAll().forEach(t => t.kill())
-      tl.kill() 
-    }
-  }, [])
 
   return (
     <>
       <Navbar />
 
-      {/* ═══ HERO — CLEAN & MARKETING FOCUSED ═══ */}
-      <section className="relative min-h-[90vh] flex items-center bg-[#f2fafd] pt-32 pb-20 overflow-hidden border-b-2 border-black/10">
-        <div className="absolute inset-0 opacity-[0.08]">
-          <Grainient
-            color1="#82C93D"
-            color2="#35C8E0"
-            color3="#1A9AB5"
-            timeSpeed={0.1}
-            warpStrength={0.5}
-            warpFrequency={3}
-            warpSpeed={0.8}
-            warpAmplitude={90}
-            rotationAmount={180}
-            grainAmount={0.06}
-            contrast={1.2}
-            saturation={1.4}
-            zoom={0.75}
+      {/* ═══ HERO - Creative Split Layout with Social Proof ═══ */}
+      <section className="relative min-h-screen flex items-center overflow-hidden bg-gradient-to-br from-[#f8fcfd] via-[#f2fafd] to-[#e8f7fa]">
+        {/* Aurora WebGL Background */}
+        <div className="absolute inset-0 opacity-40">
+          <Aurora
+            colorStops={['#82C93D', '#35C8E0', '#1A9AB5']}
+            blend={0.6}
+            amplitude={1.0}
+            speed={0.3}
           />
         </div>
-        <div className="absolute inset-0" style={{ backgroundImage: 'linear-gradient(rgba(53,200,224,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(53,200,224,0.03) 1px, transparent 1px)', backgroundSize: '60px 60px' }} />
-        
-        <div className="container-wide relative z-10 w-full">
-          <div className="max-w-4xl mx-auto text-center">
-            <div className="inline-flex items-center gap-3 bg-[#82C93D] text-white font-black text-xs uppercase tracking-widest px-5 py-2.5 mb-8 rounded-none shadow-[4px_4px_0px_rgba(0,0,0,1)] border-2 border-primary-dark">
-              <Rocket size={16} />
-              Trusted by 550+ Professionals at Top MNCs
-            </div>
+
+        {/* Subtle grid pattern */}
+        <div className="absolute inset-0 pointer-events-none opacity-30" style={{
+          backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(26,154,181,0.15) 1px, transparent 0)',
+          backgroundSize: '40px 40px'
+        }} />
+
+        <div className="container-wide relative z-10 w-full py-24 lg:py-0">
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
             
-            <h1 ref={headlineRef} className="text-5xl sm:text-6xl md:text-7xl font-heading text-primary-dark leading-[1.08] tracking-tight mb-8">
-              Launch Your <span className="text-primary">Tech Career</span><br />
-              With Industry Experts
-            </h1>
-            
-            <p ref={subRef} className="text-lg md:text-xl text-primary-dark/70 max-w-2xl mx-auto leading-relaxed mb-10 font-medium">
-              3-month intensive internships with <strong className="text-primary-dark">real MNC mentors</strong>, hands-on projects, and <strong className="text-primary-dark">placement support</strong>. Join our community at Google, Bosch, Accenture & more.
-            </p>
-            
-            <div ref={ctaRef} className="flex flex-wrap justify-center items-center gap-4 mb-12">
-              <Button asChild size="lg" className="bg-primary-dark hover:bg-black text-white font-black text-sm uppercase tracking-widest rounded-none border-2 border-primary-dark px-10 h-16 shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-[6px_6px_0px_rgba(0,0,0,1)] hover:-translate-y-1 transition-all">
-                <Link href="/courses" className="flex items-center gap-3">
-                  Explore Courses <ArrowUpRight size={20} />
-                </Link>
-              </Button>
-              <Button asChild variant="outline" size="lg" className="bg-white border-2 border-primary-dark text-primary-dark hover:bg-primary-dark hover:text-white font-black text-sm uppercase tracking-widest rounded-none px-8 h-16 shadow-[4px_4px_0px_rgba(0,0,0,1)] transition-all">
-                <Link href="/contact">Get Free Counselling</Link>
-              </Button>
+            {/* Left Column - Copy & CTA */}
+            <div className="order-2 lg:order-1">
+              {/* Urgency + Social Proof Badge */}
+              <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm text-primary-dark font-bold text-xs uppercase tracking-wider px-4 py-2 mb-6 rounded-full border border-primary/20 shadow-lg">
+                <span className="flex h-2 w-2 relative">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                </span>
+                <span>April Batch — <span className="text-primary">12 seats left</span></span>
+              </div>
+
+              {/* Main Headline - Jobs to Be Done + Loss Aversion */}
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-heading font-black text-primary-dark leading-[1.05] tracking-tight mb-6">
+                Stop Applying.<br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-[#1AAFCB] to-[#82C93D]">
+                  Start Getting Hired.
+                </span>
+              </h1>
+
+              {/* Subheadline - Specific Outcome */}
+              <p className="text-lg lg:text-xl text-primary-dark/70 leading-relaxed mb-8 max-w-xl">
+                Join the <strong className="text-primary-dark">550+ engineers</strong> who landed jobs at Google, Bosch & Accenture through our 
+                <strong className="text-primary-dark"> 3-month intensive internships</strong> with real MNC mentors.
+              </p>
+
+              {/* Value Props - Quick Scan */}
+              <div className="flex flex-wrap gap-4 mb-8">
+                {[
+                  { icon: BadgeCheck, text: 'MNC Mentors' },
+                  { icon: Award, text: '2 Certifications' },
+                  { icon: Briefcase, text: 'Placement Support' },
+                ].map((item) => (
+                  <div key={item.text} className="flex items-center gap-2 text-primary-dark/80 text-sm font-semibold">
+                    <item.icon size={18} className="text-[#82C93D]" />
+                    {item.text}
+                  </div>
+                ))}
+              </div>
+
+              {/* CTA Buttons - Clear Primary Action */}
+              <div className="flex flex-col sm:flex-row gap-4 mb-10">
+                <Button asChild size="lg" className="bg-primary-dark hover:bg-black text-white font-black text-sm uppercase tracking-widest rounded-2xl border-2 border-primary-dark px-8 h-14 shadow-[4px_4px_0px_rgba(130,201,61,1)] hover:shadow-[6px_6px_0px_rgba(130,201,61,1)] hover:-translate-y-1 transition-all group">
+                  <Link href="/courses" className="flex items-center gap-3">
+                    Explore Programs
+                    <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+                  </Link>
+                </Button>
+                <Button asChild variant="outline" size="lg" className="bg-white/80 backdrop-blur-sm border-2 border-primary-dark/20 text-primary-dark hover:border-primary-dark hover:bg-white font-bold text-sm uppercase tracking-widest rounded-2xl px-8 h-14 transition-all">
+                  <Link href="/contact" className="flex items-center gap-2">
+                    <Play size={16} className="text-primary" />
+                    Free Career Counselling
+                  </Link>
+                </Button>
+              </div>
+
+              {/* Micro Social Proof - Faces + Recent Placement */}
+              <div className="flex items-center gap-4 pt-6 border-t border-primary-dark/10">
+                <div className="flex -space-x-3">
+                  {['T', 'S', 'A', 'P'].map((initial, i) => (
+                    <div 
+                      key={i} 
+                      className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-[#82C93D] border-2 border-white flex items-center justify-center text-white font-bold text-sm shadow-md"
+                    >
+                      {initial}
+                    </div>
+                  ))}
+                  <div className="w-10 h-10 rounded-full bg-primary-dark border-2 border-white flex items-center justify-center text-white font-bold text-xs shadow-md">
+                    +546
+                  </div>
+                </div>
+                <div className="text-sm">
+                  <div className="font-bold text-primary-dark">Anusha joined Google last week</div>
+                  <div className="text-primary-dark/60">After completing Full Stack Internship</div>
+                </div>
+              </div>
             </div>
 
-            {/* Trust Indicators */}
-            <div className="flex flex-wrap justify-center gap-6 md:gap-10 items-center">
-              <div className="flex items-center gap-2 text-primary-dark/70">
-                <div className="w-10 h-10 bg-white border-2 border-black shadow-[2px_2px_0px_rgba(0,0,0,1)] flex items-center justify-center">
-                  <Clock size={18} className="text-primary" />
+            {/* Right Column - Visual Proof & Stats */}
+            <div className="order-1 lg:order-2 relative">
+              {/* Main Stats Card - Asymmetric Layout */}
+              <div className="relative">
+                {/* Background decorative elements */}
+                <div className="absolute -top-8 -right-8 w-32 h-32 bg-[#82C93D]/20 rounded-full blur-3xl" />
+                <div className="absolute -bottom-8 -left-8 w-40 h-40 bg-primary/20 rounded-full blur-3xl" />
+                
+                {/* Main Card */}
+                <div className="relative bg-white rounded-3xl p-8 shadow-2xl border border-primary/10">
+                  {/* Success Rate - Hero Stat */}
+                  <div className="text-center mb-8">
+                    <div className="text-7xl lg:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-r from-primary-dark to-primary leading-none">
+                      98%
+                    </div>
+                    <div className="text-primary-dark/60 font-bold uppercase tracking-widest text-sm mt-2">
+                      Placement Success Rate
+                    </div>
+                  </div>
+
+                  {/* Stats Grid */}
+                  <div className="grid grid-cols-3 gap-4 mb-8">
+                    <div className="text-center p-4 bg-gradient-to-br from-primary/5 to-primary/10 rounded-2xl">
+                      <div className="text-2xl lg:text-3xl font-black text-primary-dark">
+                        <NumberTicker value={550} />+
+                      </div>
+                      <div className="text-xs font-bold text-primary-dark/60 uppercase tracking-wider mt-1">Placed</div>
+                    </div>
+                    <div className="text-center p-4 bg-gradient-to-br from-[#82C93D]/5 to-[#82C93D]/10 rounded-2xl">
+                      <div className="text-2xl lg:text-3xl font-black text-primary-dark">
+                        <NumberTicker value={50} />+
+                      </div>
+                      <div className="text-xs font-bold text-primary-dark/60 uppercase tracking-wider mt-1">Companies</div>
+                    </div>
+                    <div className="text-center p-4 bg-gradient-to-br from-violet-500/5 to-violet-500/10 rounded-2xl">
+                      <div className="text-2xl lg:text-3xl font-black text-primary-dark">
+                        <NumberTicker value={8} />+
+                      </div>
+                      <div className="text-xs font-bold text-primary-dark/60 uppercase tracking-wider mt-1">Years</div>
+                    </div>
+                  </div>
+
+                  {/* Company Logos */}
+                  <div className="pt-6 border-t border-primary-dark/10">
+                    <div className="text-xs font-bold text-primary-dark/40 uppercase tracking-widest text-center mb-4">
+                      Our SUGians Work At
+                    </div>
+                    <div className="flex flex-wrap justify-center gap-4 items-center">
+                      {['Google', 'Bosch', 'Accenture', 'TCS', 'Capgemini'].map((company) => (
+                        <div key={company} className="text-primary-dark/30 text-sm font-bold hover:text-primary-dark transition-colors">
+                          {company}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
-                <span className="text-sm font-bold">3-Month Programs</span>
-              </div>
-              <div className="flex items-center gap-2 text-primary-dark/70">
-                <div className="w-10 h-10 bg-white border-2 border-black shadow-[2px_2px_0px_rgba(0,0,0,1)] flex items-center justify-center">
-                  <Award size={18} className="text-[#82C93D]" />
+
+                {/* Floating Badge - Urgency */}
+                <div className="absolute -bottom-4 -left-4 lg:-left-8 bg-[#82C93D] text-white px-5 py-3 rounded-2xl shadow-xl border-2 border-white">
+                  <div className="flex items-center gap-2">
+                    <Sparkles size={18} />
+                    <div>
+                      <div className="font-black text-sm">Next Batch: Apr 20</div>
+                      <div className="text-xs text-white/80">Limited seats available</div>
+                    </div>
+                  </div>
                 </div>
-                <span className="text-sm font-bold">2 Certifications</span>
-              </div>
-              <div className="flex items-center gap-2 text-primary-dark/70">
-                <div className="w-10 h-10 bg-white border-2 border-black shadow-[2px_2px_0px_rgba(0,0,0,1)] flex items-center justify-center">
-                  <Briefcase size={18} className="text-violet-500" />
+
+                {/* Floating Badge - Price Anchor */}
+                <div className="absolute -top-4 -right-4 lg:-right-8 bg-white px-5 py-3 rounded-2xl shadow-xl border-2 border-primary/20">
+                  <div className="text-center">
+                    <div className="text-xs text-red-500 font-bold line-through">₹12,999</div>
+                    <div className="text-xl font-black text-primary-dark">₹4,999</div>
+                    <div className="text-[10px] font-bold text-[#82C93D] uppercase">Save 60%</div>
+                  </div>
                 </div>
-                <span className="text-sm font-bold">Placement Support</span>
-              </div>
-              <div className="flex items-center gap-2 text-primary-dark/70">
-                <div className="w-10 h-10 bg-white border-2 border-black shadow-[2px_2px_0px_rgba(0,0,0,1)] flex items-center justify-center">
-                  <TrendingUp size={18} className="text-amber-500" />
-                </div>
-                <span className="text-sm font-bold">98% Success Rate</span>
               </div>
             </div>
           </div>
+        </div>
+
+        {/* Bottom Wave */}
+        <div className="absolute bottom-0 left-0 right-0">
+          <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full">
+            <path d="M0 120L60 105C120 90 240 60 360 45C480 30 600 30 720 37.5C840 45 960 60 1080 67.5C1200 75 1320 75 1380 75L1440 75V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0Z" fill="white"/>
+          </svg>
         </div>
       </section>
 
-      {/* ═══ TRUSTED BY LOGOS ═══ */}
-      <section className="py-10 bg-white border-b-2 border-black/10">
-        <div className="container-wide">
-          <div className="text-center text-xs font-bold uppercase tracking-widest text-primary-dark/50 mb-6">
-            Our SUGians Work At
-          </div>
-          <div className="flex flex-wrap justify-center gap-8 md:gap-12 items-center">
-            {['Google', 'Bosch', 'Accenture', 'TCS', 'Capgemini', 'Verizon', 'WatchGuard'].map((company) => (
-              <div key={company} className="text-primary-dark/40 text-sm md:text-base font-bold hover:text-primary-dark transition-colors">
-                {company}
+      {/* ═══ PLACEMENT SUCCESS - Social Proof Bar ═══ */}
+      <section className="py-20 md:py-32 bg-white border-b border-primary-dark/10 overflow-hidden">
+        <div className="container-wide mb-16 md:mb-24">
+          <AnimatedSection>
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-8">
+              <div>
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="flex items-center gap-1">
+                    {[1,2,3,4,5].map((i) => (
+                      <Star key={i} size={16} className="fill-[#82C93D] text-[#82C93D]" />
+                    ))}
+                  </div>
+                  <span className="text-sm font-bold text-primary-dark/60">550+ Success Stories</span>
+                </div>
+                <h2 className="text-3xl md:text-4xl lg:text-5xl font-heading font-black text-primary-dark leading-tight">
+                  Our SUGians Are Placed At<br />
+                  <span className="text-primary">Top Industry Leaders</span>
+                </h2>
               </div>
-            ))}
-          </div>
+              <div className="flex items-center gap-8">
+                <div className="text-right">
+                  <div className="text-4xl md:text-5xl font-black text-[#82C93D]">98%</div>
+                  <div className="text-xs font-bold text-primary-dark/50 uppercase tracking-wider">Placement Rate</div>
+                </div>
+                <div className="w-px h-16 bg-primary-dark/10 hidden md:block" />
+                <div className="text-right hidden md:block">
+                  <div className="text-4xl md:text-5xl font-black text-primary">50+</div>
+                  <div className="text-xs font-bold text-primary-dark/50 uppercase tracking-wider">Hiring Partners</div>
+                </div>
+              </div>
+            </div>
+          </AnimatedSection>
+        </div>
+        
+        {/* Edge-to-edge Logo Scroll */}
+        <div className="w-screen relative left-1/2 -translate-x-1/2">
+          <LogoLoop
+            logos={companyLogos}
+            speed={60}
+            direction="left"
+            logoHeight={50}
+            gap={80}
+            pauseOnHover
+            scaleOnHover
+            fadeOut
+            fadeOutColor="#ffffff"
+            ariaLabel="Companies where our students are placed"
+          />
         </div>
       </section>
 
@@ -277,7 +412,7 @@ export default function HomePage() {
       <section className="py-24 md:py-32 bg-gray-50 border-b-2 border-black/10">
         <div className="container-wide">
           <div className="text-center mb-16 max-w-3xl mx-auto">
-            <div className="inline-block bg-[#82C93D] text-white font-black text-xs uppercase tracking-widest px-4 py-2 mb-6 rounded-none shadow-[4px_4px_0px_rgba(0,0,0,1)] border-2 border-primary-dark">
+            <div className="inline-block bg-[#82C93D] text-white font-black text-xs uppercase tracking-widest px-4 py-2 mb-6 rounded-3xl shadow-[4px_4px_0px_rgba(0,0,0,1)] border-2 border-primary-dark">
               <GraduationCap size={14} className="inline mr-2" />
               Career Programs
             </div>
@@ -295,7 +430,7 @@ export default function HomePage() {
               const IconComponent = course.Icon
               return (
                 <AnimatedSection key={course.title} delay={index * 0.1}>
-                  <Link href={course.href} className={`group block relative h-[560px] border-2 border-primary-dark rounded-none overflow-hidden ${colors.shadow} transition-all duration-500 hover:-translate-y-2 hover:shadow-[12px_12px_0px_rgba(0,0,0,1)] bg-white focus:outline-none`}>
+                  <Link href={course.href} className={`group block relative h-[560px] border-2 border-primary-dark rounded-3xl overflow-hidden ${colors.shadow} transition-all duration-500 hover:-translate-y-2 hover:shadow-[12px_12px_0px_rgba(0,0,0,1)] bg-white focus:outline-none`}>
                     <div className="absolute inset-0 bg-gradient-to-br from-gray-100 to-gray-200">
                       <div className={`absolute inset-0 bg-gradient-to-br ${colors.gradient} opacity-20`} />
                     </div>
@@ -355,7 +490,7 @@ export default function HomePage() {
           </div>
 
           <div className="text-center mt-12">
-            <Button asChild size="lg" className="bg-primary hover:bg-primary-dark text-white font-black text-sm uppercase tracking-widest rounded-none border-2 border-primary-dark px-10 h-14 shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-[6px_6px_0px_rgba(0,0,0,1)] hover:-translate-y-1 transition-all">
+            <Button asChild size="lg" className="bg-primary hover:bg-primary-dark text-white font-black text-sm uppercase tracking-widest rounded-3xl border-2 border-primary-dark px-10 h-14 shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-[6px_6px_0px_rgba(0,0,0,1)] hover:-translate-y-1 transition-all">
               <Link href="/courses" className="flex items-center gap-3">
                 View All Programs <ArrowUpRight size={18} />
               </Link>
@@ -369,7 +504,7 @@ export default function HomePage() {
         <div className="container-wide">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div>
-              <div className="inline-block bg-primary text-white font-black text-xs uppercase tracking-widest px-4 py-2 mb-6 rounded-none shadow-[4px_4px_0px_rgba(0,0,0,1)] border-2 border-primary-dark">
+              <div className="inline-block bg-primary text-white font-black text-xs uppercase tracking-widest px-4 py-2 mb-6 rounded-3xl shadow-[4px_4px_0px_rgba(0,0,0,1)] border-2 border-primary-dark">
                 <Zap size={14} className="inline mr-2" />
                 Business Solutions
               </div>
@@ -392,7 +527,7 @@ export default function HomePage() {
                   </div>
                 ))}
               </div>
-              <Button asChild size="lg" className="bg-primary-dark hover:bg-black text-white font-black text-sm uppercase tracking-widest rounded-none border-2 border-primary-dark px-8 h-14 shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-[6px_6px_0px_rgba(0,0,0,1)] hover:-translate-y-1 transition-all">
+              <Button asChild size="lg" className="bg-primary-dark hover:bg-black text-white font-black text-sm uppercase tracking-widest rounded-3xl border-2 border-primary-dark px-8 h-14 shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-[6px_6px_0px_rgba(0,0,0,1)] hover:-translate-y-1 transition-all">
                 <Link href="/services" className="flex items-center gap-3">
                   Explore Services <ArrowUpRight size={18} />
                 </Link>
@@ -443,7 +578,7 @@ export default function HomePage() {
 
         <div className="container-wide relative z-10">
           <div className="text-center mb-16 max-w-3xl mx-auto">
-            <div className="inline-block bg-[#82C93D] text-white font-black text-xs uppercase tracking-widest px-4 py-2 mb-6 rounded-none shadow-[4px_4px_0px_rgba(0,0,0,1)] border-2 border-black">
+            <div className="inline-block bg-[#82C93D] text-white font-black text-xs uppercase tracking-widest px-4 py-2 mb-6 rounded-3xl shadow-[4px_4px_0px_rgba(0,0,0,1)] border-2 border-black">
               <Star size={14} className="inline mr-2" />
               Success Stories
             </div>
@@ -461,7 +596,7 @@ export default function HomePage() {
               <AnimatedSection key={t.name} delay={i * 0.1}>
                 <div className="bg-white border-2 border-black shadow-[6px_6px_0px_rgba(130,201,61,1)] p-6 h-full flex flex-col">
                   <div className="flex items-center gap-4 mb-4">
-                    <div className="w-14 h-14 bg-primary/20 rounded-none border-2 border-black flex items-center justify-center text-2xl font-black text-primary-dark">
+                    <div className="w-14 h-14 bg-primary/20 rounded-3xl border-2 border-black flex items-center justify-center text-2xl font-black text-primary-dark">
                       {t.name.charAt(0)}
                     </div>
                     <div>
@@ -494,7 +629,7 @@ export default function HomePage() {
       <section className="py-24 md:py-32 bg-white border-b-2 border-black/10">
         <div className="container-wide">
           <div className="text-center mb-16 max-w-3xl mx-auto">
-            <div className="inline-block bg-primary text-white font-black text-xs uppercase tracking-widest px-4 py-2 mb-6 rounded-none shadow-[4px_4px_0px_rgba(0,0,0,1)] border-2 border-primary-dark">
+            <div className="inline-block bg-primary text-white font-black text-xs uppercase tracking-widest px-4 py-2 mb-6 rounded-3xl shadow-[4px_4px_0px_rgba(0,0,0,1)] border-2 border-primary-dark">
               Why Choose Us
             </div>
             <h2 className="text-4xl md:text-5xl font-heading font-black text-primary-dark tracking-tight leading-tight">
@@ -558,12 +693,12 @@ export default function HomePage() {
             Join our next batch and become part of the 550+ SUGians working at top MNCs. Limited seats available.
           </p>
           <div className="flex flex-wrap justify-center gap-4">
-            <Button asChild size="lg" className="bg-primary-dark hover:bg-black text-white font-black text-sm uppercase tracking-widest rounded-none border-2 border-primary-dark px-12 h-16 shadow-[6px_6px_0px_rgba(0,0,0,1)] hover:shadow-[8px_8px_0px_rgba(0,0,0,1)] hover:-translate-y-1 transition-all">
+            <Button asChild size="lg" className="bg-primary-dark hover:bg-black text-white font-black text-sm uppercase tracking-widest rounded-3xl border-2 border-primary-dark px-12 h-16 shadow-[6px_6px_0px_rgba(0,0,0,1)] hover:shadow-[8px_8px_0px_rgba(0,0,0,1)] hover:-translate-y-1 transition-all">
               <Link href="/courses" className="flex items-center gap-3">
                 Explore Courses <ArrowUpRight size={20} />
               </Link>
             </Button>
-            <Button asChild variant="outline" size="lg" className="bg-transparent border-2 border-primary-dark text-primary-dark hover:bg-primary-dark hover:text-white font-black text-sm uppercase tracking-widest rounded-none px-12 h-16 shadow-[6px_6px_0px_rgba(0,0,0,1)] transition-all">
+            <Button asChild variant="outline" size="lg" className="bg-transparent border-2 border-primary-dark text-primary-dark hover:bg-primary-dark hover:text-white font-black text-sm uppercase tracking-widest rounded-3xl px-12 h-16 shadow-[6px_6px_0px_rgba(0,0,0,1)] transition-all">
               <Link href="/contact">Talk to Counsellor</Link>
             </Button>
           </div>

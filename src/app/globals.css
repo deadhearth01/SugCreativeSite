@@ -69,7 +69,7 @@
   --shadow-xl: 0 24px 48px -8px rgba(53, 200, 224, 0.14);
 
   /* ── shadcn required tokens — mapped to brand ── */
-  --radius: 0rem;
+  --radius: 1.5rem;
   --background: #FFFFFF;
   --card: #FFFFFF;
   --card-foreground: #111827;
@@ -171,6 +171,13 @@
 
 /* Base element resets moved into @layer base below
    so Tailwind v4 utilities can properly override them. */
+
+/* ═══ HERO AMBIENT BLOBS ═══ */
+@keyframes heroFloat {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33%      { transform: translate(4%, -3%) scale(1.05); }
+  66%      { transform: translate(-3%, 4%) scale(0.97); }
+}
 
 /* ═══ SELECTION + SCROLLBAR ═══ */
 ::selection {

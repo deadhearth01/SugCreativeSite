@@ -11,7 +11,7 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
 
     const { data, error } = await supabase
       .from('ticket_replies')
-      .select(`*, author:author_id(full_name, role, avatar_url)`)
+      .select(`*, author:user_id(full_name, role, avatar_url)`)
       .eq('ticket_id', id)
       .order('created_at', { ascending: true })
 
@@ -40,11 +40,10 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
       .from('ticket_replies')
       .insert({
         ticket_id: ticketId,
-        author_id: user.id,
+        user_id: user.id,
         message,
-        is_internal: is_internal && ['admin', 'employee'].includes(profile?.role || '') ? true : false,
       })
-      .select(`*, author:author_id(full_name, role)`)
+      .select(`*, author:user_id(full_name, role)`)
       .single()
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
