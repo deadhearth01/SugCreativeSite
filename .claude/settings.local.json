@@ -3,7 +3,16 @@
     "allow": [
       "Bash(npx tsc:*)",
       "Skill(update-config)",
-      "git"
+      "Bash(node -e ':*)",
+      "Bash(node -e \"require\\('fs'\\).readFileSync\\('/Volumes/SSD_1TB/vscode/SugCreativeSite/src/components/GridMotionHero.tsx', 'utf8'\\)\")",
+      "Bash(npm run:*)",
+      "Bash(sips:*)",
+      "Bash(curl:*)",
+      "Bash(awk '{print $2, $11, $12}')"
     ]
-  }
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "shadcn"
+  ]
 }

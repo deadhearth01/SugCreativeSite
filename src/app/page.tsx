@@ -2,18 +2,25 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { ArrowUpRight, CheckCircle2, TrendingUp, GraduationCap, Award, Users, Clock, Play, Briefcase, Calendar, Star, Quote, Building2, Shield, Cpu, Globe, Server, Code2, Palette, Settings, Zap, Target, Rocket, Sparkles, BadgeCheck, ArrowRight } from 'lucide-react'
+import { ArrowUpRight, CheckCircle2, TrendingUp, GraduationCap, Award, Users, Clock, Play, Briefcase, Calendar, Star, Quote, Building2, Shield, Cpu, Globe, Server, Code2, Palette, Settings, Zap, Target, Rocket, BadgeCheck, ArrowRight } from 'lucide-react'
+import RotatingText from '@/components/RotatingText'
 import dynamic from 'next/dynamic'
 import Navbar from '@/components/Navbar'
-
-const Aurora = dynamic(() => import('@/components/Aurora'), { ssr: false })
 import Footer from '@/components/Footer'
 import AnimatedSection from '@/components/AnimatedSection'
+import { DomeGallery } from '@/components/DomeGallery'
 import { Button } from '@/components/ui/button'
 import { NumberTicker } from '@/components/ui/number-ticker'
 import { LogoLoop } from '@/components/LogoLoop'
 
+const GridMotionHero = dynamic(() => import('@/components/GridMotionHero'), { ssr: false })
+
 // Company logos for placement showcase
+const placementImages = Array.from({ length: 50 }, (_, i) => ({
+  src: `/placements/placement_${i + 1}.jpg`,
+  alt: `SUG member placed at top company`
+}))
+
 const companyLogos = [
   { src: '/companyPlacementLogo/google.png', alt: 'Google' },
   { src: '/companyPlacementLogo/bosch.png', alt: 'Bosch' },
@@ -52,73 +59,68 @@ const collaborations = [
 ]
 
 // Success stories / Testimonials
+// Success stories / Testimonials
 const testimonials = [
   {
     name: 'Tanvi Bansal',
     company: 'WatchGuard',
     domain: 'IoT',
     quote: "Sug Creative's IoT domain training was exactly what I needed to enhance my skills and land a job at WatchGuard. The learning materials were spot-on, and the trainers helped me prepare for every interview.",
-    image: '/testimonials/tanvi.jpg',
+    image: '/placements/placement_1.jpg',
   },
   {
     name: 'Shyam',
     company: 'Bosch',
     domain: 'IoT',
     quote: "Thanks to Sug Creative's domain training, I gained the expertise in IoT that helped me get placed at Bosch. The course covered everything I needed to know, and the mentors were incredibly supportive.",
-    image: '/testimonials/shyam.jpg',
+    image: '/placements/placement_2.jpg',
   },
   {
     name: 'Anusha',
     company: 'Google',
     domain: 'Full Stack',
     quote: "I thank Sug Creative for the training I received. It gave me the practical skills and confidence needed to land a job at Google. The instructors were knowledgeable and always available.",
-    image: '/testimonials/anusha.jpg',
+    image: '/placements/placement_3.jpg',
   },
   {
     name: 'Pradeep',
     company: 'Accenture',
     domain: 'ML Engineer',
     quote: "Sug Creative's Placement Prep gave me the edge I needed to land a role as a Machine Learning Engineer at Accenture. The hands-on training helped me become job-ready and confident.",
-    image: '/testimonials/pradeep.jpg',
+    image: '/placements/placement_4.jpg',
   },
   {
     name: 'Chandrasekhar',
     company: 'TCS',
     domain: 'Web Design',
     quote: "The Web Designing Course provided by Sug Creative was a game-changer for my career. The detailed curriculum and hands-on experience helped me secure a role at TCS.",
-    image: '/testimonials/chandrasekhar.jpg',
+    image: '/placements/placement_5.jpg',
   },
   {
     name: 'Ruchita Patil',
     company: 'Capgemini',
     domain: 'UX Design',
     quote: "The practical approach to learning UX design helped me develop a strong portfolio and secure a role at Capgemini. I'm thrilled with my new career!",
-    image: '/testimonials/ruchita.jpg',
+    image: '/placements/placement_6.jpg',
   },
 ]
 
 // Courses data - matching poster exactly with professional icons
 const courses = [
   {
-    title: 'DevOps Internship',
+    title: 'DevOps Program',
     desc: 'Master CI/CD pipelines, container orchestration with Docker & Kubernetes, cloud automation & DevSecOps practices.',
-    href: '/courses/devops-internship',
-    image: '/courses/devops-hero.jpg',
-    price: 7999,
-    originalPrice: 12999,
-    savings: 5000,
+    href: '/courses/devops',
+    image: '/Career-Programs/devops.png',
     color: 'violet',
     tech: ['Docker', 'Kubernetes', 'Jenkins', 'Terraform', 'AWS / GCP', 'GitOps'],
     Icon: Server,
   },
   {
-    title: 'Cyber Security Internship',
+    title: 'Cyber Security Program',
     desc: 'Deep-dive into ethical hacking, penetration testing, network security, VAPT & threat intelligence with live CTF labs.',
-    href: '/courses/cyber-security-internship',
-    image: '/courses/cybersecurity-hero.jpg',
-    price: 4999,
-    originalPrice: 9999,
-    savings: 5000,
+    href: '/courses/cyber-security',
+    image: '/Career-Programs/cyberSecurity.png',
     color: 'blue',
     tech: ['Kali Linux', 'Metasploit', 'Wireshark', 'Burp Suite', 'SIEM', 'VAPT'],
     Icon: Shield,
@@ -126,23 +128,17 @@ const courses = [
   {
     title: 'IoT & Embedded Systems',
     desc: 'Go from circuit to cloud — learn embedded C, RTOS, microcontroller programming & build complete smart IoT solutions.',
-    href: '/courses/iot-embedded-internship',
-    image: '/courses/iot-hero.jpg',
-    price: 4999,
-    originalPrice: 9999,
-    savings: 5000,
+    href: '/courses/iot-embedded',
+    image: '/Career-Programs/embeddedSystem.png',
     color: 'green',
     tech: ['Arduino', 'Raspberry Pi', 'Embedded C', 'RTOS', 'MQTT', 'AWS IoT'],
     Icon: Cpu,
   },
   {
-    title: 'Full Stack Dev Internship',
+    title: 'Full Stack Dev Program',
     desc: 'Build production-ready web apps end-to-end — master React, Node.js, REST APIs, databases & cloud deployment.',
-    href: '/courses/fullstack-dev-internship',
-    image: '/courses/fullstack-hero.jpg',
-    price: 5999,
-    originalPrice: 10999,
-    savings: 5000,
+    href: '/courses/fullstack-dev',
+    image: '/Career-Programs/FullStack-Dev.png',
     color: 'gold',
     tech: ['React.js', 'Node.js', 'MongoDB', 'PostgreSQL', 'REST APIs', 'Vercel/AWS'],
     Icon: Globe,
@@ -170,235 +166,127 @@ export default function HomePage() {
     <>
       <Navbar />
 
-      {/* ═══ HERO - Creative Split Layout with Social Proof ═══ */}
-      <section className="relative min-h-screen flex items-center overflow-hidden bg-gradient-to-br from-[#f8fcfd] via-[#f2fafd] to-[#e8f7fa]">
-        {/* Aurora WebGL Background */}
-        <div className="absolute inset-0 opacity-40">
-          <Aurora
-            colorStops={['#82C93D', '#35C8E0', '#1A9AB5']}
-            blend={0.6}
-            amplitude={1.0}
-            speed={0.3}
-          />
-        </div>
+      {/* ═══ HERO ═══ */}
+      <section className="min-h-screen flex bg-white overflow-hidden pb-24 md:pb-32">
 
-        {/* Subtle grid pattern */}
-        <div className="absolute inset-0 pointer-events-none opacity-30" style={{
-          backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(26,154,181,0.15) 1px, transparent 0)',
-          backgroundSize: '40px 40px'
-        }} />
+        {/* ── Left: content column ── */}
+        <div className="relative z-10 w-full lg:w-[45%] flex flex-col justify-end px-6 sm:px-10 lg:pl-16 lg:pr-8 pt-24 pb-20 lg:pt-24 lg:pb-24 flex-shrink-0">
 
-        <div className="container-wide relative z-10 w-full py-24 lg:py-0">
-          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-            
-            {/* Left Column - Copy & CTA */}
-            <div className="order-2 lg:order-1">
-              {/* Urgency + Social Proof Badge */}
-              <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm text-primary-dark font-bold text-xs uppercase tracking-wider px-4 py-2 mb-6 rounded-full border border-primary/20 shadow-lg">
-                <span className="flex h-2 w-2 relative">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-                </span>
-                <span>April Batch — <span className="text-primary">12 seats left</span></span>
+          {/* Headline — static + rotating word + static */}
+          <h1 className="font-heading font-black text-primary-dark tracking-tight mb-6">
+
+            {/* Line 1 — small preface */}
+            <span className="block text-lg sm:text-xl lg:text-2xl text-primary-dark/40 font-bold uppercase tracking-[0.2em] mb-3">
+              Turn Your
+            </span>
+
+            {/* Line 2 — rotating word */}
+            <span className="block text-5xl sm:text-6xl lg:text-7xl leading-[1.0] mb-2" style={{ overflow: 'clip' }}>
+              <RotatingText
+                texts={['Degree.', 'Skills.', 'Potential.', 'Ambition.']}
+                mainClassName="text-primary"
+                splitBy="characters"
+                staggerDuration={0.025}
+                staggerFrom="first"
+                rotationInterval={2500}
+                transition={{ type: 'spring', damping: 22, stiffness: 220 }}
+                initial={{ y: '110%', opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: '-110%', opacity: 0 }}
+              />
+            </span>
+
+            {/* Line 3 — outcome */}
+            <span className="block text-4xl sm:text-5xl lg:text-6xl leading-[1.05]">
+              Into a Career.
+            </span>
+          </h1>
+
+          {/* Sub */}
+          <p className="text-base lg:text-lg text-primary-dark/55 leading-relaxed mb-10 max-w-sm">
+            Expert-led programs, industry mentors, and dedicated placement support — everything you need to land your first role at a top MNC.
+          </p>
+
+          {/* Trust stats — 2×2 grid */}
+          <div className="grid grid-cols-2 gap-x-10 gap-y-5 mb-10 max-w-xs">
+            {[
+              { value: '550+', label: 'Placed' },
+              { value: '50+',  label: 'MNC Partners' },
+              { value: '8+',   label: 'Years' },
+              { value: '98%',  label: 'Success Rate' },
+            ].map(({ value, label }) => (
+              <div key={label}>
+                <div className="text-2xl font-black text-primary-dark leading-none">{value}</div>
+                <div className="text-xs text-primary-dark/45 font-semibold mt-1">{label}</div>
               </div>
+            ))}
+          </div>
 
-              {/* Main Headline - Jobs to Be Done + Loss Aversion */}
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-heading font-black text-primary-dark leading-[1.05] tracking-tight mb-6">
-                Stop Applying.<br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-[#1AAFCB] to-[#82C93D]">
-                  Start Getting Hired.
-                </span>
-              </h1>
-
-              {/* Subheadline - Specific Outcome */}
-              <p className="text-lg lg:text-xl text-primary-dark/70 leading-relaxed mb-8 max-w-xl">
-                Join the <strong className="text-primary-dark">550+ engineers</strong> who landed jobs at Google, Bosch & Accenture through our 
-                <strong className="text-primary-dark"> 3-month intensive internships</strong> with real MNC mentors.
-              </p>
-
-              {/* Value Props - Quick Scan */}
-              <div className="flex flex-wrap gap-4 mb-8">
-                {[
-                  { icon: BadgeCheck, text: 'MNC Mentors' },
-                  { icon: Award, text: '2 Certifications' },
-                  { icon: Briefcase, text: 'Placement Support' },
-                ].map((item) => (
-                  <div key={item.text} className="flex items-center gap-2 text-primary-dark/80 text-sm font-semibold">
-                    <item.icon size={18} className="text-[#82C93D]" />
-                    {item.text}
-                  </div>
-                ))}
-              </div>
-
-              {/* CTA Buttons - Clear Primary Action */}
-              <div className="flex flex-col sm:flex-row gap-4 mb-10">
-                <Button asChild size="lg" className="bg-primary-dark hover:bg-black text-white font-black text-sm uppercase tracking-widest rounded-2xl border-2 border-primary-dark px-8 h-14 shadow-[4px_4px_0px_rgba(130,201,61,1)] hover:shadow-[6px_6px_0px_rgba(130,201,61,1)] hover:-translate-y-1 transition-all group">
-                  <Link href="/courses" className="flex items-center gap-3">
-                    Explore Programs
-                    <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
-                  </Link>
-                </Button>
-                <Button asChild variant="outline" size="lg" className="bg-white/80 backdrop-blur-sm border-2 border-primary-dark/20 text-primary-dark hover:border-primary-dark hover:bg-white font-bold text-sm uppercase tracking-widest rounded-2xl px-8 h-14 transition-all">
-                  <Link href="/contact" className="flex items-center gap-2">
-                    <Play size={16} className="text-primary" />
-                    Free Career Counselling
-                  </Link>
-                </Button>
-              </div>
-
-              {/* Micro Social Proof - Faces + Recent Placement */}
-              <div className="flex items-center gap-4 pt-6 border-t border-primary-dark/10">
-                <div className="flex -space-x-3">
-                  {['T', 'S', 'A', 'P'].map((initial, i) => (
-                    <div 
-                      key={i} 
-                      className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-[#82C93D] border-2 border-white flex items-center justify-center text-white font-bold text-sm shadow-md"
-                    >
-                      {initial}
-                    </div>
-                  ))}
-                  <div className="w-10 h-10 rounded-full bg-primary-dark border-2 border-white flex items-center justify-center text-white font-bold text-xs shadow-md">
-                    +546
-                  </div>
-                </div>
-                <div className="text-sm">
-                  <div className="font-bold text-primary-dark">Anusha joined Google last week</div>
-                  <div className="text-primary-dark/60">After completing Full Stack Internship</div>
-                </div>
-              </div>
-            </div>
-
-            {/* Right Column - Visual Proof & Stats */}
-            <div className="order-1 lg:order-2 relative">
-              {/* Main Stats Card - Asymmetric Layout */}
-              <div className="relative">
-                {/* Background decorative elements */}
-                <div className="absolute -top-8 -right-8 w-32 h-32 bg-[#82C93D]/20 rounded-full blur-3xl" />
-                <div className="absolute -bottom-8 -left-8 w-40 h-40 bg-primary/20 rounded-full blur-3xl" />
-                
-                {/* Main Card */}
-                <div className="relative bg-white rounded-3xl p-8 shadow-2xl border border-primary/10">
-                  {/* Success Rate - Hero Stat */}
-                  <div className="text-center mb-8">
-                    <div className="text-7xl lg:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-r from-primary-dark to-primary leading-none">
-                      98%
-                    </div>
-                    <div className="text-primary-dark/60 font-bold uppercase tracking-widest text-sm mt-2">
-                      Placement Success Rate
-                    </div>
-                  </div>
-
-                  {/* Stats Grid */}
-                  <div className="grid grid-cols-3 gap-4 mb-8">
-                    <div className="text-center p-4 bg-gradient-to-br from-primary/5 to-primary/10 rounded-2xl">
-                      <div className="text-2xl lg:text-3xl font-black text-primary-dark">
-                        <NumberTicker value={550} />+
-                      </div>
-                      <div className="text-xs font-bold text-primary-dark/60 uppercase tracking-wider mt-1">Placed</div>
-                    </div>
-                    <div className="text-center p-4 bg-gradient-to-br from-[#82C93D]/5 to-[#82C93D]/10 rounded-2xl">
-                      <div className="text-2xl lg:text-3xl font-black text-primary-dark">
-                        <NumberTicker value={50} />+
-                      </div>
-                      <div className="text-xs font-bold text-primary-dark/60 uppercase tracking-wider mt-1">Companies</div>
-                    </div>
-                    <div className="text-center p-4 bg-gradient-to-br from-violet-500/5 to-violet-500/10 rounded-2xl">
-                      <div className="text-2xl lg:text-3xl font-black text-primary-dark">
-                        <NumberTicker value={8} />+
-                      </div>
-                      <div className="text-xs font-bold text-primary-dark/60 uppercase tracking-wider mt-1">Years</div>
-                    </div>
-                  </div>
-
-                  {/* Company Logos */}
-                  <div className="pt-6 border-t border-primary-dark/10">
-                    <div className="text-xs font-bold text-primary-dark/40 uppercase tracking-widest text-center mb-4">
-                      Our SUGians Work At
-                    </div>
-                    <div className="flex flex-wrap justify-center gap-4 items-center">
-                      {['Google', 'Bosch', 'Accenture', 'TCS', 'Capgemini'].map((company) => (
-                        <div key={company} className="text-primary-dark/30 text-sm font-bold hover:text-primary-dark transition-colors">
-                          {company}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Floating Badge - Urgency */}
-                <div className="absolute -bottom-4 -left-4 lg:-left-8 bg-[#82C93D] text-white px-5 py-3 rounded-2xl shadow-xl border-2 border-white">
-                  <div className="flex items-center gap-2">
-                    <Sparkles size={18} />
-                    <div>
-                      <div className="font-black text-sm">Next Batch: Apr 20</div>
-                      <div className="text-xs text-white/80">Limited seats available</div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Floating Badge - Price Anchor */}
-                <div className="absolute -top-4 -right-4 lg:-right-8 bg-white px-5 py-3 rounded-2xl shadow-xl border-2 border-primary/20">
-                  <div className="text-center">
-                    <div className="text-xs text-red-500 font-bold line-through">₹12,999</div>
-                    <div className="text-xl font-black text-primary-dark">₹4,999</div>
-                    <div className="text-[10px] font-bold text-[#82C93D] uppercase">Save 60%</div>
-                  </div>
-                </div>
-              </div>
-            </div>
+          {/* CTAs */}
+          <div className="flex flex-col sm:flex-row gap-3">
+            <Button asChild size="lg" className="bg-primary-dark hover:bg-black text-white font-black text-sm uppercase tracking-widest rounded-2xl px-8 h-14 shadow-[4px_4px_0px_rgba(130,201,61,1)] hover:shadow-[6px_6px_0px_rgba(130,201,61,1)] hover:-translate-y-0.5 transition-all group">
+              <Link href="/courses" className="flex items-center gap-2">
+                Explore Programs
+                <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+              </Link>
+            </Button>
+            <Button asChild variant="outline" size="lg" className="border-2 border-primary-dark/20 text-primary-dark hover:border-primary-dark hover:bg-primary-dark/5 font-bold text-sm uppercase tracking-widest rounded-2xl px-8 h-14 transition-all">
+              <Link href="/contact">Free Career Counselling</Link>
+            </Button>
           </div>
         </div>
 
-        {/* Bottom Wave */}
-        <div className="absolute bottom-0 left-0 right-0">
-          <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full">
-            <path d="M0 120L60 105C120 90 240 60 360 45C480 30 600 30 720 37.5C840 45 960 60 1080 67.5C1200 75 1320 75 1380 75L1440 75V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0Z" fill="white"/>
-          </svg>
+        {/* ── Right: GridMotion column — strictly contained, hidden on mobile ── */}
+        <div className="hidden lg:block flex-1 relative overflow-hidden">
+          <GridMotionHero />
         </div>
+
       </section>
 
       {/* ═══ PLACEMENT SUCCESS - Social Proof Bar ═══ */}
-      <section className="py-20 md:py-32 bg-white border-b border-primary-dark/10 overflow-hidden">
-        <div className="container-wide mb-16 md:mb-24">
+      <section className="pt-24 md:pt-36 bg-white overflow-hidden">
+
+        {/* Heading + stats */}
+        <div className="container-wide">
           <AnimatedSection>
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-8">
+            <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-8 mb-16 md:mb-20">
               <div>
-                <div className="flex items-center gap-3 mb-4">
+                <div className="flex items-center gap-3 mb-6">
                   <div className="flex items-center gap-1">
                     {[1,2,3,4,5].map((i) => (
-                      <Star key={i} size={16} className="fill-[#82C93D] text-[#82C93D]" />
+                      <Star key={i} size={15} className="fill-[#82C93D] text-[#82C93D]" />
                     ))}
                   </div>
-                  <span className="text-sm font-bold text-primary-dark/60">550+ Success Stories</span>
+                  <span className="text-sm font-bold text-primary-dark/50">550+ Success Stories</span>
                 </div>
-                <h2 className="text-3xl md:text-4xl lg:text-5xl font-heading font-black text-primary-dark leading-tight">
+                <h2 className="text-3xl md:text-4xl lg:text-5xl font-heading font-black text-primary-dark leading-[1.1]">
                   Our SUGians Are Placed At<br />
                   <span className="text-primary">Top Industry Leaders</span>
                 </h2>
               </div>
-              <div className="flex items-center gap-8">
-                <div className="text-right">
-                  <div className="text-4xl md:text-5xl font-black text-[#82C93D]">98%</div>
-                  <div className="text-xs font-bold text-primary-dark/50 uppercase tracking-wider">Placement Rate</div>
+              <div className="flex items-center gap-12 pb-2">
+                <div>
+                  <div className="text-4xl md:text-5xl font-black text-[#82C93D] leading-none">98%</div>
+                  <div className="text-xs font-bold text-primary-dark/45 uppercase tracking-wider mt-2">Placement Rate</div>
                 </div>
-                <div className="w-px h-16 bg-primary-dark/10 hidden md:block" />
-                <div className="text-right hidden md:block">
-                  <div className="text-4xl md:text-5xl font-black text-primary">50+</div>
-                  <div className="text-xs font-bold text-primary-dark/50 uppercase tracking-wider">Hiring Partners</div>
+                <div className="w-px h-14 bg-primary-dark/10 hidden md:block" />
+                <div className="hidden md:block">
+                  <div className="text-4xl md:text-5xl font-black text-primary leading-none">50+</div>
+                  <div className="text-xs font-bold text-primary-dark/45 uppercase tracking-wider mt-2">Hiring Partners</div>
                 </div>
               </div>
             </div>
           </AnimatedSection>
         </div>
-        
-        {/* Edge-to-edge Logo Scroll */}
-        <div className="w-screen relative left-1/2 -translate-x-1/2">
+
+        {/* Edge-to-edge Logo Scroll — generous vertical padding */}
+        <div className="w-screen relative left-1/2 -translate-x-1/2 py-10 border-t border-primary-dark/6">
           <LogoLoop
             logos={companyLogos}
-            speed={60}
+            speed={55}
             direction="left"
-            logoHeight={50}
-            gap={80}
+            logoHeight={48}
+            gap={120}
             pauseOnHover
             scaleOnHover
             fadeOut
@@ -406,6 +294,7 @@ export default function HomePage() {
             ariaLabel="Companies where our students are placed"
           />
         </div>
+
       </section>
 
       {/* ═══ INTERNSHIP PROGRAMS ═══ */}
@@ -417,7 +306,7 @@ export default function HomePage() {
               Career Programs
             </div>
             <h2 className="text-4xl md:text-5xl font-heading font-black text-primary-dark tracking-tight leading-tight mb-4">
-              Industry-Focused Internships<br />With Placement Support
+              Industry-Focused Programs<br />With Placement Support
             </h2>
             <p className="text-primary-dark/70 text-lg font-bold">
               3-month intensive programs designed by MNC mentors. Get certified, build real projects, and launch your career.
@@ -431,32 +320,29 @@ export default function HomePage() {
               return (
                 <AnimatedSection key={course.title} delay={index * 0.1}>
                   <Link href={course.href} className={`group block relative h-[560px] border-2 border-primary-dark rounded-3xl overflow-hidden ${colors.shadow} transition-all duration-500 hover:-translate-y-2 hover:shadow-[12px_12px_0px_rgba(0,0,0,1)] bg-white focus:outline-none`}>
-                    <div className="absolute inset-0 bg-gradient-to-br from-gray-100 to-gray-200">
-                      <div className={`absolute inset-0 bg-gradient-to-br ${colors.gradient} opacity-20`} />
-                    </div>
                     
-                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-transparent" />
-                    
-                    {/* Price Tag with Savings */}
-                    <div className="absolute top-4 right-4 bg-white border-2 border-black shadow-[2px_2px_0px_rgba(0,0,0,1)] p-3">
-                      <div className="text-[10px] font-bold uppercase text-red-500 bg-red-50 px-2 py-0.5 mb-1 border border-red-200 flex items-center gap-1">
-                        <Target size={10} /> Save ₹{course.savings.toLocaleString()}
-                      </div>
-                      <div className="text-xs text-gray-400 line-through">₹{course.originalPrice.toLocaleString()}</div>
-                      <div className="text-xl font-black text-primary-dark">₹{course.price.toLocaleString()}</div>
+                    {/* Background Image - MUST BE BASE LAYER */}
+                    <div className="absolute inset-0 z-0">
+                      <Image src={course.image} alt={course.title} fill className="object-cover" />
                     </div>
 
+                    {/* Colored overlay */}
+                    <div className={`absolute inset-0 bg-gradient-to-br ${colors.gradient} opacity-80 mix-blend-multiply z-10 pointer-events-none`} />
+                    
+                    {/* Dark gradient for text readability */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-primary-dark via-primary-dark/80 to-transparent z-20 pointer-events-none" />
+
                     {/* Icon & Duration Badge */}
-                    <div className="absolute top-4 left-4 flex flex-col gap-2">
-                      <div className={`w-14 h-14 ${colors.bg} border-2 border-black flex items-center justify-center text-white`}>
+                    <div className="absolute top-4 left-4 flex flex-col gap-2 z-30 pointer-events-none">
+                      <div className={`w-14 h-14 ${colors.bg} rounded-2xl border-2 border-black flex items-center justify-center text-white`}>
                         <IconComponent size={28} />
                       </div>
-                      <div className="bg-white text-primary-dark font-black text-[10px] uppercase tracking-widest px-3 py-1.5 border-2 border-black text-center">
+                      <div className="bg-white text-primary-dark font-black text-[10px] uppercase rounded-2xl tracking-widest px-3 py-1.5 border-2 border-black text-center">
                         3 Months
                       </div>
                     </div>
 
-                    <div className="absolute inset-x-0 bottom-0 p-6 flex flex-col justify-end">
+                    <div className="absolute inset-x-0 bottom-0 p-6 flex flex-col justify-end z-30 pointer-events-none">
                       {/* Tech Stack - all 6 pills */}
                       <div className="flex flex-wrap gap-1 mb-4">
                         {course.tech.map((t) => (
@@ -516,8 +402,8 @@ export default function HomePage() {
               </p>
               <div className="grid grid-cols-2 gap-4 mb-8">
                 {businessServices.map((service) => (
-                  <div key={service.title} className="flex items-start gap-3 p-4 bg-gray-50 border-2 border-black/10 hover:border-primary/30 transition-colors">
-                    <div className="w-10 h-10 bg-primary/10 flex items-center justify-center text-primary flex-shrink-0">
+                  <div key={service.title} className="flex items-start gap-3 p-4 bg-gray-50 rounded-2xl border border-black/8 hover:border-primary/30 transition-colors">
+                    <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center text-primary flex-shrink-0">
                       <service.Icon size={20} />
                     </div>
                     <div>
@@ -536,21 +422,21 @@ export default function HomePage() {
             
             <div className="relative">
               <div className="grid grid-cols-2 gap-4">
-                <div className="bg-primary-dark border-2 border-black p-6 shadow-[6px_6px_0px_rgba(130,201,61,1)]">
+                <div className="bg-primary-dark rounded-3xl border-2 border-black p-6 shadow-[6px_6px_0px_rgba(130,201,61,1)]">
                   <div className="text-4xl font-black text-white mb-1">
                     <NumberTicker value={200} />+
                   </div>
                   <div className="text-xs font-bold text-white/60 uppercase tracking-widest">Business Clients</div>
                 </div>
-                <div className="bg-[#82C93D] border-2 border-black p-6 shadow-[6px_6px_0px_rgba(26,154,181,1)]">
+                <div className="bg-[#82C93D] rounded-3xl border-2 border-black p-6 shadow-[6px_6px_0px_rgba(26,154,181,1)]">
                   <div className="text-4xl font-black text-white mb-1">
                     <NumberTicker value={8} />+
                   </div>
                   <div className="text-xs font-bold text-white/60 uppercase tracking-widest">Years Experience</div>
                 </div>
-                <div className="col-span-2 bg-gray-50 border-2 border-black p-6 shadow-[4px_4px_0px_rgba(0,0,0,1)]">
+                <div className="col-span-2 bg-gray-50 rounded-3xl border-2 border-black/10 p-6 shadow-[4px_4px_0px_rgba(0,0,0,0.08)]">
                   <div className="flex items-center gap-4 mb-4">
-                    <div className="w-12 h-12 bg-primary/20 flex items-center justify-center text-primary">
+                    <div className="w-12 h-12 bg-primary/20 rounded-2xl flex items-center justify-center text-primary">
                       <CheckCircle2 size={24} />
                     </div>
                     <div>
@@ -560,7 +446,7 @@ export default function HomePage() {
                   </div>
                   <div className="flex flex-wrap gap-2">
                     {['Startups', 'SMEs', 'Enterprises', 'NGOs'].map((type) => (
-                      <span key={type} className="text-xs font-bold px-3 py-1 bg-white border border-black/10 text-primary-dark/70">
+                      <span key={type} className="text-xs font-bold px-3 py-1.5 bg-white rounded-full border border-black/10 text-primary-dark/70">
                         {type}
                       </span>
                     ))}
@@ -590,37 +476,31 @@ export default function HomePage() {
             </p>
           </div>
 
-          {/* Testimonials Grid */}
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {testimonials.slice(0, 6).map((t, i) => (
-              <AnimatedSection key={t.name} delay={i * 0.1}>
-                <div className="bg-white border-2 border-black shadow-[6px_6px_0px_rgba(130,201,61,1)] p-6 h-full flex flex-col">
-                  <div className="flex items-center gap-4 mb-4">
-                    <div className="w-14 h-14 bg-primary/20 rounded-3xl border-2 border-black flex items-center justify-center text-2xl font-black text-primary-dark">
-                      {t.name.charAt(0)}
-                    </div>
-                    <div>
-                      <div className="font-black text-primary-dark">{t.name}</div>
-                      <div className="text-sm font-bold text-primary">
-                        <Building2 size={12} className="inline mr-1" />
-                        {t.company}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex-1">
-                    <Quote size={24} className="text-primary/30 mb-2" />
-                    <p className="text-primary-dark/80 font-medium text-sm leading-relaxed">
-                      "{t.quote}"
-                    </p>
-                  </div>
-                  <div className="mt-4 pt-4 border-t border-black/10">
-                    <span className="text-xs font-bold uppercase tracking-widest text-primary bg-primary/10 px-2 py-1">
-                      {t.domain}
-                    </span>
-                  </div>
-                </div>
-              </AnimatedSection>
-            ))}
+          {/* Dome Gallery placement scroll */}
+          {/* Edge-to-edge Dome Gallery Container - spans full viewport width */}
+          <div className="relative w-screen left-1/2 -translate-x-1/2 h-[500px] md:h-[600px] lg:h-[700px]">
+            <DomeGallery
+              images={placementImages}
+              fit={0.9}
+              minRadius={500}
+              maxVerticalRotationDeg={8}
+              segments={10}
+              dragDampening={1.8}
+              grayscale={false}
+              overlayBlurColor="#1A9AB5"
+              imageBorderRadius="12px"
+              openedImageBorderRadius="20px"
+              openedImageWidth="280px"
+              openedImageHeight="360px"
+            />
+          </div>
+          
+          <div className="text-center mt-12">
+            <Link href="/testimonials">
+              <Button size="lg" className="bg-[#82C93D] hover:bg-[#82C93D]/90 text-white rounded-full px-8 py-6 text-lg font-bold shadow-[4px_4px_0px_rgba(0,0,0,1)] border-2 border-black transition-all hover:translate-y-1 hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]">
+                View All Success Stories <ArrowRight className="ml-2" size={20} />
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
@@ -649,8 +529,8 @@ export default function HomePage() {
               { icon: <Calendar size={32} />, title: 'Flexible Batches', desc: 'Weekend and weekday batches available.' },
             ].map((item, i) => (
               <AnimatedSection key={item.title} delay={i * 0.05}>
-                <div className="bg-white border-2 border-black p-6 shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-[8px_8px_0px_rgba(0,0,0,1)] hover:-translate-y-1 transition-all h-full">
-                  <div className="w-14 h-14 bg-primary/10 flex items-center justify-center mb-4 text-primary border-2 border-primary/20">
+                <div className="bg-white border-2 border-black p-6 rounded-3xl shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-[8px_8px_0px_rgba(0,0,0,1)] hover:-translate-y-1 transition-all h-full">
+                  <div className="w-14 h-14 bg-primary/10 rounded-2xl flex items-center justify-center mb-4 text-primary border-2 border-primary/20">
                     {item.icon}
                   </div>
                   <h3 className="text-lg font-black text-primary-dark mb-2">{item.title}</h3>
@@ -672,7 +552,7 @@ export default function HomePage() {
               { value: 200, suffix: '+', label: 'Business Clients' },
               { value: 15, suffix: '+', label: 'Collaborations' },
             ].map((stat) => (
-              <div key={stat.label} className="bg-white/10 backdrop-blur-sm border-2 border-white/30 p-6">
+              <div key={stat.label} className="bg-white/10 rounded-3xl backdrop-blur-sm border-2 border-white/30 p-6">
                 <div className="text-4xl md:text-5xl font-black text-white mb-2">
                   <NumberTicker value={stat.value} />{stat.suffix}
                 </div>

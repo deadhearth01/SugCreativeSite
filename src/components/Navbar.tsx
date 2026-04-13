@@ -91,10 +91,10 @@ export default function Navbar() {
   return (
     <>
       <nav
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 hidden xl:flex items-center justify-between ${
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 hidden xl:flex items-center justify-between backdrop-blur-xl ${
           scrolled
-            ? 'bg-white/95 backdrop-blur-xl border-b border-black/5 py-3 shadow-sm px-6'
-            : 'bg-transparent py-5 px-10'
+            ? 'bg-white/85 border-b border-black/8 shadow-sm py-3 px-6'
+            : 'bg-white/70 border-b border-white/30 py-5 px-10'
         }`}
       >
         {/* Logo — Far Left */}

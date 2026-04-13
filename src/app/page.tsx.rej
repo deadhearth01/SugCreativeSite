@@ -1,0 +1,13 @@
+@@ -530,12 +530,12 @@
+             </h2>
+           </div>
+ 
+           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+             {[
+               { icon: <Play size={32} />, title: 'Live Sessions', desc: 'Interactive classes with industry experts, not just recorded videos.' },
+               { icon: <Users size={32} />, title: 'MNC Mentors', desc: 'Learn from professionals working at Google, Microsoft, Amazon & more.' },
+               { icon: <Award size={32} />, title: '2 Certifications', desc: 'Get both course completion and internship certificates.' },
+               { icon: <Briefcase size={32} />, title: 'Placement Support', desc: 'Resume reviews, mock interviews & job referrals included.' },
+               { icon: <Clock size={32} />, title: '3-Month Intensive', desc: 'Focused learning with hands-on projects every week.' },
+               { icon: <CheckCircle2 size={32} />, title: 'Real Projects', desc: 'Build production-grade applications for your portfolio.' },
+               { icon: <TrendingUp size={32} />, title: '98% Success Rate', desc: 'Most of our students land jobs within 3 months of completion.' },

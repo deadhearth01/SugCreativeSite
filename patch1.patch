@@ -1,0 +1,48 @@
+--- src/app/page.tsx
++++ src/app/page.tsx
+@@ -530,12 +530,12 @@
+             </h2>
+           </div>
+ 
+           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+             {[
+               { icon: <Play size={32} />, title: 'Live Sessions', desc: 'Interactive classes with industry experts, not just recorded videos.' },
+               { icon: <Users size={32} />, title: 'MNC Mentors', desc: 'Learn from professionals working at Google, Microsoft, Amazon & more.' },
+               { icon: <Award size={32} />, title: '2 Certifications', desc: 'Get both course completion and internship certificates.' },
+               { icon: <Briefcase size={32} />, title: 'Placement Support', desc: 'Resume reviews, mock interviews & job referrals included.' },
+               { icon: <Clock size={32} />, title: '3-Month Intensive', desc: 'Focused learning with hands-on projects every week.' },
+               { icon: <CheckCircle2 size={32} />, title: 'Real Projects', desc: 'Build production-grade applications for your portfolio.' },
+               { icon: <TrendingUp size={32} />, title: '98% Success Rate', desc: 'Most of our students land jobs within 3 months of completion.' },
+               { icon: <Calendar size={32} />, title: 'Flexible Batches', desc: 'Weekend and weekday batches available.' },
+             ].map((item, i) => (
+               <AnimatedSection key={item.title} delay={i * 0.05}>
+-                <div className="bg-white border-2 border-black p-6 shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-[8px_8px_0px_rgba(0,0,0,1)] hover:-translate-y-1 transition-all h-full">
+-                  <div className="w-14 h-14 bg-primary/10 flex items-center justify-center mb-4 text-primary border-2 border-primary/20">
++                <div className="bg-white border-2 border-black p-6 rounded-3xl shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-[8px_8px_0px_rgba(0,0,0,1)] hover:-translate-y-1 transition-all h-full">
++                  <div className="w-14 h-14 bg-primary/10 rounded-2xl flex items-center justify-center mb-4 text-primary border-2 border-primary/20">
+                     {item.icon}
+                   </div>
+                   <h3 className="text-lg font-black text-primary-dark mb-2">{item.title}</h3>
+                   <p className="text-primary-dark/70 font-medium text-sm">{item.desc}</p>
+                 </div>
+               </AnimatedSection>
+             ))}
+           </div>
+         </div>
+       </section>
+ 
+       {/* ═══ STATS SECTION ═══ */}
+       <section className="py-20 bg-gradient-to-r from-[#82C93D] to-[#35C8E0] border-y-2 border-black">
+         <div className="container-wide">
+           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+             {[
+               { value: 3000, suffix: '+', label: 'Careers Transformed' },
+               { value: 550, suffix: '+', label: 'SUGians Placed' },
+               { value: 200, suffix: '+', label: 'Business Clients' },
+               { value: 15, suffix: '+', label: 'Collaborations' },
+             ].map((stat) => (
+-              <div key={stat.label} className="bg-white/10 backdrop-blur-sm border-2 border-white/30 p-6">
++              <div key={stat.label} className="bg-white/10 rounded-3xl backdrop-blur-sm border-2 border-white/30 p-6">
+                 <div className="text-4xl md:text-5xl font-black text-white mb-2">
+                   <NumberTicker value={stat.value} />{stat.suffix}
+                 </div>

@@ -70,7 +70,8 @@ interface ItemWithImage extends Coord {
 }
 
 function buildItems(pool: ImageItem[], seg: number): ItemWithImage[] {
-  const xCols = Array.from({ length: seg }, (_, i) => -37 + i * 2);
+  const startX = -((seg - 1) * 2) / 2;
+  const xCols = Array.from({ length: seg }, (_, i) => startX + i * 2);
   const evenYs = [-4, -2, 0, 2, 4];
   const oddYs = [-3, -1, 1, 3, 5];
 
@@ -91,19 +92,26 @@ function buildItems(pool: ImageItem[], seg: number): ItemWithImage[] {
     return { src: image.src || '', alt: image.alt || '' };
   });
 
-  const usedImages = Array.from({ length: totalSlots }, (_, i) => normalizedImages[i % normalizedImages.length]);
-
-  for (let i = 1; i < usedImages.length; i++) {
-    if (usedImages[i].src === usedImages[i - 1].src) {
-      for (let j = i + 1; j < usedImages.length; j++) {
-        if (usedImages[j].src !== usedImages[i].src) {
-          const tmp = usedImages[i];
-          usedImages[i] = usedImages[j];
-          usedImages[j] = tmp;
-          break;
-        }
+  // To prevent any duplicate photo side-by-side or near,
+  // we completely randomize the pool selection for all slots.
+  // We'll iterate and pick an image, ensuring it doesn't match recently used images.
+  const usedImages = [];
+  const recentHistory = [];
+  
+  for (let i = 0; i < totalSlots; i++) {
+    // try finding an image not in recent history
+    let candidate;
+    for (let attempts = 0; attempts < 50; attempts++) {
+      const randomIndex = Math.floor(Math.random() * normalizedImages.length);
+      candidate = normalizedImages[randomIndex];
+      // Keep last 15 images to avoid clustering too densely
+      if (!recentHistory.includes(candidate.src)) {
+        break;
       }
     }
+    usedImages.push(candidate);
+    recentHistory.push(candidate.src);
+    if (recentHistory.length > 15) recentHistory.shift();
   }
 
   return coords.map((c, i) => ({

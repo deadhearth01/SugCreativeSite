@@ -157,11 +157,11 @@ export default function AboutPage() {
             {/* Right: Image grid */}
             <div className="lg:w-[50%] relative w-full">
               <div className="grid grid-cols-2 gap-4">
-                <div className="hero-animate relative h-64 border-2 border-primary-dark shadow-[8px_8px_0px_rgba(0,0,0,1)] overflow-hidden">
+                <div className="hero-animate relative h-64 rounded-3xl border-2 border-primary-dark shadow-[8px_8px_0px_rgba(0,0,0,1)] overflow-hidden">
                   <Image src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=600&h=500&fit=crop" alt="Team collaboration" fill className="object-cover grayscale hover:grayscale-0 transition-all duration-700" />
                   <div className="absolute inset-0 bg-primary-dark/20 group-hover:opacity-0 transition-opacity" />
                 </div>
-                <div className="hero-animate relative h-64 mt-8 border-2 border-primary-dark shadow-[8px_8px_0px_rgba(130,201,61,1)] overflow-hidden">
+                <div className="hero-animate relative h-64 mt-8 rounded-3xl border-2 border-primary-dark shadow-[8px_8px_0px_rgba(130,201,61,1)] overflow-hidden">
                   <Image src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=600&h=500&fit=crop" alt="Business growth" fill className="object-cover grayscale hover:grayscale-0 transition-all duration-700" />
                   <div className="absolute inset-0 bg-[#82C93D]/20 group-hover:opacity-0 transition-opacity" />
                 </div>
@@ -182,7 +182,7 @@ export default function AboutPage() {
         <div className="container-wide relative z-10" ref={statsRef}>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
             {stats.map((stat, i) => (
-              <div key={stat.label} className="stat-card text-center p-8 border-2 border-white/10 hover:border-[#82C93D] bg-white/5 backdrop-blur-sm shadow-[4px_4px_0px_rgba(0,0,0,0.5)] transition-all duration-300 group hover:-translate-y-1">
+              <div key={stat.label} className="stat-card rounded-3xl text-center p-8 border-2 border-white/10 hover:border-[#82C93D] bg-white/5 backdrop-blur-sm shadow-[4px_4px_0px_rgba(0,0,0,0.5)] transition-all duration-300 group hover:-translate-y-1">
                 <div className="w-12 h-12 mx-auto mb-4 bg-white/10 border border-white/20 flex items-center justify-center group-hover:bg-[#82C93D] transition-colors">
                   <stat.icon size={22} className="text-[#82C93D] group-hover:text-white transition-colors" />
                 </div>
@@ -213,7 +213,7 @@ export default function AboutPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <AnimatedSection direction="left">
               <div className="bg-primary-dark text-white border-2 border-primary-dark p-10 md:p-12 rounded-3xl shadow-[10px_10px_0px_rgba(0,0,0,1)] h-full group hover:-translate-y-1 hover:shadow-[14px_14px_0px_rgba(0,0,0,1)] transition-all duration-300">
-                <div className="w-16 h-16 flex items-center justify-center bg-[#82C93D] border-2 border-white/20 mb-8 shadow-[4px_4px_0px_rgba(130,201,61,0.5)]">
+                <div className="w-16 h-16 rounded-2xl flex items-center justify-center bg-[#82C93D] border-2 border-white/20 mb-8 shadow-[4px_4px_0px_rgba(130,201,61,0.5)]">
                   <Target size={28} className="text-white" />
                 </div>
                 <div className="text-[10px] font-black uppercase tracking-widest text-[#82C93D] mb-3">Mission</div>
@@ -230,7 +230,7 @@ export default function AboutPage() {
 
             <AnimatedSection direction="right" delay={0.15}>
               <div className="bg-white text-primary-dark border-2 border-primary-dark p-10 md:p-12 rounded-3xl shadow-[10px_10px_0px_rgba(130,201,61,1)] h-full group hover:-translate-y-1 hover:shadow-[14px_14px_0px_rgba(130,201,61,1)] transition-all duration-300">
-                <div className="w-16 h-16 flex items-center justify-center bg-primary-dark border-2 border-primary-dark mb-8 shadow-[4px_4px_0px_rgba(0,0,0,1)]">
+                <div className="w-16 h-16 rounded-2xl flex items-center justify-center bg-primary-dark border-2 border-primary-dark mb-8 shadow-[4px_4px_0px_rgba(0,0,0,1)]">
                   <Eye size={28} className="text-[#82C93D]" />
                 </div>
                 <div className="text-[10px] font-black uppercase tracking-widest text-primary mb-3">Vision</div>
@@ -311,99 +311,11 @@ export default function AboutPage() {
             {values.map((value, i) => (
               <AnimatedSection key={value.title} delay={i * 0.1}>
                 <div className="bg-white border-2 border-primary-dark p-8 rounded-3xl shadow-[8px_8px_0px_rgba(0,0,0,1)] hover:-translate-y-2 hover:shadow-[12px_12px_0px_rgba(0,0,0,1)] transition-all duration-300 group h-full">
-                  <div className="w-14 h-14 flex items-center justify-center bg-primary-dark border-2 border-primary-dark mb-6 shadow-[4px_4px_0px_rgba(130,201,61,1)] group-hover:bg-[#82C93D] transition-colors">
+                  <div className="w-14 h-14 flex rounded-2xl items-center justify-center bg-primary-dark border-2 border-primary-dark mb-6 shadow-[4px_4px_0px_rgba(130,201,61,1)] group-hover:bg-[#82C93D] transition-colors">
                     <value.icon size={24} className="text-[#82C93D] group-hover:text-white transition-colors" />
                   </div>
                   <h3 className="text-xl font-heading font-black text-primary-dark mb-3">{value.title}</h3>
                   <p className="text-primary-dark/70 font-bold text-sm leading-relaxed">{value.desc}</p>
-                </div>
-              </AnimatedSection>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ═══ TEAM ═══ */}
-      <section className="py-24 md:py-32 bg-gray-50 border-b-2 border-black/10">
-        <div className="container-wide">
-          <AnimatedSection>
-            <div className="text-center mb-16">
-              <div className="inline-block bg-primary text-white font-black text-xs uppercase tracking-widest px-4 py-2 mb-6 rounded-3xl shadow-[4px_4px_0px_rgba(0,0,0,1)] border-2 border-primary-dark">
-                The Team
-              </div>
-              <h2 className="text-4xl md:text-5xl font-heading font-black text-primary-dark tracking-tight mb-6">
-                Meet the Team
-              </h2>
-              <p className="text-primary-dark/60 text-lg font-bold max-w-2xl mx-auto">
-                A diverse team of strategists, mentors, technologists, and dreamers united by
-                a shared passion for creating measurable impact.
-              </p>
-            </div>
-          </AnimatedSection>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {team.map((member, i) => (
-              <AnimatedSection key={member.name} delay={i * 0.1}>
-                <div className="group border-2 border-primary-dark rounded-3xl shadow-[8px_8px_0px_rgba(0,0,0,1)] hover:-translate-y-2 hover:shadow-[16px_16px_0px_rgba(0,0,0,1)] transition-all duration-300 overflow-hidden bg-white">
-                  <div className="relative h-72 overflow-hidden border-b-2 border-primary-dark">
-                    <Image
-                      src={member.image}
-                      alt={member.name}
-                      fill
-                      className="object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105"
-                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-primary-dark/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                    {/* Hover overlay */}
-                    <div className="absolute bottom-0 inset-x-0 p-6 translate-y-full group-hover:translate-y-0 transition-transform duration-500">
-                      <div className="w-10 h-10 bg-[#82C93D] border-2 border-white flex items-center justify-center rounded-3xl shadow-[2px_2px_0px_rgba(255,255,255,0.5)]">
-                        <ArrowUpRight size={18} className="text-white" />
-                      </div>
-                    </div>
-                  </div>
-                  <div className="p-6">
-                    <h3 className="text-lg font-heading font-black text-primary-dark group-hover:text-primary transition-colors uppercase tracking-wide">
-                      {member.name}
-                    </h3>
-                    <p className="text-primary-dark/60 text-xs font-black uppercase tracking-widest mt-1">{member.role}</p>
-                  </div>
-                </div>
-              </AnimatedSection>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ═══ GALLERY ═══ */}
-      <section className="py-24 md:py-32 bg-primary-dark border-b-2 border-black relative overflow-hidden">
-        <div className="absolute inset-0" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px)', backgroundSize: '80px 80px' }} />
-        <div className="container-wide relative z-10">
-          <AnimatedSection>
-            <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-6 mb-12">
-              <div>
-                <div className="inline-block bg-white text-primary-dark font-black text-xs uppercase tracking-widest px-4 py-2 mb-6 rounded-3xl shadow-[4px_4px_0px_rgba(255,255,255,0.2)] border-2 border-white/30">
-                  Behind the Scenes
-                </div>
-                <h2 className="text-4xl md:text-5xl font-heading font-black text-white tracking-tight">
-                  We Live What<br /><span className="text-[#82C93D]">We Preach</span>
-                </h2>
-              </div>
-              <p className="text-white/50 font-bold max-w-sm">Moments from our workshops, events, and team sessions.</p>
-            </div>
-          </AnimatedSection>
-
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            {galleryImages.map((img, i) => (
-              <AnimatedSection key={i} delay={i * 0.07}>
-                <div className="group relative border-2 border-white/10 overflow-hidden shadow-[4px_4px_0px_rgba(0,0,0,0.5)] hover:border-[#82C93D] hover:shadow-[8px_8px_0px_rgba(0,0,0,0.8)] transition-all duration-300 hover:-translate-y-1 aspect-[4/3]">
-                  <Image
-                    src={img}
-                    alt={`Sug Creative event ${i + 1}`}
-                    fill
-                    className="object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-110"
-                    sizes="(max-width: 768px) 50vw, 33vw"
-                  />
-                  <div className="absolute inset-0 bg-primary-dark/40 group-hover:bg-primary-dark/10 transition-colors" />
                 </div>
               </AnimatedSection>
             ))}
