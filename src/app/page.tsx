@@ -1,10 +1,10 @@
 'use client'
+import { useState, useEffect } from 'react'
 
 import Image from 'next/image'
 import Link from 'next/link'
 import { ArrowUpRight, CheckCircle2, TrendingUp, GraduationCap, Award, Users, Clock, Play, Briefcase, Calendar, Star, Quote, Building2, Shield, Cpu, Globe, Server, Code2, Palette, Settings, Zap, Target, Rocket, BadgeCheck, ArrowRight } from 'lucide-react'
 import RotatingText from '@/components/RotatingText'
-import dynamic from 'next/dynamic'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import AnimatedSection from '@/components/AnimatedSection'
@@ -12,8 +12,10 @@ import { DomeGallery } from '@/components/DomeGallery'
 import { Button } from '@/components/ui/button'
 import { NumberTicker } from '@/components/ui/number-ticker'
 import { LogoLoop } from '@/components/LogoLoop'
+import dynamic from 'next/dynamic'
 
 const GridMotionHero = dynamic(() => import('@/components/GridMotionHero'), { ssr: false })
+
 
 // Company logos for placement showcase
 const placementImages = Array.from({ length: 50 }, (_, i) => ({
@@ -162,6 +164,23 @@ const courseColors: Record<string, { bg: string; accent: string; shadow: string;
 
 export default function HomePage() {
 
+  const [activeServiceIndex, setActiveServiceIndex] = useState(0)
+
+  const showcaseServices = [
+    { Icon: Globe, title: 'Web Development', desc: 'Custom websites & web applications built with modern frameworks and scalable architecture.', gradient: 'from-blue-500 to-cyan-500', bg: 'bg-blue-500' },
+    { Icon: Palette, title: 'UI/UX Design', desc: 'User-centered design solutions that deliver intuitive, beautiful digital experiences.', gradient: 'from-purple-500 to-pink-500', bg: 'bg-purple-500' },
+    { Icon: Code2, title: 'Software Development', desc: 'Scalable enterprise software engineered for performance, security, and growth.', gradient: 'from-green-500 to-emerald-500', bg: 'bg-green-500' },
+    { Icon: Settings, title: 'IT Consulting', desc: 'Strategic digital transformation guidance to future-proof your business operations.', gradient: 'from-amber-500 to-orange-500', bg: 'bg-amber-500' },
+  ]
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveServiceIndex((prev) => (prev + 1) % 4)
+    }, 3000)
+    return () => clearInterval(interval)
+  }, [])
+
+
   return (
     <>
       <Navbar />
@@ -208,16 +227,18 @@ export default function HomePage() {
           </p>
 
           {/* Trust stats — 2×2 grid */}
-          <div className="grid grid-cols-2 gap-x-10 gap-y-5 mb-10 max-w-xs">
+          <div className="grid grid-cols-2 gap-x-12 gap-y-6 mb-10 max-w-sm">
             {[
-              { value: '550+', label: 'Placed' },
-              { value: '50+',  label: 'MNC Partners' },
-              { value: '8+',   label: 'Years' },
-              { value: '98%',  label: 'Success Rate' },
-            ].map(({ value, label }) => (
-              <div key={label}>
-                <div className="text-2xl font-black text-primary-dark leading-none">{value}</div>
-                <div className="text-xs text-primary-dark/45 font-semibold mt-1">{label}</div>
+              { end: 550, suffix: '+', label: 'Placed' },
+              { end: 50, suffix: '+', label: 'MNC Partners' },
+              { end: 8, suffix: '+', label: 'Years' },
+              { label: '98%', label2: 'Success Rate' },
+            ].map(({ end, suffix, label, label2 }) => (
+              <div key={label || label2}>
+                <div className="text-3xl font-black text-primary-dark leading-none">
+                  {end ? <><NumberTicker value={end} />{suffix}</> : '98%'}
+                </div>
+                <div className="text-xs text-primary-dark/45 font-semibold mt-1">{label2 || label}</div>
               </div>
             ))}
           </div>
@@ -327,10 +348,10 @@ export default function HomePage() {
                     </div>
 
                     {/* Colored overlay */}
-                    <div className={`absolute inset-0 bg-gradient-to-br ${colors.gradient} opacity-80 mix-blend-multiply z-10 pointer-events-none`} />
+                    <div className={`absolute inset-0 bg-gradient-to-br ${colors.gradient} opacity-50 mix-blend-multiply z-10 pointer-events-none`} />
                     
                     {/* Dark gradient for text readability */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-primary-dark via-primary-dark/80 to-transparent z-20 pointer-events-none" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-primary-dark/90 via-primary-dark/50 to-transparent z-20 pointer-events-none" />
 
                     {/* Icon & Duration Badge */}
                     <div className="absolute top-4 left-4 flex flex-col gap-2 z-30 pointer-events-none">
@@ -398,7 +419,7 @@ export default function HomePage() {
                 We Also Excel In<br /><span className="text-primary">Digital Transformation</span>
               </h2>
               <p className="text-primary-dark/70 text-lg font-medium leading-relaxed mb-8">
-                Beyond education, we help businesses thrive with cutting-edge technology solutions. From web development to IT consulting, we've partnered with <strong className="text-primary-dark">200+ businesses</strong> across industries.
+                Beyond education, we help businesses thrive with cutting-edge technology solutions. From web development to IT consulting, we&apos;ve partnered with <strong className="text-primary-dark">200+ businesses</strong> across industries.
               </p>
               <div className="grid grid-cols-2 gap-4 mb-8">
                 {businessServices.map((service) => (
@@ -420,37 +441,64 @@ export default function HomePage() {
               </Button>
             </div>
             
-            <div className="relative">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="bg-primary-dark rounded-3xl border-2 border-black p-6 shadow-[6px_6px_0px_rgba(130,201,61,1)]">
-                  <div className="text-4xl font-black text-white mb-1">
+            <div className="relative flex flex-col items-center gap-6">
+              {/* Auto-cycling service showcase */}
+              <div className="relative w-full max-w-md mx-auto">
+                {showcaseServices.map((service, idx) => {
+                  const ServiceIcon = service.Icon
+                  return (
+                    <div
+                      key={service.title}
+                      className={`transition-all duration-700 ease-in-out ${idx === activeServiceIndex ? 'relative opacity-100 scale-100 translate-y-0' : 'absolute inset-0 opacity-0 scale-95 translate-y-4 pointer-events-none'}`}
+                    >
+                      <div className={`bg-gradient-to-br ${service.gradient} rounded-3xl border-2 border-black p-8 shadow-[8px_8px_0px_rgba(0,0,0,1)]`}>
+                        <div className="flex items-start gap-5 mb-5">
+                          <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center text-white border-2 border-white/30 flex-shrink-0">
+                            <ServiceIcon size={32} />
+                          </div>
+                          <div>
+                            <h3 className="text-2xl font-heading font-black text-white mb-1">{service.title}</h3>
+                            <p className="text-white/80 font-medium text-sm leading-relaxed">{service.desc}</p>
+                          </div>
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                          {['Startups', 'SMEs', 'Enterprises', 'NGOs'].map((type) => (
+                            <span key={type} className="text-xs font-bold px-3 py-1.5 bg-white/20 backdrop-blur-sm rounded-2xl border border-white/30 text-white">
+                              {type}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+
+              {/* Navigation dots */}
+              <div className="flex items-center gap-2">
+                {showcaseServices.map((_, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setActiveServiceIndex(idx)}
+                    className={`rounded-full transition-all duration-300 border-2 border-primary-dark ${idx === activeServiceIndex ? 'w-8 h-3 bg-primary' : 'w-3 h-3 bg-primary-dark/20 hover:bg-primary-dark/40'}`}
+                    aria-label={`Show service ${idx + 1}`}
+                  />
+                ))}
+              </div>
+
+              {/* Stats row */}
+              <div className="flex items-center gap-4 w-full max-w-md">
+                <div className="flex-1 bg-primary-dark rounded-3xl border-2 border-black p-5 shadow-[4px_4px_0px_rgba(130,201,61,1)] text-center">
+                  <div className="text-3xl font-black text-white mb-1">
                     <NumberTicker value={200} />+
                   </div>
-                  <div className="text-xs font-bold text-white/60 uppercase tracking-widest">Business Clients</div>
+                  <div className="text-[10px] font-bold text-white/60 uppercase tracking-widest">Business Clients</div>
                 </div>
-                <div className="bg-[#82C93D] rounded-3xl border-2 border-black p-6 shadow-[6px_6px_0px_rgba(26,154,181,1)]">
-                  <div className="text-4xl font-black text-white mb-1">
+                <div className="flex-1 bg-[#82C93D] rounded-3xl border-2 border-black p-5 shadow-[4px_4px_0px_rgba(26,154,181,1)] text-center">
+                  <div className="text-3xl font-black text-white mb-1">
                     <NumberTicker value={8} />+
                   </div>
-                  <div className="text-xs font-bold text-white/60 uppercase tracking-widest">Years Experience</div>
-                </div>
-                <div className="col-span-2 bg-gray-50 rounded-3xl border-2 border-black/10 p-6 shadow-[4px_4px_0px_rgba(0,0,0,0.08)]">
-                  <div className="flex items-center gap-4 mb-4">
-                    <div className="w-12 h-12 bg-primary/20 rounded-2xl flex items-center justify-center text-primary">
-                      <CheckCircle2 size={24} />
-                    </div>
-                    <div>
-                      <div className="font-black text-primary-dark">End-to-End Solutions</div>
-                      <div className="text-sm text-primary-dark/60">From concept to deployment</div>
-                    </div>
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    {['Startups', 'SMEs', 'Enterprises', 'NGOs'].map((type) => (
-                      <span key={type} className="text-xs font-bold px-3 py-1.5 bg-white rounded-full border border-black/10 text-primary-dark/70">
-                        {type}
-                      </span>
-                    ))}
-                  </div>
+                  <div className="text-[10px] font-bold text-white/60 uppercase tracking-widest">Years Experience</div>
                 </div>
               </div>
             </div>
@@ -478,7 +526,7 @@ export default function HomePage() {
 
           {/* Dome Gallery placement scroll */}
           {/* Edge-to-edge Dome Gallery Container - spans full viewport width */}
-          <div className="relative w-screen left-1/2 -translate-x-1/2 h-[500px] md:h-[600px] lg:h-[700px]">
+          <div className="relative w-screen left-1/2 -translate-x-1/2 h-[500px] md:h-[600px] lg:h-[700px] overflow-hidden">
             <DomeGallery
               images={placementImages}
               fit={0.9}
@@ -506,7 +554,7 @@ export default function HomePage() {
       </section>
 
       {/* ═══ PROGRAM HIGHLIGHTS ═══ */}
-      <section className="py-24 md:py-32 bg-white border-b-2 border-black/10">
+      <section className="py-24 md:py-32 bg-gradient-to-br from-gray-50 via-white to-primary/5 border-b-2 border-black/10">
         <div className="container-wide">
           <div className="text-center mb-16 max-w-3xl mx-auto">
             <div className="inline-block bg-primary text-white font-black text-xs uppercase tracking-widest px-4 py-2 mb-6 rounded-3xl shadow-[4px_4px_0px_rgba(0,0,0,1)] border-2 border-primary-dark">
@@ -519,22 +567,39 @@ export default function HomePage() {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
-              { icon: <Play size={32} />, title: 'Live Sessions', desc: 'Interactive classes with industry experts, not just recorded videos.' },
-              { icon: <Users size={32} />, title: 'MNC Mentors', desc: 'Learn from professionals working at Google, Microsoft, Amazon & more.' },
-              { icon: <Award size={32} />, title: '2 Certifications', desc: 'Get both course completion and internship certificates.' },
-              { icon: <Briefcase size={32} />, title: 'Placement Support', desc: 'Resume reviews, mock interviews & job referrals included.' },
-              { icon: <Clock size={32} />, title: '3-Month Intensive', desc: 'Focused learning with hands-on projects every week.' },
-              { icon: <CheckCircle2 size={32} />, title: 'Real Projects', desc: 'Build production-grade applications for your portfolio.' },
-              { icon: <TrendingUp size={32} />, title: '98% Success Rate', desc: 'Most of our students land jobs within 3 months of completion.' },
-              { icon: <Calendar size={32} />, title: 'Flexible Batches', desc: 'Weekend and weekday batches available.' },
+              { icon: <Play size={36} />, title: 'Live Sessions', desc: 'Interactive classes with industry experts, not just recorded videos.', accent: 'primary' },
+              { icon: <Users size={36} />, title: 'MNC Mentors', desc: 'Learn from professionals working at Google, Microsoft, Amazon & more.', accent: 'lime' },
+              { icon: <Award size={36} />, title: '2 Certifications', desc: 'Get both course completion and internship certificates.', accent: 'primary' },
+              { icon: <Briefcase size={36} />, title: 'Placement Support', desc: 'Resume reviews, mock interviews & job referrals included.', accent: 'lime' },
+              { icon: <Clock size={36} />, title: '3-Month Intensive', desc: 'Focused learning with hands-on projects every week.', accent: 'lime' },
+              { icon: <CheckCircle2 size={36} />, title: 'Real Projects', desc: 'Build production-grade applications for your portfolio.', accent: 'primary' },
+              { icon: <TrendingUp size={36} />, title: '98% Success Rate', desc: 'Most of our students land jobs within 3 months of completion.', accent: 'lime' },
+              { icon: <Calendar size={36} />, title: 'Flexible Batches', desc: 'Weekend and weekday batches available.', accent: 'primary' },
             ].map((item, i) => (
               <AnimatedSection key={item.title} delay={i * 0.05}>
-                <div className="bg-white border-2 border-black p-6 rounded-3xl shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-[8px_8px_0px_rgba(0,0,0,1)] hover:-translate-y-1 transition-all h-full">
-                  <div className="w-14 h-14 bg-primary/10 rounded-2xl flex items-center justify-center mb-4 text-primary border-2 border-primary/20">
+                <div className="group relative bg-white border-2 border-black/10 p-6 rounded-3xl hover:border-transparent hover:shadow-[8px_8px_0px_rgba(0,0,0,1)] hover:-translate-y-1 transition-all duration-300 h-full overflow-hidden hover:bg-gradient-to-br hover:from-white hover:to-primary/5">
+                  {/* Gradient border on hover - pseudo via wrapper */}
+                  <div className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-br from-primary via-[#82C93D] to-primary p-[2px] -z-10">
+                    <div className="w-full h-full bg-white rounded-3xl" />
+                  </div>
+
+                  {/* Counter number */}
+                  <div className="absolute top-4 right-4 text-4xl font-black text-primary-dark/[0.06] group-hover:text-primary/10 transition-colors duration-300 leading-none select-none">
+                    {String(i + 1).padStart(2, '0')}
+                  </div>
+
+                  {/* Icon */}
+                  <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-5 transition-all duration-300 border-2 ${item.accent === 'primary' ? 'bg-primary/10 text-primary border-primary/20 group-hover:bg-primary group-hover:text-white group-hover:border-primary group-hover:shadow-lg group-hover:shadow-primary/25' : 'bg-[#82C93D]/10 text-[#82C93D] border-[#82C93D]/20 group-hover:bg-[#82C93D] group-hover:text-white group-hover:border-[#82C93D] group-hover:shadow-lg group-hover:shadow-[#82C93D]/25'}`}>
                     {item.icon}
                   </div>
-                  <h3 className="text-lg font-black text-primary-dark mb-2">{item.title}</h3>
-                  <p className="text-primary-dark/70 font-medium text-sm">{item.desc}</p>
+
+                  {/* Title with animated underline */}
+                  <div className="relative inline-block mb-2">
+                    <h3 className="text-lg font-black text-primary-dark">{item.title}</h3>
+                    <div className={`absolute bottom-0 left-0 h-[2px] w-0 group-hover:w-full transition-all duration-500 ${item.accent === 'primary' ? 'bg-primary' : 'bg-[#82C93D]'}`} />
+                  </div>
+
+                  <p className="text-primary-dark/70 font-medium text-sm leading-relaxed">{item.desc}</p>
                 </div>
               </AnimatedSection>
             ))}

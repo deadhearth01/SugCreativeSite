@@ -147,12 +147,12 @@ function NavLink({ item, collapsed, isActive, onClick }: {
       href={item.href}
       onClick={onClick}
       title={collapsed ? item.label : undefined}
-      className={`flex items-center gap-3 px-3 py-2.5 text-sm font-semibold transition-all duration-200 group relative ${
+      className={`flex items-center gap-3 px-3 py-2.5 text-sm font-semibold transition-all duration-200 group relative rounded-xl ${
         collapsed ? 'justify-center' : ''
       } ${
         isActive
-          ? 'bg-white/15 text-white border-l-2 border-white'
-          : 'text-white/55 hover:text-white hover:bg-white/8'
+          ? 'bg-white/20 text-white rounded-xl'
+          : 'text-white/55 hover:text-white hover:bg-white/8 rounded-xl'
       }`}
     >
       <item.icon size={18} className="flex-shrink-0" />
@@ -215,7 +215,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const SidebarContent = ({ mobile = false }: { mobile?: boolean }) => (
     <>
       {/* Logo */}
-      <div className={`border-b border-white/10 flex items-center ${sidebarCollapsed && !mobile ? 'justify-center p-4' : 'justify-between p-5'}`}>
+      <div className={`border-b border-white/5 flex items-center ${sidebarCollapsed && !mobile ? 'justify-center p-4' : 'justify-between p-5'}`}>
         {(!sidebarCollapsed || mobile) ? (
           <Link href="/" className="flex items-center gap-2.5 min-w-0">
             <Image src="/sug-new-log.svg" alt="Sug Creative" width={32} height={32} className="flex-shrink-0" />
@@ -230,13 +230,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </Link>
         )}
         {mobile ? (
-          <button onClick={() => setSidebarOpen(false)} className="text-white/50 hover:text-white p-1">
+          <button onClick={() => setSidebarOpen(false)} className="text-white/50 hover:text-white p-1 rounded-xl">
             <X size={18} />
           </button>
         ) : (
           <button
             onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-            className={`text-white/40 hover:text-white hover:bg-white/10 p-1.5 transition-colors flex-shrink-0 ${sidebarCollapsed ? 'ml-0' : 'ml-1'}`}
+            className={`text-white/40 hover:text-white hover:bg-white/10 p-1.5 rounded-full transition-colors flex-shrink-0 ${sidebarCollapsed ? 'ml-0' : 'ml-1'}`}
             title={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
           >
             {sidebarCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
@@ -258,7 +258,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       </nav>
 
       {/* Bottom Items (Support + Settings) */}
-      <div className="border-t border-white/10 px-2 py-3 space-y-0.5">
+      <div className="border-t border-white/5 px-2 py-3 space-y-0.5">
         {bottomItems.map((item) => (
           <NavLink
             key={item.href}
@@ -271,11 +271,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       </div>
 
       {/* Sign Out */}
-      <div className="px-2 pb-3 border-t border-white/10 pt-2">
+      <div className="px-2 pb-3 border-t border-white/5 pt-2">
         <button
           onClick={handleLogout}
           title={sidebarCollapsed && !mobile ? 'Sign Out' : undefined}
-          className={`flex items-center gap-3 px-3 py-2.5 text-sm font-semibold text-white/40 hover:text-white hover:bg-white/8 transition-colors w-full ${sidebarCollapsed && !mobile ? 'justify-center' : ''}`}
+          className={`flex items-center gap-3 px-3 py-2.5 text-sm font-semibold text-white/40 hover:text-white hover:bg-white/8 transition-colors w-full rounded-xl ${sidebarCollapsed && !mobile ? 'justify-center' : ''}`}
         >
           <LogOut size={18} className="flex-shrink-0" />
           {(!sidebarCollapsed || mobile) && <span>Sign Out</span>}
@@ -288,7 +288,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     <div className="min-h-screen bg-[#F3F4F6] flex">
       {/* Desktop Sidebar */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 bg-[#1A9AB5] flex flex-col transition-all duration-300 hidden lg:flex ${
+        className={`fixed top-3 bottom-3 left-3 z-50 bg-[#1A9AB5] flex flex-col transition-all duration-300 hidden lg:flex rounded-3xl overflow-hidden ${
           sidebarCollapsed ? 'w-16' : 'w-64'
         }`}
       >
@@ -298,15 +298,15 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       {/* Mobile Sidebar Overlay */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 bg-black/60 z-40 lg:hidden"
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
 
       {/* Mobile Sidebar Drawer */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-64 bg-[#1A9AB5] flex flex-col transition-transform duration-300 lg:hidden ${
-          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        className={`fixed inset-y-3 left-3 z-50 w-64 bg-[#1A9AB5] flex flex-col transition-transform duration-300 lg:hidden rounded-3xl overflow-hidden ${
+          sidebarOpen ? 'translate-x-0' : '-translate-x-[calc(100%+12px)]'
         }`}
       >
         <SidebarContent mobile />
@@ -315,14 +315,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       {/* Main Content */}
       <div
         className={`flex-1 min-w-0 transition-all duration-300 ${
-          sidebarCollapsed ? 'lg:ml-16' : 'lg:ml-64'
+          sidebarCollapsed ? 'lg:ml-[76px]' : 'lg:ml-[268px]'
         }`}
       >
         {/* Top Bar */}
-        <header className="sticky top-0 z-30 bg-white border-b border-black/8 h-16 flex items-center px-4 sm:px-6 gap-3">
+        <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-md border-b border-black/5 h-16 flex items-center px-4 sm:px-6 gap-3">
           <button
             onClick={() => setSidebarOpen(true)}
-            className="lg:hidden text-[#1A9AB5] hover:bg-black/5 p-2 transition-colors"
+            className="lg:hidden text-[#1A9AB5] hover:bg-black/5 p-2 transition-colors rounded-xl"
             aria-label="Open menu"
           >
             <Menu size={22} />
@@ -337,7 +337,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <div className="flex items-center gap-3 flex-shrink-0 relative" ref={dropdownRef}>
             <button
               onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
-              className="flex items-center gap-2 hover:bg-black/5 px-2 py-1.5 transition-colors -mr-1"
+              className="flex items-center gap-2 hover:bg-black/5 px-2 py-1.5 transition-colors -mr-1 rounded-xl"
             >
               {userProfile?.full_name && (
                 <span className="text-sm text-foreground/50 font-semibold hidden sm:block truncate max-w-32">
@@ -345,9 +345,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 </span>
               )}
               {userProfile?.avatar_url ? (
-                <Image src={userProfile.avatar_url} alt="Avatar" width={36} height={36} className="w-9 h-9 object-cover border-2 border-[#1580A0] shadow-[2px_2px_0px_rgba(0,0,0,0.15)]" />
+                <Image src={userProfile.avatar_url} alt="Avatar" width={36} height={36} className="w-9 h-9 object-cover border-2 border-[#1580A0] rounded-xl shadow-md" />
               ) : (
-                <div className="w-9 h-9 bg-[#1A9AB5] flex items-center justify-center text-white text-xs font-black border-2 border-[#1580A0] shadow-[2px_2px_0px_rgba(0,0,0,0.15)]">
+                <div className="w-9 h-9 bg-[#1A9AB5] flex items-center justify-center text-white text-xs font-black border-2 border-[#1580A0] rounded-xl shadow-md">
                   {getInitials(userProfile?.full_name || null)}
                 </div>
               )}
@@ -356,8 +356,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
             {/* Profile Dropdown */}
             {profileDropdownOpen && (
-              <div className="absolute top-full right-0 mt-2 w-56 bg-white border-2 border-black/10 shadow-[4px_4px_0px_rgba(0,0,0,0.08)] z-50">
-                <div className="px-4 py-3 border-b border-black/8">
+              <div className="absolute top-full right-0 mt-2 w-56 bg-white border border-black/10 shadow-lg z-50 rounded-2xl overflow-hidden">
+                <div className="px-4 py-3 border-b border-black/5">
                   <p className="text-xs font-black uppercase tracking-widest text-[#1A9AB5]">{roleLabels[role]}</p>
                   <p className="text-sm font-semibold text-foreground truncate mt-0.5">{userProfile?.full_name || 'User'}</p>
                   <p className="text-xs text-foreground/40 truncate">{userProfile?.email || ''}</p>
@@ -380,7 +380,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     Settings
                   </Link>
                 </div>
-                <div className="border-t border-black/8 py-1">
+                <div className="border-t border-black/5 py-1">
                   <button
                     onClick={() => { setProfileDropdownOpen(false); handleLogout() }}
                     className="flex items-center gap-3 px-4 py-2.5 text-sm font-semibold text-red-500 hover:text-red-600 hover:bg-red-50 transition-colors w-full"

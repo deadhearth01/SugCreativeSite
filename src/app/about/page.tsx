@@ -26,11 +26,11 @@ import { NumberTicker } from '@/components/ui/number-ticker'
 gsap.registerPlugin(ScrollTrigger)
 
 const timeline = [
-  { year: '2015', title: 'The Beginning', desc: 'Founded with a vision to bridge the gap between potential and opportunity across businesses and careers.' },
-  { year: '2017', title: 'First 500 Careers', desc: 'Reached our first major milestone — 500 careers transformed through guided mentorship and strategic coaching.' },
-  { year: '2019', title: 'Business Consulting Launch', desc: 'Expanded into full-spectrum business solutions for SMEs and enterprises across South India.' },
-  { year: '2021', title: 'Startup Hub Opened', desc: 'Launched our flagship incubation program, helping 20+ startups validate, fund, and scale from zero.' },
-  { year: '2023', title: 'Edu Tech Division', desc: 'Introduced our technology-powered learning platform for scalable, outcome-focused education.' },
+  { year: '2018', title: 'The Beginning', desc: 'Founded with a vision to bridge the gap between potential and opportunity across businesses and careers.' },
+  { year: '2019', title: 'Community Formed', desc: 'Built our first community of learners and professionals committed to growth and collaboration.' },
+  { year: '2020', title: 'Edu Tech Launch', desc: 'Introduced our technology-powered learning platform for scalable, outcome-focused education.' },
+  { year: '2021', title: 'Business Solutions Plan', desc: 'Expanded into full-spectrum business solutions for SMEs and enterprises.' },
+  { year: '2023', title: 'Young Compete Student Network', desc: 'Launched the Young Compete initiative, creating a student network for competitive excellence.' },
   { year: '2025', title: '3000+ Lives Impacted', desc: 'Continuing to grow, innovate, and transform futures across India and beyond with measurable results.' },
 ]
 
@@ -42,10 +42,10 @@ const values = [
 ]
 
 const stats = [
-  { value: 3000, suffix: '+', label: 'Lives Impacted', icon: Users },
+  { value: 8, suffix: '+', label: 'Years of Impact', icon: Users },
   { value: 200, suffix: '+', label: 'Businesses Scaled', icon: TrendingUp },
   { value: 50, suffix: '+', label: 'Startups Launched', icon: Lightbulb },
-  { value: 98, suffix: '%', label: 'Satisfaction Rate', icon: Award },
+  { value: 98, suffix: '%', label: '20K+ Community', icon: Award },
 ]
 
 const team = [
@@ -167,7 +167,7 @@ export default function AboutPage() {
                 </div>
                 {/* Stat overlay box */}
                 <div className="hero-animate absolute -bottom-6 left-4 bg-primary-dark text-white border-2 border-primary-dark p-5 rounded-3xl shadow-[8px_8px_0px_rgba(130,201,61,1)] z-20">
-                  <div className="text-3xl font-black font-heading text-[#82C93D] mb-1">10+</div>
+                  <div className="text-3xl font-black font-heading text-[#82C93D] mb-1">8+</div>
                   <div className="text-[10px] uppercase tracking-widest font-black text-white/70">Years of Impact</div>
                 </div>
               </div>
@@ -258,7 +258,7 @@ export default function AboutPage() {
                 Company History
               </div>
               <h2 className="text-4xl md:text-5xl font-heading font-black text-primary-dark tracking-tight">
-                A Decade of Impact
+                8+ Years of Impact
               </h2>
             </div>
           </AnimatedSection>

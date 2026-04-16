@@ -128,11 +128,11 @@ export default function Footer() {
         {/* Contact Info Bar */}
         <div className="py-8 border-t border-white/10 flex flex-col lg:flex-row justify-between items-center gap-6 text-white/60 text-sm font-medium">
           <div className="flex flex-wrap items-center justify-center gap-8 lg:gap-12">
-            <a href="mailto:hello@sugcreative.com" className="flex items-center gap-3 hover:text-white transition-colors group">
+            <a href="mailto:support@sugcreative.com" className="flex items-center gap-3 hover:text-white transition-colors group">
               <span className="w-10 h-10 rounded-3xl border border-white/20 flex items-center justify-center group-hover:bg-white group-hover:text-primary-dark transition-all shadow-[2px_2px_0px_rgba(255,255,255,0.1)] group-hover:shadow-[4px_4px_0px_rgba(255,255,255,1)]">
                 <Mail size={16} />
               </span> 
-              hello@sugcreative.com
+              support@sugcreative.com
             </a>
             <a href="tel:+919876543210" className="flex items-center gap-3 hover:text-white transition-colors group">
               <span className="w-10 h-10 rounded-3xl border border-white/20 flex items-center justify-center group-hover:bg-white group-hover:text-primary-dark transition-all shadow-[2px_2px_0px_rgba(255,255,255,0.1)] group-hover:shadow-[4px_4px_0px_rgba(255,255,255,1)]">
@@ -144,7 +144,7 @@ export default function Footer() {
               <span className="w-10 h-10 rounded-3xl border border-white/20 flex items-center justify-center shadow-[2px_2px_0px_rgba(255,255,255,0.1)]">
                 <MapPin size={16} />
               </span> 
-              Chennai, India
+              Rajahmundry
             </span>
           </div>
         </div>

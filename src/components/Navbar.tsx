@@ -42,6 +42,7 @@ const navLinks: NavLink[] = [
       { href: '/services#digital-marketing', label: 'Digital Marketing', icon: Megaphone, desc: 'SEO, Social & Ads' },
     ]
   },
+  { href: '/business-solutions', label: 'Business Solutions' },
   { href: '/about', label: 'About' },
   { href: '/testimonials', label: 'Success Stories' },
   { href: '/contact', label: 'Contact' },
@@ -51,6 +52,7 @@ const menuItems = [
   { label: 'Home', ariaLabel: 'Go to home page', link: '/' },
   { label: 'Courses', ariaLabel: 'View our courses', link: '/courses' },
   { label: 'Services', ariaLabel: 'View our services', link: '/services' },
+  { label: 'Business Solutions', ariaLabel: 'View business solutions', link: '/business-solutions' },
   { label: 'About', ariaLabel: 'Learn about us', link: '/about' },
   { label: 'Success Stories', ariaLabel: 'Success Stories', link: '/testimonials' },
   { label: 'Contact', ariaLabel: 'Get in touch', link: '/contact' },
@@ -91,10 +93,10 @@ export default function Navbar() {
   return (
     <>
       <nav
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 hidden xl:flex items-center justify-between backdrop-blur-xl ${
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 hidden xl:flex items-center justify-between ${
           scrolled
-            ? 'bg-white/85 border-b border-black/8 shadow-sm py-3 px-6'
-            : 'bg-white/70 border-b border-white/30 py-5 px-10'
+            ? 'backdrop-blur-2xl bg-white/90 border-b border-black/8 shadow-sm py-3 px-6'
+            : 'backdrop-blur-xl bg-white/70 border-b border-white/30 py-5 px-10'
         }`}
       >
         {/* Logo — Far Left */}
@@ -148,14 +150,14 @@ export default function Navbar() {
                       isOpen ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible -translate-y-2 pointer-events-none'
                     }`}
                   >
-                    <div className="bg-white border-2 border-black shadow-[6px_6px_0px_rgba(0,0,0,1)] min-w-[280px] p-2">
+                    <div className="bg-white border border-black/10 shadow-[0_8px_30px_rgba(0,0,0,0.12)] rounded-2xl min-w-[280px] p-2">
                       {link.subItems.map((subItem) => {
                         const IconComponent = subItem.icon
                         return (
                           <Link
                             key={subItem.href}
                             href={subItem.href}
-                            className="flex items-start gap-3 p-3 hover:bg-gray-50 transition-colors"
+                            className="flex items-start gap-3 p-3 rounded-xl hover:bg-gray-50 transition-colors"
                           >
                             {IconComponent && (
                               <div className="w-10 h-10 bg-primary/10 flex items-center justify-center text-primary flex-shrink-0 hover:bg-primary hover:text-white transition-colors">
@@ -178,7 +180,7 @@ export default function Navbar() {
                       <div className="border-t border-black/10 mt-2 pt-2">
                         <Link
                           href={link.href}
-                          className="flex items-center justify-between p-3 text-xs font-bold uppercase tracking-widest text-primary hover:bg-primary/5 transition-colors"
+                          className="flex items-center justify-between p-3 rounded-xl text-xs font-bold uppercase tracking-widest text-primary hover:bg-primary/5 transition-colors"
                         >
                           View All {link.label}
                           <ArrowUpRight size={14} />

@@ -54,8 +54,8 @@ export default function AdminDashboard() {
   return (
     <div className="space-y-6">
       {/* Welcome */}
-      <div className="bg-[#1A9AB5] border-2 border-black shadow-[3px_3px_0px_rgba(0,0,0,0.8)] p-6">
-        <div className="inline-flex items-center gap-2 bg-[#35C8E0] text-white text-[10px] font-black uppercase tracking-widest px-3 py-1.5 border-2 border-white/20 shadow-[2px_2px_0px_rgba(0,0,0,0.5)] mb-3">
+      <div className="bg-[#1A9AB5] rounded-2xl border border-[#1A9AB5]/20 shadow-lg p-6">
+        <div className="inline-flex items-center gap-2 bg-[#35C8E0] text-white text-[10px] font-black uppercase tracking-widest px-3 py-1.5 border border-white/20 rounded-full shadow-sm mb-3">
           Admin Portal
         </div>
         <h2 className="text-xl font-black text-white">Admin Overview</h2>
@@ -70,9 +70,9 @@ export default function AdminDashboard() {
           { label: 'Revenue', value: fmt(stats.revenue), icon: CreditCard, color: 'bg-purple-600' },
           { label: 'Open Tickets', value: String(stats.openTickets), icon: LifeBuoy, color: stats.openTickets > 0 ? 'bg-red-600' : 'bg-gray-500' },
         ].map((card) => (
-          <div key={card.label} className="bg-white border-2 border-black shadow-[3px_3px_0px_rgba(0,0,0,0.8)] p-5">
+          <div key={card.label} className="bg-white rounded-2xl border border-gray-100 shadow-md hover:shadow-lg transition-shadow p-5">
             <div className="flex items-center gap-2 mb-3">
-              <div className={`w-9 h-9 ${card.color} border-2 border-black flex items-center justify-center shadow-[2px_2px_0px_rgba(0,0,0,0.5)]`}>
+              <div className={`w-9 h-9 ${card.color} rounded-xl flex items-center justify-center shadow-sm`}>
                 <card.icon size={16} className="text-white" />
               </div>
               <span className="text-[10px] font-black uppercase tracking-widest text-foreground/50">{card.label}</span>
@@ -91,9 +91,9 @@ export default function AdminDashboard() {
           { label: 'Calendar', href: '/dashboard/admin/calendar', icon: Calendar },
         ].map((action) => (
           <Link key={action.label} href={action.href}
-            className="bg-white border-2 border-black shadow-[2px_2px_0px_rgba(0,0,0,0.7)] p-4 flex items-center gap-3 hover:shadow-[1px_1px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all group"
+            className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md p-4 flex items-center gap-3 transition-all group"
           >
-            <div className="w-8 h-8 bg-[#1A9AB5] border border-black flex items-center justify-center flex-shrink-0">
+            <div className="w-8 h-8 bg-[#1A9AB5] rounded-lg flex items-center justify-center flex-shrink-0">
               <action.icon size={15} className="text-white" />
             </div>
             <span className="text-xs font-black uppercase tracking-wide text-[#1A9AB5]">{action.label}</span>
@@ -105,8 +105,8 @@ export default function AdminDashboard() {
       {/* Tables */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Recent Users */}
-        <div className="bg-white border-2 border-black shadow-[3px_3px_0px_rgba(0,0,0,0.8)]">
-          <div className="flex items-center justify-between px-5 py-4 border-b-2 border-black bg-[#1A9AB5]">
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-md overflow-hidden">
+          <div className="flex items-center justify-between px-5 py-4 border-b border-[#1A9AB5]/10 bg-[#1A9AB5]">
             <h3 className="text-sm font-black uppercase tracking-widest text-white">Recent Registrations</h3>
             <Link href="/dashboard/admin/users" className="text-[10px] font-black uppercase tracking-widest text-white/60 hover:text-white transition-colors flex items-center gap-1">
               View All <ArrowUpRight size={12} />
@@ -116,7 +116,7 @@ export default function AdminDashboard() {
             <p className="text-sm text-foreground/40 py-8 text-center font-semibold">No users yet</p>
           ) : (
             <table className="w-full text-sm">
-              <thead><tr className="bg-[#F4F6FA] border-b-2 border-black">
+              <thead><tr className="bg-gray-50/80 border-b border-gray-100">
                 {['Name', 'Role', 'Joined', 'Status'].map(h => <th key={h} className="text-left py-3 px-4 text-[10px] font-black text-foreground/50 uppercase tracking-widest">{h}</th>)}
               </tr></thead>
               <tbody>
@@ -134,8 +134,8 @@ export default function AdminDashboard() {
         </div>
 
         {/* Recent Tickets */}
-        <div className="bg-white border-2 border-black shadow-[3px_3px_0px_rgba(0,0,0,0.8)]">
-          <div className="flex items-center justify-between px-5 py-4 border-b-2 border-black bg-[#1A9AB5]">
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-md overflow-hidden">
+          <div className="flex items-center justify-between px-5 py-4 border-b border-[#1A9AB5]/10 bg-[#1A9AB5]">
             <h3 className="text-sm font-black uppercase tracking-widest text-white">Support Tickets</h3>
             <Link href="/dashboard/admin/tickets" className="text-[10px] font-black uppercase tracking-widest text-white/60 hover:text-white transition-colors flex items-center gap-1">
               View All <ArrowUpRight size={12} />
@@ -145,7 +145,7 @@ export default function AdminDashboard() {
             <p className="text-sm text-foreground/40 py-8 text-center font-semibold">No tickets yet</p>
           ) : (
             <table className="w-full text-sm">
-              <thead><tr className="bg-[#F4F6FA] border-b-2 border-black">
+              <thead><tr className="bg-gray-50/80 border-b border-gray-100">
                 {['Subject', 'Priority', 'Status'].map(h => <th key={h} className="text-left py-3 px-4 text-[10px] font-black text-foreground/50 uppercase tracking-widest">{h}</th>)}
               </tr></thead>
               <tbody>
@@ -153,7 +153,7 @@ export default function AdminDashboard() {
                   <tr key={i} className="border-b border-black/8 hover:bg-[#F4F6FA]">
                     <td className="py-3 px-4 font-bold text-[#1A9AB5] text-xs truncate max-w-40">{t.subject}</td>
                     <td className="py-3 px-4">
-                      <span className={`text-[10px] px-2 py-1 font-black uppercase tracking-wide border-2 ${t.priority === 'urgent' ? 'bg-red-100 text-red-700 border-red-400' : t.priority === 'high' ? 'bg-orange-100 text-orange-700 border-orange-400' : t.priority === 'medium' ? 'bg-amber-100 text-amber-700 border-amber-400' : 'bg-gray-100 text-gray-600 border-gray-300'}`}>
+                      <span className={`text-[10px] px-2 py-1 font-black uppercase tracking-wide rounded-full border ${t.priority === 'urgent' ? 'bg-red-100 text-red-700 border-red-200' : t.priority === 'high' ? 'bg-orange-100 text-orange-700 border-orange-200' : t.priority === 'medium' ? 'bg-amber-100 text-amber-700 border-amber-200' : 'bg-gray-100 text-gray-600 border-gray-200'}`}>
                         {t.priority}
                       </span>
                     </td>

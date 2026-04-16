@@ -56,6 +56,17 @@ const getDataNumber = (el: HTMLElement, name: string, fallback: number) => {
   const n = attr == null ? NaN : parseFloat(attr);
   return Number.isFinite(n) ? n : fallback;
 };
+/** Mulberry32: a fast seeded 32-bit PRNG. Returns values in [0, 1). */
+function mulberry32(seed: number): () => number {
+  let s = seed | 0;
+  return () => {
+    s = (s + 0x6d2b79f5) | 0;
+    let t = Math.imul(s ^ (s >>> 15), 1 | s);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
 
 interface Coord {
   x: number;
@@ -92,17 +103,19 @@ function buildItems(pool: ImageItem[], seg: number): ItemWithImage[] {
     return { src: image.src || '', alt: image.alt || '' };
   });
 
-  // To prevent any duplicate photo side-by-side or near,
-  // we completely randomize the pool selection for all slots.
-  // We'll iterate and pick an image, ensuring it doesn't match recently used images.
-  const usedImages = [];
-  const recentHistory = [];
-  
+  // Use a deterministic seeded PRNG so server and client produce the
+  // same image order, preventing React hydration mismatches.
+  const seed = pool.length * 2654435761 + seg * 40503;
+  const rand = mulberry32(seed);
+
+  const usedImages: ImageItem[] = [];
+  const recentHistory: string[] = [];
+
   for (let i = 0; i < totalSlots; i++) {
     // try finding an image not in recent history
-    let candidate;
+    let candidate: ImageItem = normalizedImages[0];
     for (let attempts = 0; attempts < 50; attempts++) {
-      const randomIndex = Math.floor(Math.random() * normalizedImages.length);
+      const randomIndex = Math.floor(rand() * normalizedImages.length);
       candidate = normalizedImages[randomIndex];
       // Keep last 15 images to avoid clustering too densely
       if (!recentHistory.includes(candidate.src)) {

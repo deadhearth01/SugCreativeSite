@@ -337,13 +337,13 @@ export default function TestimonialsPage() {
           </div>
           
           {/* Edge-to-edge Dome Gallery Container - spans full viewport width */}
-          <div className="relative w-screen left-1/2 -translate-x-1/2 h-[500px] md:h-[600px] lg:h-[700px]">
+          <div className="relative w-screen left-1/2 -translate-x-1/2 h-[500px] md:h-[600px] lg:h-[700px] overflow-hidden">
             <DomeGallery
               images={placementImages}
               fit={0.9}
               minRadius={500}
               maxVerticalRotationDeg={8}
-              segments={32}
+              segments={10}
               dragDampening={1.8}
               grayscale={false}
               overlayBlurColor="#1A9AB5"

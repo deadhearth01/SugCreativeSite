@@ -1,11 +1,14 @@
 import { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
+import Image from "next/image";
 import { notFound } from "next/navigation";
-import { 
-  Clock, Award, Users, Calendar, ArrowRight, ArrowLeft, 
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+import {
+  Clock, Award, Users, Calendar, ArrowRight, ArrowLeft,
   CheckCircle2, Sparkles, GraduationCap, BookOpen, Target,
-  Briefcase, Play, Code2, FileCheck2, Handshake, UserCheck
+  Briefcase, Play, Code2, FileCheck2, UserCheck
 } from "lucide-react";
 
 // Color theme mapping
@@ -102,239 +105,269 @@ export default async function CourseDetailPage({ params }: PageProps) {
   ];
 
   return (
-    <main className="min-h-screen bg-white">
-      {/* Hero Section */}
-      <section className={`relative py-16 ${theme.light} border-b-2 border-black overflow-hidden`}>
-        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-5" />
-        <div className="container mx-auto px-4 relative">
-          {/* Back Link */}
-          <Link
-            href="/courses"
-            className="inline-flex items-center gap-2 text-sm font-bold mb-8 hover:underline"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            All Courses
-          </Link>
+    <>
+      <Navbar />
+      <main className="min-h-screen bg-white">
+        {/* Hero Section */}
+        <section className={`relative py-16 ${theme.light} overflow-hidden`}>
+          <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-5" />
+          <div className="container mx-auto px-4 relative">
+            {/* Back Link */}
+            <Link
+              href="/courses"
+              className="inline-flex items-center gap-2 text-sm font-bold mb-8 hover:underline"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              All Courses
+            </Link>
 
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            {/* Left - Course Info */}
-            <div>
-              {course.is_featured && (
-                <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#82C93D] to-[#35C8E0] text-white text-sm font-bold mb-6 border-2 border-black">
-                  <Sparkles className="w-4 h-4" />
-                  Featured Program
-                </div>
-              )}
-
-              <h1 className="text-4xl md:text-5xl font-black tracking-tight mb-4">
-                {course.title}
-              </h1>
-
-              <p className="text-lg text-gray-600 mb-6">
-                {course.description}
-              </p>
-
-              {/* Tech Stack Pills */}
-              <div className="flex flex-wrap gap-2 mb-8">
-                {techStack.map((tech: string, i: number) => (
-                  <span
-                    key={i}
-                    className={`px-3 py-1 text-sm font-bold ${theme.bg} ${theme.accent} border ${theme.border}`}
-                  >
-                    {tech}
-                  </span>
-                ))}
-              </div>
-
-              {/* Pricing */}
-              <div className="flex items-baseline gap-4 mb-6">
-                <span className="text-5xl font-black">
-                  ₹{(course.offer_price || course.price)?.toLocaleString()}
-                </span>
-                {course.original_price && course.original_price > (course.offer_price || course.price) && (
-                  <>
-                    <span className="text-2xl text-gray-400 line-through">
-                      ₹{course.original_price.toLocaleString()}
-                    </span>
-                    <span className={`px-2 py-1 ${theme.bg} ${theme.accent} text-sm font-bold border ${theme.border}`}>
-                      {Math.round((1 - (course.offer_price || course.price) / course.original_price) * 100)}% OFF
-                    </span>
-                  </>
+            <div className="grid lg:grid-cols-2 gap-12 items-center">
+              {/* Left - Course Info */}
+              <div>
+                {course.is_featured && (
+                  <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#82C93D] to-[#35C8E0] text-white text-sm font-bold mb-6 rounded-full shadow-lg">
+                    <Sparkles className="w-4 h-4" />
+                    Featured Program
+                  </div>
                 )}
+
+                <h1 className="text-4xl md:text-5xl font-black tracking-tight mb-4">
+                  {course.title}
+                </h1>
+
+                <p className="text-lg text-gray-600 mb-6">
+                  {course.description}
+                </p>
+
+                {/* Course Image (mobile) */}
+                {course.image_url && (
+                  <div className="relative h-56 rounded-2xl overflow-hidden mb-6 lg:hidden border border-gray-200 shadow-lg">
+                    <Image
+                      src={course.image_url}
+                      alt={course.title}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                )}
+
+                {/* Tech Stack Pills */}
+                <div className="flex flex-wrap gap-2 mb-8">
+                  {techStack.map((tech: string, i: number) => (
+                    <span
+                      key={i}
+                      className={`px-3 py-1 text-sm font-bold rounded-full ${theme.bg} ${theme.accent} border ${theme.border}`}
+                    >
+                      {tech}
+                    </span>
+                  ))}
+                </div>
+
+                {/* Pricing */}
+                <div className="flex items-baseline gap-4 mb-6">
+                  <span className="text-5xl font-black">
+                    {"\u20B9"}{(course.offer_price || course.price)?.toLocaleString()}
+                  </span>
+                  {course.original_price && course.original_price > (course.offer_price || course.price) && (
+                    <>
+                      <span className="text-2xl text-gray-400 line-through">
+                        {"\u20B9"}{course.original_price.toLocaleString()}
+                      </span>
+                      <span className={`px-3 py-1 rounded-full ${theme.bg} ${theme.accent} text-sm font-bold`}>
+                        {Math.round((1 - (course.offer_price || course.price) / course.original_price) * 100)}% OFF
+                      </span>
+                    </>
+                  )}
+                </div>
+
+                {/* Batch Info */}
+                {course.batch_start_date && (
+                  <div className="flex items-center gap-2 text-sm text-gray-600 mb-8">
+                    <Calendar className="w-4 h-4" />
+                    <span>
+                      Next Batch: <strong>{new Date(course.batch_start_date).toLocaleDateString("en-IN", { month: "long", day: "numeric", year: "numeric" })}</strong>
+                    </span>
+                  </div>
+                )}
+
+                {/* CTA Buttons */}
+                <div className="flex flex-wrap gap-4">
+                  <Link
+                    href="/contact"
+                    className={`inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r ${theme.gradient} text-white font-bold text-lg rounded-2xl shadow-xl hover:shadow-lg hover:scale-[0.98] transition-all`}
+                  >
+                    Enroll Now
+                    <ArrowRight className="w-5 h-5" />
+                  </Link>
+                  <Link
+                    href="/contact"
+                    className="inline-flex items-center gap-2 px-8 py-4 bg-white font-bold text-lg rounded-2xl border border-gray-200 shadow-lg hover:shadow-md hover:scale-[0.98] transition-all"
+                  >
+                    Request Callback
+                  </Link>
+                </div>
               </div>
 
-              {/* Batch Info */}
-              {course.batch_start_date && (
-                <div className="flex items-center gap-2 text-sm text-gray-600 mb-8">
-                  <Calendar className="w-4 h-4" />
-                  <span>
-                    Next Batch: <strong>{new Date(course.batch_start_date).toLocaleDateString("en-IN", { month: "long", day: "numeric", year: "numeric" })}</strong>
-                  </span>
-                </div>
-              )}
+              {/* Right - Perks Card + Image */}
+              <div className="space-y-6">
+                {/* Course Image (desktop) */}
+                {course.image_url && (
+                  <div className="relative h-56 rounded-2xl overflow-hidden hidden lg:block border border-gray-200 shadow-lg">
+                    <Image
+                      src={course.image_url}
+                      alt={course.title}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                )}
 
-              {/* CTA Buttons */}
-              <div className="flex flex-wrap gap-4">
-                <Link
-                  href="/contact"
-                  className={`inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r ${theme.gradient} text-white font-bold text-lg border-2 border-black shadow-[6px_6px_0px_rgba(0,0,0,1)] hover:shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all`}
-                >
-                  Enroll Now
-                  <ArrowRight className="w-5 h-5" />
-                </Link>
-                <Link
-                  href="/contact"
-                  className="inline-flex items-center gap-2 px-8 py-4 bg-white font-bold text-lg border-2 border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
-                >
-                  Request Callback
-                </Link>
+                <div className="rounded-3xl border border-gray-200 bg-white shadow-xl overflow-hidden">
+                  <div className={`p-4 ${theme.bg}`}>
+                    <h3 className="font-bold text-lg">Program Highlights</h3>
+                  </div>
+                  <div className="p-6">
+                    <div className="grid grid-cols-2 gap-4">
+                      {perks.map((perk, i) => (
+                        <div key={i} className="flex items-center gap-3 p-3 rounded-xl border border-gray-100 bg-gray-50/50">
+                          <perk.icon className={`w-5 h-5 ${theme.accent}`} />
+                          <span className="text-sm font-medium">{perk.label}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
+          </div>
+        </section>
 
-            {/* Right - Perks Card */}
-            <div className="border-2 border-black bg-white shadow-[8px_8px_0px_rgba(0,0,0,1)]">
-              <div className={`p-4 ${theme.bg} border-b-2 border-black`}>
-                <h3 className="font-bold text-lg">Program Highlights</h3>
-              </div>
-              <div className="p-6">
-                <div className="grid grid-cols-2 gap-4">
-                  {perks.map((perk, i) => (
-                    <div key={i} className="flex items-center gap-3 p-3 border border-gray-200">
-                      <perk.icon className={`w-5 h-5 ${theme.accent}`} />
-                      <span className="text-sm font-medium">{perk.label}</span>
+        {/* What You'll Learn */}
+        {highlights.length > 0 && (
+          <section className="py-16 bg-white">
+            <div className="container mx-auto px-4">
+              <div className="max-w-4xl mx-auto">
+                <div className="flex items-center gap-3 mb-8">
+                  <Target className={`w-6 h-6 ${theme.accent}`} />
+                  <h2 className="text-3xl font-black">{"What You'll Learn"}</h2>
+                </div>
+                <div className="grid sm:grid-cols-2 gap-4">
+                  {highlights.map((item, i) => (
+                    <div
+                      key={i}
+                      className={`flex items-start gap-3 p-4 rounded-2xl ${theme.light} border border-gray-200`}
+                    >
+                      <CheckCircle2 className={`w-5 h-5 ${theme.accent} flex-shrink-0 mt-0.5`} />
+                      <span className="font-medium">{item}</span>
                     </div>
                   ))}
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-      </section>
+          </section>
+        )}
 
-      {/* What You'll Learn */}
-      {highlights.length > 0 && (
-        <section className="py-16 bg-white border-b-2 border-black">
+        {/* Syllabus */}
+        {syllabus?.modules && syllabus.modules.length > 0 && (
+          <section className="py-16 bg-gray-50">
+            <div className="container mx-auto px-4">
+              <div className="max-w-4xl mx-auto">
+                <div className="flex items-center gap-3 mb-8">
+                  <BookOpen className={`w-6 h-6 ${theme.accent}`} />
+                  <h2 className="text-3xl font-black">Course Syllabus</h2>
+                </div>
+                <div className="space-y-4">
+                  {syllabus.modules.map((module, i) => (
+                    <details
+                      key={i}
+                      className="group bg-white rounded-2xl border border-gray-200 shadow-lg overflow-hidden"
+                    >
+                      <summary className="flex items-center justify-between p-4 cursor-pointer font-bold hover:bg-gray-50">
+                        <span className="flex items-center gap-3">
+                          <span className={`w-8 h-8 flex items-center justify-center rounded-lg ${theme.bg} ${theme.accent} text-sm font-bold`}>
+                            {i + 1}
+                          </span>
+                          {module.title}
+                        </span>
+                        <span className="text-gray-400 group-open:rotate-180 transition-transform">{"\u25BC"}</span>
+                      </summary>
+                      <div className="p-4 pt-0 border-t border-gray-100">
+                        <ul className="space-y-2">
+                          {module.topics.map((topic, j) => (
+                            <li key={j} className="flex items-center gap-2 text-sm text-gray-600">
+                              <span className={`w-1.5 h-1.5 rounded-full bg-gradient-to-r ${theme.gradient}`} />
+                              {topic}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </details>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* Why This Program */}
+        <section className="py-16 bg-white">
           <div className="container mx-auto px-4">
             <div className="max-w-4xl mx-auto">
-              <div className="flex items-center gap-3 mb-8">
-                <Target className={`w-6 h-6 ${theme.accent}`} />
-                <h2 className="text-3xl font-black">What You'll Learn</h2>
-              </div>
-              <div className="grid sm:grid-cols-2 gap-4">
-                {highlights.map((item, i) => (
+              <h2 className="text-3xl font-black text-center mb-12">Why Choose This Program?</h2>
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {[
+                  { Icon: GraduationCap, title: "Industry Curriculum", desc: "Designed by professionals from top MNCs" },
+                  { Icon: Code2, title: "Hands-on Projects", desc: "Build real-world applications from scratch" },
+                  { Icon: Play, title: "Live Sessions", desc: "Interactive classes with Q&A support" },
+                  { Icon: FileCheck2, title: "Dual Certification", desc: "Get both completion & internship certificates" },
+                  { Icon: Briefcase, title: "Placement Support", desc: "Resume reviews & mock interviews" },
+                  { Icon: UserCheck, title: "1:1 Mentorship", desc: "Personal guidance throughout the program" },
+                ].map((feature, i) => (
                   <div
                     key={i}
-                    className={`flex items-start gap-3 p-4 ${theme.light} border-2 border-black`}
+                    className="p-6 bg-white rounded-2xl border border-gray-200 shadow-lg"
                   >
-                    <CheckCircle2 className={`w-5 h-5 ${theme.accent} flex-shrink-0 mt-0.5`} />
-                    <span className="font-medium">{item}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* Syllabus */}
-      {syllabus?.modules && syllabus.modules.length > 0 && (
-        <section className="py-16 bg-gray-50 border-b-2 border-black">
-          <div className="container mx-auto px-4">
-            <div className="max-w-4xl mx-auto">
-              <div className="flex items-center gap-3 mb-8">
-                <BookOpen className={`w-6 h-6 ${theme.accent}`} />
-                <h2 className="text-3xl font-black">Course Syllabus</h2>
-              </div>
-              <div className="space-y-4">
-                {syllabus.modules.map((module, i) => (
-                  <details
-                    key={i}
-                    className="group bg-white border-2 border-black shadow-[4px_4px_0px_rgba(0,0,0,1)]"
-                  >
-                    <summary className="flex items-center justify-between p-4 cursor-pointer font-bold hover:bg-gray-50">
-                      <span className="flex items-center gap-3">
-                        <span className={`w-8 h-8 flex items-center justify-center ${theme.bg} ${theme.accent} border ${theme.border} text-sm font-bold`}>
-                          {i + 1}
-                        </span>
-                        {module.title}
-                      </span>
-                      <span className="text-gray-400 group-open:rotate-180 transition-transform">▼</span>
-                    </summary>
-                    <div className="p-4 pt-0 border-t border-gray-200">
-                      <ul className="space-y-2">
-                        {module.topics.map((topic, j) => (
-                          <li key={j} className="flex items-center gap-2 text-sm text-gray-600">
-                            <span className={`w-1.5 h-1.5 rounded-full bg-gradient-to-r ${theme.gradient}`} />
-                            {topic}
-                          </li>
-                        ))}
-                      </ul>
+                    <div className={`w-12 h-12 mb-4 rounded-xl ${theme.bg} flex items-center justify-center`}>
+                      <feature.Icon className={`w-6 h-6 ${theme.accent}`} />
                     </div>
-                  </details>
+                    <h3 className="font-bold mb-2">{feature.title}</h3>
+                    <p className="text-sm text-gray-600">{feature.desc}</p>
+                  </div>
                 ))}
               </div>
             </div>
           </div>
         </section>
-      )}
 
-      {/* Why This Program */}
-      <section className="py-16 bg-white border-b-2 border-black">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto">
-            <h2 className="text-3xl font-black text-center mb-12">Why Choose This Program?</h2>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {[
-                { Icon: GraduationCap, title: "Industry Curriculum", desc: "Designed by professionals from top MNCs" },
-                { Icon: Code2, title: "Hands-on Projects", desc: "Build real-world applications from scratch" },
-                { Icon: Play, title: "Live Sessions", desc: "Interactive classes with Q&A support" },
-                { Icon: FileCheck2, title: "Dual Certification", desc: "Get both completion & internship certificates" },
-                { Icon: Briefcase, title: "Placement Support", desc: "Resume reviews & mock interviews" },
-                { Icon: UserCheck, title: "1:1 Mentorship", desc: "Personal guidance throughout the program" },
-              ].map((feature, i) => (
-                <div
-                  key={i}
-                  className="p-6 bg-white border-2 border-black shadow-[4px_4px_0px_rgba(0,0,0,1)]"
-                >
-                  <div className={`w-12 h-12 mb-4 ${theme.bg} border-2 border-black flex items-center justify-center`}>
-                    <feature.Icon className={`w-6 h-6 ${theme.accent}`} />
-                  </div>
-                  <h3 className="font-bold mb-2">{feature.title}</h3>
-                  <p className="text-sm text-gray-600">{feature.desc}</p>
-                </div>
-              ))}
+        {/* CTA Section */}
+        <section className={`py-20 bg-gradient-to-r ${theme.gradient} rounded-none`}>
+          <div className="container mx-auto px-4 text-center">
+            <h2 className="text-3xl md:text-4xl font-black text-white mb-4">
+              {"Ready to Start Your "}{course.title.replace(" Internship", "")}{" Journey?"}
+            </h2>
+            <p className="text-white/90 mb-8 max-w-xl mx-auto">
+              Join our next batch and get the skills, certifications, and placement support you need to launch your career.
+            </p>
+            <div className="flex flex-wrap justify-center gap-4">
+              <Link
+                href="/contact"
+                className="inline-flex items-center gap-2 px-8 py-4 bg-white text-black font-bold text-lg rounded-2xl shadow-xl hover:shadow-lg hover:scale-[0.98] transition-all"
+              >
+                Enroll Now
+                <ArrowRight className="w-5 h-5" />
+              </Link>
+              <Link
+                href="/courses"
+                className="inline-flex items-center gap-2 px-8 py-4 bg-transparent text-white font-bold text-lg rounded-2xl border-2 border-white hover:bg-white/10 transition-all"
+              >
+                <ArrowLeft className="w-5 h-5" />
+                View All Courses
+              </Link>
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className={`py-20 bg-gradient-to-r ${theme.gradient}`}>
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl md:text-4xl font-black text-white mb-4">
-            Ready to Start Your {course.title.replace(" Internship", "")} Journey?
-          </h2>
-          <p className="text-white/90 mb-8 max-w-xl mx-auto">
-            Join our next batch and get the skills, certifications, and placement support you need to launch your career.
-          </p>
-          <div className="flex flex-wrap justify-center gap-4">
-            <Link
-              href="/contact"
-              className="inline-flex items-center gap-2 px-8 py-4 bg-white text-black font-bold text-lg border-2 border-black shadow-[6px_6px_0px_rgba(0,0,0,1)] hover:shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
-            >
-              Enroll Now
-              <ArrowRight className="w-5 h-5" />
-            </Link>
-            <Link
-              href="/courses"
-              className="inline-flex items-center gap-2 px-8 py-4 bg-transparent text-white font-bold text-lg border-2 border-white hover:bg-white/10 transition-all"
-            >
-              <ArrowLeft className="w-5 h-5" />
-              View All Courses
-            </Link>
-          </div>
-        </div>
-      </section>
-    </main>
+        </section>
+      </main>
+      <Footer />
+    </>
   );
 }
