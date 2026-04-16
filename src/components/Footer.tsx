@@ -1,8 +1,9 @@
 'use client'
 
+import { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { ArrowUpRight, Mail, Phone, MapPin, Facebook, Linkedin, Instagram, Twitter } from 'lucide-react'
+import { ArrowUpRight, Mail, Phone, MapPin, Facebook, Linkedin, Instagram, Twitter, Loader2, Check } from 'lucide-react'
 
 const footerLinks = {
   Services: [
@@ -25,6 +26,41 @@ const footerLinks = {
 }
 
 export default function Footer() {
+  const [newsletterEmail, setNewsletterEmail] = useState('')
+  const [newsletterSubmitting, setNewsletterSubmitting] = useState(false)
+  const [newsletterDone, setNewsletterDone] = useState(false)
+  const [newsletterError, setNewsletterError] = useState('')
+
+  const handleNewsletterSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!newsletterEmail) return
+    setNewsletterSubmitting(true)
+    setNewsletterError('')
+    try {
+      const res = await fetch('/api/site-queries', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: 'Newsletter Subscriber',
+          email: newsletterEmail,
+          message: 'Newsletter subscription request',
+          source: 'footer_newsletter',
+        }),
+      })
+      if (!res.ok) {
+        const { error } = await res.json()
+        setNewsletterError(error || 'Failed to subscribe')
+        return
+      }
+      setNewsletterDone(true)
+      setNewsletterEmail('')
+    } catch {
+      setNewsletterError('Something went wrong. Please try again.')
+    } finally {
+      setNewsletterSubmitting(false)
+    }
+  }
+
   return (
     <footer className="bg-primary-dark text-white relative font-body border-t-2 border-white/10 overflow-hidden">
       {/* Background Pattern */}

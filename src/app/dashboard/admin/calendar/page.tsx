@@ -391,7 +391,7 @@ export default function CalendarPage() {
               })
               setShowModal(true)
             }}
-            className="bg-primary text-white px-5 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 hover:bg-primary/90 transition-colors"
+            className="bg-primary text-white px-5 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-2 hover:bg-primary/90 transition-colors"
           >
             <Plus size={16} /> Add Event
           </button>
@@ -399,7 +399,7 @@ export default function CalendarPage() {
       />
 
       {/* Instructions */}
-      <div className="mb-4 p-4 bg-off-white border border-border rounded-lg flex items-center gap-3 text-sm text-foreground-secondary">
+      <div className="mb-4 p-4 bg-off-white border border-border rounded-2xl shadow-sm flex items-center gap-3 text-sm text-foreground-secondary">
         <GripVertical size={16} className="text-primary flex-shrink-0" />
         <span>
           <strong>Tip:</strong> Click on any date/time to create an event. Drag events to move them. Drag event edges to resize.
@@ -407,7 +407,7 @@ export default function CalendarPage() {
       </div>
 
       {/* Calendar */}
-      <div className="bg-white border border-border rounded-xl overflow-hidden" style={{ height: 'calc(100vh - 260px)', minHeight: '600px' }}>
+      <div className="bg-white border border-gray-200 rounded-2xl shadow-lg overflow-hidden" style={{ height: 'calc(100vh - 260px)', minHeight: '600px' }}>
         <DnDCalendar
           localizer={localizer}
           events={calendarEvents}
@@ -464,7 +464,7 @@ export default function CalendarPage() {
       {/* Event Detail Popup */}
       {selectedEvent && (
         <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4" onClick={() => setSelectedEvent(null)}>
-          <div className="bg-white rounded-2xl w-full max-w-md shadow-xl" onClick={e => e.stopPropagation()}>
+          <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl" onClick={e => e.stopPropagation()}>
             <div className="p-6 border-b border-border">
               <div className="flex items-start justify-between">
                 <div>
@@ -529,13 +529,13 @@ export default function CalendarPage() {
             <div className="flex gap-3 p-6 border-t border-border">
               <button
                 onClick={() => openEditModal(selectedEvent)}
-                className="flex-1 py-2.5 rounded-lg text-sm font-semibold border border-border text-foreground/70 hover:bg-off-white transition-colors flex items-center justify-center gap-2"
+                className="flex-1 py-2.5 rounded-xl text-sm font-semibold border border-border text-foreground/70 hover:bg-off-white transition-colors flex items-center justify-center gap-2"
               >
                 <Edit size={14} /> Edit
               </button>
               <button
                 onClick={() => handleDelete(selectedEvent.id)}
-                className="flex-1 py-2.5 rounded-lg text-sm font-semibold bg-red-50 text-red-600 hover:bg-red-100 transition-colors flex items-center justify-center gap-2"
+                className="flex-1 py-2.5 rounded-xl text-sm font-semibold bg-red-50 text-red-600 hover:bg-red-100 transition-colors flex items-center justify-center gap-2"
               >
                 <Trash2 size={14} /> Delete
               </button>
@@ -547,10 +547,10 @@ export default function CalendarPage() {
       {/* Create/Edit Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl w-full max-w-lg shadow-xl max-h-[90vh] overflow-y-auto">
+          <div className="bg-white rounded-2xl w-full max-w-lg shadow-2xl max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between p-6 border-b border-border sticky top-0 bg-white z-10">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-[#35C8E0]/20 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-xl bg-[#35C8E0]/20 flex items-center justify-center">
                   <CalendarIcon size={20} className="text-primary" />
                 </div>
                 <h2 className="text-lg font-bold text-primary">
@@ -559,7 +559,7 @@ export default function CalendarPage() {
               </div>
               <button
                 onClick={() => { setShowModal(false); setEditingEvent(null) }}
-                className="w-8 h-8 rounded-lg hover:bg-off-white flex items-center justify-center transition-colors"
+                className="w-8 h-8 rounded-xl hover:bg-off-white flex items-center justify-center transition-colors"
               >
                 <X size={18} className="text-foreground/40" />
               </button>
@@ -575,7 +575,7 @@ export default function CalendarPage() {
                   type="text"
                   value={form.title}
                   onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
-                  className="w-full border border-border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10"
+                  className="w-full border border-border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10"
                   placeholder="Enter event title"
                   autoFocus
                 />
@@ -590,7 +590,7 @@ export default function CalendarPage() {
                   value={form.description}
                   onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
                   rows={3}
-                  className="w-full border border-border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 resize-none"
+                  className="w-full border border-border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 resize-none"
                   placeholder="Add event description (optional)"
                 />
               </div>
@@ -611,7 +611,7 @@ export default function CalendarPage() {
                         color: type?.color || f.color
                       }))
                     }}
-                    className="w-full border border-border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10"
+                    className="w-full border border-border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10"
                   >
                     {EVENT_TYPES.map(t => (
                       <option key={t.value} value={t.value}>{t.label}</option>
@@ -622,7 +622,7 @@ export default function CalendarPage() {
                   <label className="block text-xs font-semibold text-foreground/60 mb-1.5 uppercase tracking-wide">
                     Color
                   </label>
-                  <div className="flex gap-1.5 flex-wrap p-2 border border-border rounded-lg">
+                  <div className="flex gap-1.5 flex-wrap p-2 border border-border rounded-xl">
                     {EVENT_COLORS.map(c => (
                       <button
                         key={c}
@@ -648,7 +648,7 @@ export default function CalendarPage() {
                     type="datetime-local"
                     value={form.start_time}
                     onChange={e => setForm(f => ({ ...f, start_time: e.target.value }))}
-                    className="w-full border border-border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10"
+                    className="w-full border border-border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10"
                   />
                 </div>
                 <div>
@@ -659,13 +659,13 @@ export default function CalendarPage() {
                     type="datetime-local"
                     value={form.end_time}
                     onChange={e => setForm(f => ({ ...f, end_time: e.target.value }))}
-                    className="w-full border border-border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10"
+                    className="w-full border border-border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10"
                   />
                 </div>
               </div>
 
               {/* All Day Checkbox */}
-              <label className="flex items-center gap-3 cursor-pointer p-3 border border-border rounded-lg hover:bg-off-white transition-colors">
+              <label className="flex items-center gap-3 cursor-pointer p-3 border border-border rounded-xl hover:bg-off-white transition-colors">
                 <input
                   type="checkbox"
                   checked={form.all_day}
@@ -689,7 +689,7 @@ export default function CalendarPage() {
                     type="text"
                     value={form.location}
                     onChange={e => setForm(f => ({ ...f, location: e.target.value }))}
-                    className="w-full border border-border rounded-lg pl-10 pr-3 py-2.5 text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10"
+                    className="w-full border border-border rounded-xl pl-10 pr-3 py-2.5 text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10"
                     placeholder="Add location or meeting link"
                   />
                 </div>
@@ -706,7 +706,7 @@ export default function CalendarPage() {
                       key={r.value}
                       type="button"
                       onClick={() => toggleRole(r.value)}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${
+                      className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all ${
                         form.target_roles.includes(r.value)
                           ? 'bg-primary text-white border-primary shadow-sm'
                           : 'border-border text-foreground/60 hover:border-primary/50 hover:text-primary'
@@ -725,14 +725,14 @@ export default function CalendarPage() {
             <div className="flex gap-3 p-6 border-t border-border sticky bottom-0 bg-white">
               <button
                 onClick={() => { setShowModal(false); setEditingEvent(null) }}
-                className="flex-1 py-2.5 rounded-lg text-sm font-semibold border border-border text-foreground/60 hover:bg-off-white transition-colors"
+                className="flex-1 py-2.5 rounded-xl text-sm font-semibold border border-border text-foreground/60 hover:bg-off-white transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSave}
                 disabled={saving || !form.title || !form.start_time}
-                className="flex-1 py-2.5 rounded-lg text-sm font-semibold bg-primary text-white hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 py-2.5 rounded-xl text-sm font-semibold bg-primary text-white hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {saving ? 'Saving...' : editingEvent ? 'Update Event' : 'Create Event'}
               </button>

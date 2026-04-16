@@ -8,7 +8,9 @@
       "Bash(npm run:*)",
       "Bash(sips:*)",
       "Bash(curl:*)",
-      "Bash(awk '{print $2, $11, $12}')"
+      "Bash(awk '{print $2, $11, $12}')",
+      "Bash(git show *)",
+      "Read(//tmp/**)"
     ]
   },
   "enableAllProjectMcpServers": true,

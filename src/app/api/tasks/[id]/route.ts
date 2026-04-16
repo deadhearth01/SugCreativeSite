@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
 
-// PATCH — Update task (assignee can update status; admin can update everything)
+// PATCH — Update task (role-based permissions)
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params
@@ -12,16 +12,11 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single()
     const body = await req.json()
 
-    // Non-admins can only update status of their own tasks
-    if (profile?.role !== 'admin') {
-      const { data: task } = await supabase.from('tasks').select('assigned_to').eq('id', id).single()
-      if (task?.assigned_to !== user.id) {
-        return NextResponse.json({ error: 'Unauthorized to update this task' }, { status: 403 })
-      }
-      // Only allow status updates for non-admins
+    // Admin can update everything
+    if (profile?.role === 'admin') {
       const { data, error } = await supabase
         .from('tasks')
-        .update({ status: body.status, updated_at: new Date().toISOString() })
+        .update({ ...body, updated_at: new Date().toISOString() })
         .eq('id', id)
         .select()
         .single()
@@ -29,13 +24,35 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       return NextResponse.json({ data })
     }
 
+    // For non-admins, check ownership
+    const { data: task } = await supabase.from('tasks').select('assigned_to, assigned_by').eq('id', id).single()
+
+    // Employee can update status of tasks assigned to them, or tasks they created
+    if (profile?.role === 'employee') {
+      if (task?.assigned_to === user.id || task?.assigned_by === user.id) {
+        const { data, error } = await supabase
+          .from('tasks')
+          .update({ status: body.status, updated_at: new Date().toISOString() })
+          .eq('id', id)
+          .select()
+          .single()
+        if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+        return NextResponse.json({ data })
+      }
+      return NextResponse.json({ error: 'Unauthorized to update this task' }, { status: 403 })
+    }
+
+    // Everyone else can only update status of their own tasks
+    if (task?.assigned_to !== user.id) {
+      return NextResponse.json({ error: 'Unauthorized to update this task' }, { status: 403 })
+    }
+
     const { data, error } = await supabase
       .from('tasks')
-      .update({ ...body, updated_at: new Date().toISOString() })
+      .update({ status: body.status, updated_at: new Date().toISOString() })
       .eq('id', id)
       .select()
       .single()
-
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
     return NextResponse.json({ data })
   } catch (err) {

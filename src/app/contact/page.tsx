@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { Mail, Phone, MapPin, Send, ArrowUpRight, CheckCircle2, Clock, MessageSquare } from 'lucide-react'
+import { Mail, Phone, MapPin, Send, ArrowUpRight, CheckCircle2, Clock, MessageSquare, Loader2 } from 'lucide-react'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import AnimatedSection from '@/components/AnimatedSection'
@@ -39,6 +39,8 @@ export default function ContactPage() {
   const [formState, setFormState] = useState({ name: '', email: '', phone: '', subject: '', message: '', service: '' })
   const [submitted, setSubmitted] = useState(false)
   const [focused, setFocused] = useState('')
+  const [submitting, setSubmitting] = useState(false)
+  const [error, setError] = useState('')
 
   useEffect(() => {
     if (heroRef.current) {
@@ -54,9 +56,35 @@ export default function ContactPage() {
     return () => { ScrollTrigger.getAll().forEach(t => t.kill()) }
   }, [])
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setSubmitted(true)
+    setSubmitting(true)
+    setError('')
+    try {
+      const res = await fetch('/api/site-queries', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: formState.name,
+          email: formState.email,
+          phone: formState.phone || null,
+          subject: formState.subject,
+          message: formState.message,
+          service: formState.service || null,
+          source: 'contact_page',
+        }),
+      })
+      if (!res.ok) {
+        const { error: errMsg } = await res.json()
+        setError(errMsg || 'Something went wrong. Please try again.')
+        return
+      }
+      setSubmitted(true)
+    } catch {
+      setError('Something went wrong. Please try again.')
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   const inputClass = (field: string) =>
@@ -298,14 +326,20 @@ export default function ContactPage() {
                           />
                         </div>
 
+                        {error && (
+                          <div className="bg-red-50 border-2 border-red-300 text-red-700 text-sm font-bold px-4 py-3 rounded-xl">
+                            {error}
+                          </div>
+                        )}
+
                         <Button
                           type="submit"
                           size="lg"
-                          className="w-full bg-primary-dark hover:bg-black text-white font-black text-sm uppercase tracking-widest rounded-2xl border-2 border-primary-dark h-16 shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-[8px_8px_0px_rgba(0,0,0,1)] hover:-translate-y-1 transition-all"
+                          disabled={submitting}
+                          className="w-full bg-primary-dark hover:bg-black text-white font-black text-sm uppercase tracking-widest rounded-2xl border-2 border-primary-dark h-16 shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-[8px_8px_0px_rgba(0,0,0,1)] hover:-translate-y-1 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
                         >
                           <span className="flex items-center justify-center gap-3">
-                            Send Message
-                            <ArrowUpRight size={20} />
+                            {submitting ? <><Loader2 size={20} className="animate-spin" /> Sending...</> : <>Send Message <ArrowUpRight size={20} /></>}
                           </span>
                         </Button>
                         <p className="text-xs text-primary-dark/40 font-bold text-center">

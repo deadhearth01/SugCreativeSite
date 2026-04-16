@@ -4,6 +4,7 @@ import { getGoogleAuthUrl } from '@/lib/google-meet'
 
 /**
  * GET /api/auth/google - Redirect to Google OAuth for Meet authorization
+ * Accepts ?origin= query param from client for accurate redirect URI
  */
 export async function GET(req: NextRequest) {
   try {
@@ -14,12 +15,24 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Build redirect URI
-    const origin = req.nextUrl.origin
+    // Determine the correct origin:
+    // 1. Prefer explicit origin from client (window.location.origin)
+    // 2. Fall back to x-forwarded headers (for reverse proxies)
+    // 3. Fall back to req.nextUrl.origin
+    const clientOrigin = req.nextUrl.searchParams.get('origin')
+    const forwardedProto = req.headers.get('x-forwarded-proto') || 'https'
+    const forwardedHost = req.headers.get('x-forwarded-host') || req.headers.get('host')
+    const origin = clientOrigin
+      || (forwardedHost ? `${forwardedProto}://${forwardedHost}` : null)
+      || req.nextUrl.origin
+
     const redirectUri = `${origin}/api/auth/google/callback`
 
-    // State includes user ID for verification in callback
-    const state = Buffer.from(JSON.stringify({ userId: user.id })).toString('base64')
+    // State includes user ID and origin for verification in callback
+    const state = Buffer.from(JSON.stringify({
+      userId: user.id,
+      origin,
+    })).toString('base64')
 
     const authUrl = getGoogleAuthUrl(redirectUri, state)
 

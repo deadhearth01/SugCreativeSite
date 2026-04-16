@@ -10,7 +10,7 @@ type TicketReply = {
   message: string
   created_at: string
   user_id: string
-  author?: { full_name: string } | null
+  author?: { full_name: string; role?: string } | null
 }
 
 type Ticket = {
@@ -67,14 +67,17 @@ export default function StudentSupportPage() {
 
   const fetchReplies = async (ticketId: string) => {
     setRepliesLoading(true)
-    const supabase = createClient()
-    const { data } = await supabase
-      .from('ticket_replies')
-      .select('id, message, created_at, user_id, author:user_id(full_name)')
-      .eq('ticket_id', ticketId)
-      .order('created_at')
-
-    setReplies((data as unknown as TicketReply[]) || [])
+    try {
+      const res = await fetch(`/api/tickets/${ticketId}/replies`)
+      if (res.ok) {
+        const json = await res.json()
+        setReplies((json.data as TicketReply[]) || [])
+      } else {
+        setReplies([])
+      }
+    } catch {
+      setReplies([])
+    }
     setRepliesLoading(false)
   }
 
@@ -147,7 +150,7 @@ export default function StudentSupportPage() {
     <div>
       {/* Toast */}
       {toast && (
-        <div className={`fixed top-4 right-4 z-50 px-5 py-3 rounded-lg shadow-lg text-sm font-medium text-white transition-all ${toast.type === 'success' ? 'bg-green-600' : 'bg-red-500'}`}>
+        <div className={`fixed top-4 right-4 z-50 px-5 py-3 rounded-2xl shadow-lg text-sm font-medium text-white transition-all ${toast.type === 'success' ? 'bg-green-600' : 'bg-red-500'}`}>
           {toast.message}
         </div>
       )}
@@ -158,7 +161,7 @@ export default function StudentSupportPage() {
         action={
           <button
             onClick={() => setShowCreateModal(true)}
-            className="bg-primary text-white px-5 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 hover:bg-primary/90 transition-colors"
+            className="bg-primary text-white px-5 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-2 hover:bg-primary/90 transition-colors"
           >
             <Plus size={16} /> New Ticket
           </button>
@@ -166,7 +169,7 @@ export default function StudentSupportPage() {
       />
 
       {/* Status Filter Tabs */}
-      <div className="flex border border-border rounded-lg overflow-hidden mb-6 w-fit flex-wrap">
+      <div className="flex border border-gray-200 rounded-2xl overflow-hidden mb-6 w-fit flex-wrap">
         {statusTabs.map((t) => {
           const count = t === 'all' ? tickets.length : tickets.filter((tk) => tk.status === t).length
           return (
@@ -192,7 +195,7 @@ export default function StudentSupportPage() {
               <div
                 key={ticket.id}
                 onClick={() => handleOpenTicket(ticket)}
-                className="bg-white border border-border rounded-xl p-5 hover:shadow-sm hover:border-[#35C8E0]/50 transition-all cursor-pointer"
+                className="bg-white border border-gray-200 rounded-2xl p-5 hover:shadow-md hover:border-[#35C8E0]/50 transition-all cursor-pointer"
               >
                 <div className="flex items-center justify-between gap-4">
                   <div className="flex items-start gap-3 min-w-0">
@@ -204,7 +207,7 @@ export default function StudentSupportPage() {
                         <span className="text-xs text-foreground/40">
                           {new Date(ticket.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                         </span>
-                        <span className={`text-xs px-2 py-0.5 rounded font-medium ${ticket.priority === 'high' ? 'bg-red-50 text-red-600' : ticket.priority === 'medium' ? 'bg-yellow-50 text-yellow-700' : 'bg-green-50 text-green-700'}`}>
+                        <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${ticket.priority === 'high' ? 'bg-red-50 text-red-600' : ticket.priority === 'medium' ? 'bg-yellow-50 text-yellow-700' : 'bg-green-50 text-green-700'}`}>
                           {ticket.priority}
                         </span>
                         {replyCount > 0 && (
@@ -227,13 +230,13 @@ export default function StudentSupportPage() {
       {/* Create Ticket Modal */}
       {showCreateModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl w-full max-w-lg mx-4 shadow-xl">
-            <div className="flex items-center justify-between p-6 border-b border-border">
+          <div className="bg-white rounded-2xl w-full max-w-lg mx-4 shadow-lg">
+            <div className="flex items-center justify-between p-6 border-b border-gray-200">
               <div>
                 <h3 className="text-lg font-heading font-bold text-primary">New Support Ticket</h3>
                 <p className="text-xs text-foreground/50 mt-0.5">Describe your issue and we&apos;ll get back to you</p>
               </div>
-              <button onClick={() => setShowCreateModal(false)} className="p-1 rounded-lg hover:bg-off-white transition-colors">
+              <button onClick={() => setShowCreateModal(false)} className="p-1 rounded-xl hover:bg-off-white transition-colors">
                 <X size={18} />
               </button>
             </div>
@@ -245,7 +248,7 @@ export default function StudentSupportPage() {
                   value={form.subject}
                   onChange={(e) => setForm({ ...form, subject: e.target.value })}
                   placeholder="Brief summary of your issue"
-                  className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-[#35C8E0]"
+                  className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-[#35C8E0]"
                 />
               </div>
               <div>
@@ -255,7 +258,7 @@ export default function StudentSupportPage() {
                   value={form.description}
                   onChange={(e) => setForm({ ...form, description: e.target.value })}
                   placeholder="Describe your issue in detail..."
-                  className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-[#35C8E0] resize-none"
+                  className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-[#35C8E0] resize-none"
                 />
               </div>
               <div>
@@ -263,7 +266,7 @@ export default function StudentSupportPage() {
                 <select
                   value={form.priority}
                   onChange={(e) => setForm({ ...form, priority: e.target.value })}
-                  className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-[#35C8E0] bg-white"
+                  className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-[#35C8E0] bg-white"
                 >
                   <option value="low">Low</option>
                   <option value="medium">Medium</option>
@@ -271,17 +274,17 @@ export default function StudentSupportPage() {
                 </select>
               </div>
             </div>
-            <div className="flex justify-end gap-3 p-6 border-t border-border">
+            <div className="flex justify-end gap-3 p-6 border-t border-gray-200">
               <button
                 onClick={() => setShowCreateModal(false)}
-                className="px-5 py-2.5 rounded-lg text-sm font-semibold border border-border hover:bg-off-white transition-colors"
+                className="px-5 py-2.5 rounded-xl text-sm font-semibold border border-gray-200 hover:bg-off-white transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={handleCreateTicket}
                 disabled={creating || !form.subject.trim() || !form.description.trim()}
-                className="bg-primary text-white px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-primary/90 transition-colors disabled:opacity-60 flex items-center gap-2"
+                className="bg-primary text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-primary/90 transition-colors disabled:opacity-60 flex items-center gap-2"
               >
                 {creating ? <Loader2 size={14} className="animate-spin" /> : <Plus size={14} />}
                 Create Ticket
@@ -294,25 +297,25 @@ export default function StudentSupportPage() {
       {/* Ticket Detail Modal */}
       {selectedTicket && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl w-full max-w-2xl mx-4 shadow-xl max-h-[90vh] flex flex-col">
-            <div className="flex items-center justify-between p-6 border-b border-border flex-shrink-0">
+          <div className="bg-white rounded-2xl w-full max-w-2xl mx-4 shadow-lg max-h-[90vh] flex flex-col">
+            <div className="flex items-center justify-between p-6 border-b border-gray-200 flex-shrink-0">
               <div className="min-w-0">
                 <h3 className="text-lg font-heading font-bold text-primary truncate">{selectedTicket.subject}</h3>
                 <div className="flex items-center gap-2 mt-1">
                   <StatusBadge status={selectedTicket.status} />
-                  <span className={`text-xs px-2 py-0.5 rounded font-medium ${selectedTicket.priority === 'high' ? 'bg-red-50 text-red-600' : selectedTicket.priority === 'medium' ? 'bg-yellow-50 text-yellow-700' : 'bg-green-50 text-green-700'}`}>
+                  <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${selectedTicket.priority === 'high' ? 'bg-red-50 text-red-600' : selectedTicket.priority === 'medium' ? 'bg-yellow-50 text-yellow-700' : 'bg-green-50 text-green-700'}`}>
                     {selectedTicket.priority} priority
                   </span>
                 </div>
               </div>
-              <button onClick={() => setSelectedTicket(null)} className="p-1 rounded-lg hover:bg-off-white transition-colors flex-shrink-0 ml-4">
+              <button onClick={() => setSelectedTicket(null)} className="p-1 rounded-xl hover:bg-off-white transition-colors flex-shrink-0 ml-4">
                 <X size={18} />
               </button>
             </div>
 
             <div className="p-6 overflow-y-auto flex-1 space-y-4">
               {/* Original Description */}
-              <div className="bg-off-white rounded-lg p-4">
+              <div className="bg-off-white rounded-2xl p-4">
                 <p className="text-xs text-foreground/50 mb-1">Original message</p>
                 <p className="text-sm text-primary">{selectedTicket.description}</p>
               </div>
@@ -329,7 +332,7 @@ export default function StudentSupportPage() {
                   {replies.map((reply) => {
                     const author = reply.author as { full_name: string } | null
                     return (
-                      <div key={reply.id} className="bg-white border border-border rounded-lg p-4">
+                      <div key={reply.id} className="bg-white border border-gray-200 rounded-2xl p-4">
                         <div className="flex items-center justify-between mb-2">
                           <span className="text-xs font-semibold text-primary">{author?.full_name || 'Support Team'}</span>
                           <span className="text-xs text-foreground/40">
@@ -345,7 +348,7 @@ export default function StudentSupportPage() {
             </div>
 
             {/* Reply Input */}
-            <div className="p-6 border-t border-border flex-shrink-0">
+            <div className="p-6 border-t border-gray-200 flex-shrink-0">
               <div className="flex gap-3">
                 <input
                   type="text"
@@ -353,12 +356,12 @@ export default function StudentSupportPage() {
                   onChange={(e) => setReplyText(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleAddReply()}
                   placeholder="Type your reply..."
-                  className="flex-1 border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-[#35C8E0]"
+                  className="flex-1 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-[#35C8E0]"
                 />
                 <button
                   onClick={handleAddReply}
                   disabled={submittingReply || !replyText.trim()}
-                  className="bg-primary text-white px-4 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 hover:bg-primary/90 transition-colors disabled:opacity-60"
+                  className="bg-primary text-white px-4 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-2 hover:bg-primary/90 transition-colors disabled:opacity-60"
                 >
                   {submittingReply ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
                 </button>

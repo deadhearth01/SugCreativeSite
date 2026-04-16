@@ -18,7 +18,7 @@ type Ticket = {
 function Toast({ message, type, onClose }: { message: string; type: 'success' | 'error'; onClose: () => void }) {
   useEffect(() => { const t = setTimeout(onClose, 4000); return () => clearTimeout(t) }, [onClose])
   return (
-    <div className={`fixed bottom-6 right-6 z-50 flex items-center gap-3 px-5 py-3 rounded-xl shadow-lg text-sm font-semibold text-white ${type === 'success' ? 'bg-emerald-600' : 'bg-red-500'}`}>
+    <div className={`fixed bottom-6 right-6 z-50 flex items-center gap-3 px-5 py-3 rounded-2xl shadow-lg text-sm font-semibold text-white ${type === 'success' ? 'bg-emerald-600' : 'bg-red-500'}`}>
       {message}<button onClick={onClose}><X size={14} /></button>
     </div>
   )
@@ -86,13 +86,13 @@ export default function ClientTicketsPage() {
         title="Support & Tickets"
         description="Get help with your projects or billing"
         action={
-          <button onClick={() => setShowModal(true)} className="bg-primary text-white px-5 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 hover:bg-primary/90 transition-colors">
+          <button onClick={() => setShowModal(true)} className="bg-primary text-white px-5 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-2 hover:bg-primary/90 transition-colors">
             <Plus size={16} /> New Ticket
           </button>
         }
       />
 
-      <div className="bg-white border border-border rounded-xl">
+      <div className="bg-white border border-gray-200 rounded-2xl">
         {tickets.length === 0 ? (
           <p className="text-sm text-foreground/50 py-10 text-center">No tickets yet. Create one if you need help.</p>
         ) : (
@@ -101,7 +101,7 @@ export default function ClientTicketsPage() {
             rows={tickets.map((t) => [
               <span key="id" className="font-mono text-xs text-foreground/60">{t.ticket_number || `#${t.id.slice(0, 6)}`}</span>,
               <span key="s" className="font-medium text-primary">{t.subject}</span>,
-              <span key="p" className={`text-xs font-semibold px-2 py-1 rounded capitalize ${t.priority === 'high' ? 'bg-red-100 text-red-700' : t.priority === 'medium' ? 'bg-yellow-100 text-yellow-700' : 'bg-gray-100 text-gray-600'}`}>{t.priority || '—'}</span>,
+              <span key="p" className={`text-xs font-semibold px-2 py-1 rounded-full capitalize ${t.priority === 'high' ? 'bg-red-100 text-red-700' : t.priority === 'medium' ? 'bg-yellow-100 text-yellow-700' : 'bg-gray-100 text-gray-600'}`}>{t.priority || '—'}</span>,
               <span key="r" className="text-foreground/60 text-xs">{t.ticket_replies?.[0]?.count ?? 0}</span>,
               <StatusBadge key="st" status={t.status} />,
               <span key="c" className="text-foreground/50 text-xs">{new Date(t.created_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}</span>,
@@ -112,13 +112,13 @@ export default function ClientTicketsPage() {
 
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl w-full max-w-lg mx-4 shadow-xl">
-            <div className="flex items-center justify-between p-6 border-b border-border">
+          <div className="bg-white rounded-2xl w-full max-w-lg mx-4 shadow-lg">
+            <div className="flex items-center justify-between p-6 border-b border-gray-200">
               <div>
                 <h3 className="text-lg font-heading font-bold text-primary">New Support Ticket</h3>
                 <p className="text-xs text-foreground/50 mt-0.5">Describe your issue and our team will assist you</p>
               </div>
-              <button onClick={() => setShowModal(false)} className="p-1 rounded-lg hover:bg-off-white"><X size={18} /></button>
+              <button onClick={() => setShowModal(false)} className="p-1 rounded-xl hover:bg-off-white"><X size={18} /></button>
             </div>
             <div className="p-6 space-y-4">
               <div>
@@ -127,7 +127,7 @@ export default function ClientTicketsPage() {
                   type="text"
                   value={form.subject}
                   onChange={e => setForm({ ...form, subject: e.target.value })}
-                  className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-[#35C8E0]"
+                  className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-[#35C8E0]"
                   placeholder="Brief description of your issue"
                 />
               </div>
@@ -136,7 +136,7 @@ export default function ClientTicketsPage() {
                 <textarea
                   value={form.description}
                   onChange={e => setForm({ ...form, description: e.target.value })}
-                  className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-[#35C8E0] resize-none"
+                  className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-[#35C8E0] resize-none"
                   rows={4}
                   placeholder="Provide more details about your issue..."
                 />
@@ -146,7 +146,7 @@ export default function ClientTicketsPage() {
                 <select
                   value={form.priority}
                   onChange={e => setForm({ ...form, priority: e.target.value })}
-                  className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-[#35C8E0] bg-white"
+                  className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-[#35C8E0] bg-white"
                 >
                   <option value="low">Low</option>
                   <option value="medium">Medium</option>
@@ -154,9 +154,9 @@ export default function ClientTicketsPage() {
                 </select>
               </div>
             </div>
-            <div className="flex justify-end gap-3 p-6 border-t border-border">
-              <button onClick={() => setShowModal(false)} className="px-5 py-2.5 rounded-lg text-sm font-semibold border border-border hover:bg-off-white transition-colors">Cancel</button>
-              <button onClick={handleSubmit} disabled={submitting} className="bg-primary text-white px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-primary/90 transition-colors disabled:opacity-50 flex items-center gap-2">
+            <div className="flex justify-end gap-3 p-6 border-t border-gray-200">
+              <button onClick={() => setShowModal(false)} className="px-5 py-2.5 rounded-xl text-sm font-semibold border border-gray-200 hover:bg-off-white transition-colors">Cancel</button>
+              <button onClick={handleSubmit} disabled={submitting} className="bg-primary text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-primary/90 transition-colors disabled:opacity-50 flex items-center gap-2">
                 {submitting && <Loader2 size={14} className="animate-spin" />}
                 Submit Ticket
               </button>

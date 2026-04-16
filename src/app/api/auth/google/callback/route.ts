@@ -4,6 +4,7 @@ import { exchangeCodeForTokens } from '@/lib/google-meet'
 
 /**
  * GET /api/auth/google/callback - Handle Google OAuth callback
+ * Extracts origin from state to ensure redirect_uri matches the one used during auth initiation
  */
 export async function GET(req: NextRequest) {
   try {
@@ -22,12 +23,14 @@ export async function GET(req: NextRequest) {
       return NextResponse.redirect(new URL('/dashboard?error=no_code', req.url))
     }
 
-    // Verify state
+    // Decode state to get userId and origin
     let userId: string | null = null
+    let stateOrigin: string | null = null
     if (state) {
       try {
         const decoded = JSON.parse(Buffer.from(state, 'base64').toString())
         userId = decoded.userId
+        stateOrigin = decoded.origin || null
       } catch {
         console.error('Invalid state parameter')
       }
@@ -46,8 +49,9 @@ export async function GET(req: NextRequest) {
       return NextResponse.redirect(new URL('/dashboard?error=state_mismatch', req.url))
     }
 
-    // Exchange code for tokens
-    const origin = req.nextUrl.origin
+    // Use the same origin that was used when initiating the OAuth flow
+    // This ensures the redirect_uri matches exactly
+    const origin = stateOrigin || req.nextUrl.origin
     const redirectUri = `${origin}/api/auth/google/callback`
 
     const tokens = await exchangeCodeForTokens(code, redirectUri)

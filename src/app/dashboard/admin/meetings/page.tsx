@@ -277,6 +277,7 @@ export default function MeetingsPage() {
             {!googleConnected && !checkingGoogle && (
               <a
                 href="/api/auth/google"
+                onClick={(e) => { e.preventDefault(); window.location.href = `/api/auth/google?origin=${encodeURIComponent(window.location.origin)}`; }}
                 className="bg-white border border-gray-300 text-gray-700 px-5 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 hover:bg-gray-50 transition-colors"
               >
                 <svg className="w-4 h-4" viewBox="0 0 24 24">
@@ -529,6 +530,7 @@ export default function MeetingsPage() {
                   ) : (
                     <a
                       href="/api/auth/google"
+                      onClick={(e) => { e.preventDefault(); window.location.href = `/api/auth/google?origin=${encodeURIComponent(window.location.origin)}`; }}
                       className="text-xs text-blue-600 hover:underline"
                     >
                       Connect Account

@@ -526,13 +526,13 @@ export default function HomePage() {
 
           {/* Dome Gallery placement scroll */}
           {/* Edge-to-edge Dome Gallery Container - spans full viewport width */}
-          <div className="relative w-screen left-1/2 -translate-x-1/2 h-[500px] md:h-[600px] lg:h-[700px] overflow-hidden">
+          <div className="relative w-screen left-1/2 -translate-x-1/2 h-[500px] md:h-[600px] lg:h-[700px]">
             <DomeGallery
               images={placementImages}
               fit={0.9}
               minRadius={500}
               maxVerticalRotationDeg={8}
-              segments={10}
+              segments={32}
               dragDampening={1.8}
               grayscale={false}
               overlayBlurColor="#1A9AB5"
