@@ -47,8 +47,8 @@ export default function StudentDashboard() {
 
   return (
     <div className="space-y-6">
-      <div className="bg-[#1A9AB5] border-2 border-black shadow-[3px_3px_0px_rgba(0,0,0,0.8)] p-6">
-        <div className="inline-flex items-center gap-2 bg-[#35C8E0] text-white text-[10px] font-black uppercase tracking-widest px-3 py-1.5 border-2 border-white/20 shadow-[2px_2px_0px_rgba(0,0,0,0.5)] mb-3">Student Portal</div>
+      <div className="bg-[#1A9AB5] border border-border rounded-xl shadow-sm p-6">
+        <div className="inline-flex items-center gap-2 bg-[#35C8E0] text-white text-[10px] font-black uppercase tracking-widest px-3 py-1.5 border border-white/20 rounded-lg shadow-sm mb-3">Student Portal</div>
         <h2 className="text-xl font-black text-white">Welcome back, {userName}!</h2>
         <p className="text-white/60 text-sm font-semibold mt-1">
           {enrolledCourses.length > 0 ? `${enrolledCourses.filter(e => e.status !== 'completed').length} course(s) in progress. Keep learning!` : 'Enroll in a course to get started.'}
@@ -62,9 +62,9 @@ export default function StudentDashboard() {
           { label: 'Upcoming Meetings', value: String(upcomingMeetings.length), icon: Video, color: 'bg-purple-600' },
           { label: 'Hours Studied', value: String(hoursStudied), icon: Clock, color: 'bg-amber-500' },
         ].map((card) => (
-          <div key={card.label} className="bg-white border-2 border-black shadow-[3px_3px_0px_rgba(0,0,0,0.8)] p-5">
+          <div key={card.label} className="bg-white border border-border rounded-xl shadow-sm p-5">
             <div className="flex items-center gap-2 mb-3">
-              <div className={`w-9 h-9 ${card.color} border-2 border-black flex items-center justify-center shadow-[2px_2px_0px_rgba(0,0,0,0.5)]`}><card.icon size={16} className="text-white" /></div>
+              <div className={`w-9 h-9 ${card.color} border border-border rounded-xl flex items-center justify-center shadow-sm`}><card.icon size={16} className="text-white" /></div>
               <span className="text-[10px] font-black uppercase tracking-widest text-foreground/50 leading-tight">{card.label}</span>
             </div>
             <div className="text-2xl font-black text-[#1A9AB5]">{card.value}</div>
@@ -79,7 +79,7 @@ export default function StudentDashboard() {
           { label: 'Book Meeting', href: '/dashboard/student/meetings', icon: Video },
           { label: 'Calendar', href: '/dashboard/student/calendar', icon: Calendar },
         ].map((a) => (
-          <Link key={a.label} href={a.href} className="bg-white border-2 border-black shadow-[2px_2px_0px_rgba(0,0,0,0.7)] p-4 flex items-center gap-3 hover:shadow-[1px_1px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all group">
+          <Link key={a.label} href={a.href} className="bg-white border border-border rounded-xl shadow-sm p-4 flex items-center gap-3 hover:shadow-md transition-all group">
             <div className="w-8 h-8 bg-[#1A9AB5] border border-black flex items-center justify-center flex-shrink-0"><a.icon size={15} className="text-white" /></div>
             <span className="text-xs font-black uppercase tracking-wide text-[#1A9AB5]">{a.label}</span>
             <ArrowUpRight size={13} className="ml-auto text-foreground/30 group-hover:text-[#35C8E0] transition-colors" />
@@ -88,8 +88,8 @@ export default function StudentDashboard() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white border-2 border-black shadow-[3px_3px_0px_rgba(0,0,0,0.8)]">
-          <div className="flex items-center justify-between px-5 py-4 border-b-2 border-black bg-[#1A9AB5]">
+        <div className="bg-white border border-border rounded-xl shadow-sm">
+          <div className="flex items-center justify-between px-5 py-4 border-b border-border bg-[#1A9AB5] rounded-t-2xl">
             <h3 className="text-sm font-black uppercase tracking-widest text-white">My Courses</h3>
             <Link href="/dashboard/student/courses" className="text-[10px] font-black uppercase tracking-widest text-white/60 hover:text-white flex items-center gap-1">View All <ArrowUpRight size={12} /></Link>
           </div>
@@ -113,14 +113,14 @@ export default function StudentDashboard() {
           )}
         </div>
 
-        <div className="bg-white border-2 border-black shadow-[3px_3px_0px_rgba(0,0,0,0.8)]">
-          <div className="flex items-center justify-between px-5 py-4 border-b-2 border-black bg-[#1A9AB5]">
+        <div className="bg-white border border-border rounded-xl shadow-sm">
+          <div className="flex items-center justify-between px-5 py-4 border-b border-border bg-[#1A9AB5] rounded-t-2xl">
             <h3 className="text-sm font-black uppercase tracking-widest text-white">Upcoming Meetings</h3>
             <Link href="/dashboard/student/meetings" className="text-[10px] font-black uppercase tracking-widest text-white/60 hover:text-white flex items-center gap-1">View All <ArrowUpRight size={12} /></Link>
           </div>
           {upcomingMeetings.length === 0 ? <p className="text-sm text-foreground/40 py-8 text-center font-semibold">No upcoming meetings</p> : (
             <table className="w-full text-sm">
-              <thead><tr className="bg-[#F4F6FA] border-b-2 border-black">{['Session', 'Mentor', 'Date & Time', 'Status'].map(h => <th key={h} className="text-left py-3 px-4 text-[10px] font-black text-foreground/50 uppercase tracking-widest">{h}</th>)}</tr></thead>
+              <thead><tr className="bg-[#F4F6FA] border-b border-border">{['Session', 'Mentor', 'Date & Time', 'Status'].map(h => <th key={h} className="text-left py-3 px-4 text-[10px] font-black text-foreground/50 uppercase tracking-widest">{h}</th>)}</tr></thead>
               <tbody>{upcomingMeetings.map((m, i) => (
                 <tr key={i} className="border-b border-black/8 hover:bg-[#F4F6FA]">
                   <td className="py-3 px-4 font-bold text-[#1A9AB5] text-xs">{m.title}</td>

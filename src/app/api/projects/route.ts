@@ -15,8 +15,8 @@ export async function GET(_req: NextRequest) {
       .select(`*, client:client_id(full_name, email)`)
       .order('created_at', { ascending: false })
 
-    // Clients only see their own projects
-    if (profile?.role === 'client') {
+    // Admin and employee see all projects; clients see only theirs
+    if (!['admin', 'employee'].includes(profile?.role || '')) {
       query = query.eq('client_id', user.id)
     }
 

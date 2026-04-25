@@ -24,7 +24,7 @@ function Toast({ message, type, onClose }: { message: string; type: 'success' | 
     return () => clearTimeout(t)
   }, [onClose])
   return (
-    <div className={`fixed bottom-6 right-6 z-50 flex items-center gap-3 px-5 py-3 shadow-[4px_4px_0px_rgba(0,0,0,1)] text-sm font-bold text-white border-2 border-black ${type === 'success' ? 'bg-emerald-600' : 'bg-red-600'}`}>
+    <div className={`fixed bottom-6 right-6 z-50 flex items-center gap-3 px-5 py-3 shadow-md text-sm font-bold text-white border border-border rounded-xl ${type === 'success' ? 'bg-emerald-600' : 'bg-red-600'}`}>
       {message}
       <button onClick={onClose}><X size={14} /></button>
     </div>
@@ -143,7 +143,7 @@ export default function BudgetPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-2 bg-[#35C8E0] text-white text-[10px] font-black uppercase tracking-widest px-3 py-1.5 border-2 border-[#1A9AB5] shadow-[2px_2px_0px_rgba(0,0,0,0.7)] mb-3">
+          <div className="inline-flex items-center gap-2 bg-[#35C8E0] text-white text-[10px] font-black uppercase tracking-widest px-3 py-1.5 border border-[#1A9AB5] rounded-lg shadow-sm mb-3">
             <Wallet size={12} />
             Finance
           </div>
@@ -152,7 +152,7 @@ export default function BudgetPage() {
         </div>
         <button
           onClick={openCreate}
-          className="flex items-center gap-2 bg-[#1A9AB5] text-white text-xs font-black uppercase tracking-widest px-5 py-3 border-2 border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all flex-shrink-0"
+          className="flex items-center gap-2 bg-[#1A9AB5] text-white text-sm font-semibold px-5 py-2.5 rounded-lg hover:bg-[#158da5] transition-colors flex-shrink-0"
         >
           <Plus size={15} />
           Add Entry
@@ -161,9 +161,9 @@ export default function BudgetPage() {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-white border-2 border-black shadow-[3px_3px_0px_rgba(0,0,0,0.8)] p-5">
+        <div className="bg-white border border-border rounded-xl shadow-sm p-5">
           <div className="flex items-center gap-2 mb-3">
-            <div className="w-8 h-8 bg-emerald-500 border-2 border-black flex items-center justify-center shadow-[2px_2px_0px_rgba(0,0,0,0.5)]">
+            <div className="w-8 h-8 bg-emerald-500 border border-border rounded-xl flex items-center justify-center shadow-sm">
               <TrendingUp size={16} className="text-white" />
             </div>
             <span className="text-xs font-black uppercase tracking-widest text-foreground/60">Total Income</span>
@@ -171,9 +171,9 @@ export default function BudgetPage() {
           <div className="text-3xl font-black text-emerald-600">{fmt(totalIncome)}</div>
           <div className="text-xs font-semibold text-foreground/40 mt-1">{entries.filter(e => e.is_income).length} entries</div>
         </div>
-        <div className="bg-white border-2 border-black shadow-[3px_3px_0px_rgba(0,0,0,0.8)] p-5">
+        <div className="bg-white border border-border rounded-xl shadow-sm p-5">
           <div className="flex items-center gap-2 mb-3">
-            <div className="w-8 h-8 bg-red-500 border-2 border-black flex items-center justify-center shadow-[2px_2px_0px_rgba(0,0,0,0.5)]">
+            <div className="w-8 h-8 bg-red-500 border border-border rounded-xl flex items-center justify-center shadow-sm">
               <TrendingDown size={16} className="text-white" />
             </div>
             <span className="text-xs font-black uppercase tracking-widest text-foreground/60">Total Expenses</span>
@@ -181,9 +181,9 @@ export default function BudgetPage() {
           <div className="text-3xl font-black text-red-600">{fmt(totalExpense)}</div>
           <div className="text-xs font-semibold text-foreground/40 mt-1">{entries.filter(e => !e.is_income).length} entries</div>
         </div>
-        <div className={`bg-white border-2 border-black shadow-[3px_3px_0px_rgba(0,0,0,0.8)] p-5`}>
+        <div className={`bg-white border border-border rounded-xl shadow-sm p-5`}>
           <div className="flex items-center gap-2 mb-3">
-            <div className={`w-8 h-8 border-2 border-black flex items-center justify-center shadow-[2px_2px_0px_rgba(0,0,0,0.5)] ${netBalance >= 0 ? 'bg-[#35C8E0]' : 'bg-orange-500'}`}>
+            <div className={`w-8 h-8 border border-border rounded-xl flex items-center justify-center shadow-sm ${netBalance >= 0 ? 'bg-[#35C8E0]' : 'bg-orange-500'}`}>
               <Wallet size={16} className="text-white" />
             </div>
             <span className="text-xs font-black uppercase tracking-widest text-foreground/60">Net Balance</span>
@@ -201,10 +201,10 @@ export default function BudgetPage() {
           <button
             key={f}
             onClick={() => setFilter(f)}
-            className={`px-4 py-2 text-xs font-black uppercase tracking-widest border-2 transition-all ${
+            className={`px-4 py-2 text-xs font-black uppercase tracking-widest border rounded-lg transition-all ${
               filter === f
-                ? 'bg-[#1A9AB5] text-white border-black shadow-[2px_2px_0px_rgba(0,0,0,0.7)]'
-                : 'bg-white border-black/20 text-foreground/60 hover:border-black hover:shadow-[2px_2px_0px_rgba(0,0,0,0.5)]'
+                ? 'bg-[#1A9AB5] text-white border-[#1A9AB5] shadow-sm'
+                : 'bg-white border-border text-foreground/60 hover:border-[#1A9AB5] hover:shadow-sm'
             }`}
           >
             {f === 'all' ? 'All Entries' : f === 'income' ? 'Income' : 'Expenses'}
@@ -213,8 +213,8 @@ export default function BudgetPage() {
       </div>
 
       {/* Entries Table */}
-      <div className="bg-white border-2 border-black shadow-[3px_3px_0px_rgba(0,0,0,0.8)]">
-        <div className="flex items-center justify-between px-5 py-4 border-b-2 border-black">
+      <div className="bg-white border border-border rounded-xl shadow-sm">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-border">
           <h2 className="text-sm font-black uppercase tracking-widest text-[#1A9AB5]">
             {filter === 'all' ? 'All' : filter === 'income' ? 'Income' : 'Expense'} Entries
             <span className="ml-2 text-foreground/40">({filtered.length})</span>
@@ -226,7 +226,7 @@ export default function BudgetPage() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b-2 border-black bg-[#F4F6FA]">
+                <tr className="border-b border-border bg-[#F4F6FA]">
                   {['Date', 'Title', 'Category', 'Type', 'Amount', 'Actions'].map(h => (
                     <th key={h} className="text-left py-3 px-4 text-[10px] font-black text-foreground/50 uppercase tracking-widest">{h}</th>
                   ))}
@@ -248,7 +248,7 @@ export default function BudgetPage() {
                       </span>
                     </td>
                     <td className="py-3 px-4">
-                      <span className={`text-[10px] px-2 py-1 font-black uppercase tracking-wide border-2 ${entry.is_income ? 'bg-emerald-50 text-emerald-700 border-emerald-300' : 'bg-red-50 text-red-700 border-red-300'}`}>
+                      <span className={`text-[10px] px-2 py-1 font-black uppercase tracking-wide border rounded-md ${entry.is_income ? 'bg-emerald-50 text-emerald-700 border-emerald-300' : 'bg-red-50 text-red-700 border-red-300'}`}>
                         {entry.is_income ? 'Income' : 'Expense'}
                       </span>
                     </td>
@@ -276,8 +276,8 @@ export default function BudgetPage() {
       {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
-          <div className="bg-white w-full max-w-md border-2 border-black shadow-[8px_8px_0px_rgba(0,0,0,1)]">
-            <div className="flex items-center justify-between px-6 py-4 border-b-2 border-black bg-[#1A9AB5]">
+          <div className="bg-white w-full max-w-md rounded-2xl shadow-xl">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-border bg-[#1A9AB5] rounded-t-2xl">
               <h2 className="text-sm font-black uppercase tracking-widest text-white">{editEntry ? 'Edit Entry' : 'Add Budget Entry'}</h2>
               <button onClick={() => setShowModal(false)} className="text-white/60 hover:text-white">
                 <X size={18} />
@@ -290,7 +290,7 @@ export default function BudgetPage() {
                   type="text"
                   value={form.title}
                   onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
-                  className="w-full border-2 border-black/20 px-3 py-2 text-sm font-semibold focus:outline-none focus:border-[#35C8E0] focus:shadow-[3px_3px_0px_rgba(53,200,224,0.3)]"
+                  className="w-full border border-border rounded-lg px-3 py-2 text-sm font-semibold focus:outline-none focus:border-[#35C8E0]"
                   placeholder="e.g. Google Ads Campaign"
                 />
               </div>
@@ -301,7 +301,7 @@ export default function BudgetPage() {
                     type="number"
                     value={form.amount}
                     onChange={e => setForm(f => ({ ...f, amount: e.target.value }))}
-                    className="w-full border-2 border-black/20 px-3 py-2 text-sm font-semibold focus:outline-none focus:border-[#35C8E0]"
+                    className="w-full border border-border rounded-lg px-3 py-2 text-sm font-semibold focus:outline-none focus:border-[#35C8E0]"
                     placeholder="0"
                     min="0"
                   />
@@ -312,7 +312,7 @@ export default function BudgetPage() {
                     type="date"
                     value={form.date}
                     onChange={e => setForm(f => ({ ...f, date: e.target.value }))}
-                    className="w-full border-2 border-black/20 px-3 py-2 text-sm font-semibold focus:outline-none focus:border-[#35C8E0]"
+                    className="w-full border border-border rounded-lg px-3 py-2 text-sm font-semibold focus:outline-none focus:border-[#35C8E0]"
                   />
                 </div>
               </div>
@@ -321,7 +321,7 @@ export default function BudgetPage() {
                 <select
                   value={form.category}
                   onChange={e => setForm(f => ({ ...f, category: e.target.value }))}
-                  className="w-full border-2 border-black/20 px-3 py-2 text-sm font-semibold focus:outline-none focus:border-[#35C8E0]"
+                  className="w-full border border-border rounded-lg px-3 py-2 text-sm font-semibold focus:outline-none focus:border-[#35C8E0]"
                 >
                   {CATEGORIES.map(c => <option key={c} value={c}>{categoryLabel(c)}</option>)}
                 </select>
@@ -334,12 +334,12 @@ export default function BudgetPage() {
                       key={String(opt.val)}
                       type="button"
                       onClick={() => setForm(f => ({ ...f, is_income: opt.val }))}
-                      className={`py-2.5 text-xs font-black uppercase tracking-widest border-2 transition-all ${
+                      className={`py-2.5 text-xs font-black uppercase tracking-widest border rounded-lg transition-all ${
                         form.is_income === opt.val
                           ? opt.val
-                            ? 'bg-emerald-600 text-white border-emerald-800 shadow-[2px_2px_0px_rgba(0,0,0,0.7)]'
-                            : 'bg-red-600 text-white border-red-800 shadow-[2px_2px_0px_rgba(0,0,0,0.7)]'
-                          : 'border-black/20 text-foreground/50 hover:border-black'
+                            ? 'bg-emerald-600 text-white border-emerald-800 shadow-sm'
+                            : 'bg-red-600 text-white border-red-800 shadow-sm'
+                          : 'border-border text-foreground/50 hover:border-[#1A9AB5]'
                       }`}
                     >
                       {opt.label}
@@ -352,7 +352,7 @@ export default function BudgetPage() {
                 <textarea
                   value={form.description}
                   onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
-                  className="w-full border-2 border-black/20 px-3 py-2 text-sm font-semibold focus:outline-none focus:border-[#35C8E0] resize-none"
+                  className="w-full border border-border rounded-lg px-3 py-2 text-sm font-semibold focus:outline-none focus:border-[#35C8E0] resize-none"
                   rows={2}
                   placeholder="Optional notes..."
                 />
@@ -361,14 +361,14 @@ export default function BudgetPage() {
             <div className="flex gap-3 px-6 pb-6">
               <button
                 onClick={() => setShowModal(false)}
-                className="flex-1 py-2.5 text-xs font-black uppercase tracking-widest border-2 border-black/20 text-foreground/60 hover:border-black transition-all"
+                className="flex-1 py-2.5 text-xs font-black uppercase tracking-widest border border-border rounded-lg text-foreground/60 hover:border-[#1A9AB5] transition-all"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSave}
                 disabled={saving}
-                className="flex-1 py-2.5 text-xs font-black uppercase tracking-widest bg-[#1A9AB5] text-white border-2 border-black shadow-[2px_2px_0px_rgba(0,0,0,0.7)] hover:shadow-[1px_1px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                className="flex-1 py-2.5 text-xs font-black uppercase tracking-widest bg-[#1A9AB5] text-white rounded-lg hover:bg-[#158da5] transition-all disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 {saving ? <Loader2 size={14} className="animate-spin" /> : <ArrowUpRight size={14} />}
                 {saving ? 'Saving...' : (editEntry ? 'Update' : 'Add Entry')}

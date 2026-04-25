@@ -1,9 +1,7 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
-import { PageHeader, DashboardTable, StatusBadge } from '@/components/dashboard/DashboardUI'
-import { Loader2, X } from 'lucide-react'
-import { createClient } from '@/lib/supabase/client'
+import { useState, useEffect, useCallback } from 'react'
+import { ClipboardList, Plus, Loader2, X, CheckSquare, Square, Clock, AlertTriangle, CheckCircle2, Calendar } from 'lucide-react'
 
 type Task = {
   id: string
@@ -14,148 +12,227 @@ type Task = {
   due_date: string | null
   created_at: string
   assigned_by_profile: { full_name: string } | null
+  assigned_by: string
+  assigned_to: string
 }
+type TabKey = 'pending' | 'in_progress' | 'completed'
 
-type StatusFilter = 'all' | 'pending' | 'in_progress' | 'completed' | 'overdue'
-type Toast = { message: string; type: 'success' | 'error' }
+const priorityColors: Record<string, string> = {
+  urgent: 'bg-red-100 text-red-700 border-red-200',
+  high: 'bg-orange-100 text-orange-700 border-orange-200',
+  medium: 'bg-amber-100 text-amber-700 border-amber-200',
+  low: 'bg-green-100 text-green-700 border-green-200',
+}
 
 function Toast({ message, type, onClose }: { message: string; type: 'success' | 'error'; onClose: () => void }) {
   useEffect(() => { const t = setTimeout(onClose, 4000); return () => clearTimeout(t) }, [onClose])
   return (
-    <div className={`fixed bottom-6 right-6 z-50 flex items-center gap-3 px-5 py-3 rounded-xl shadow-lg text-sm font-semibold text-white ${type === 'success' ? 'bg-emerald-600' : 'bg-red-500'}`}>
+    <div className={`fixed bottom-6 right-6 z-50 flex items-center gap-3 px-5 py-3 shadow-md text-sm font-bold text-white border border-border rounded-xl ${type === 'success' ? 'bg-emerald-600' : 'bg-red-600'}`}>
       {message}<button onClick={onClose}><X size={14} /></button>
     </div>
   )
 }
 
-const priorityStyles: Record<string, string> = {
-  urgent: 'text-red-600 font-semibold',
-  high: 'text-orange-500 font-semibold',
-  medium: 'text-yellow-600 font-semibold',
-  low: 'text-foreground/50',
-}
-
-const statusTabs: StatusFilter[] = ['all', 'pending', 'in_progress', 'completed', 'overdue']
-
 export default function InternTasksPage() {
-  const [loading, setLoading] = useState(true)
   const [tasks, setTasks] = useState<Task[]>([])
-  const [statusFilter, setStatusFilter] = useState<StatusFilter>('all')
-  const [updatingId, setUpdatingId] = useState<string | null>(null)
-  const [toast, setToast] = useState<Toast | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [activeTab, setActiveTab] = useState<TabKey>('pending')
+  const [showModal, setShowModal] = useState(false)
+  const [saving, setSaving] = useState(false)
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
+  const [currentUserId, setCurrentUserId] = useState('')
+
+  const [form, setForm] = useState({ title: '', description: '', priority: 'medium', due_date: '' })
 
   const showToast = (message: string, type: 'success' | 'error') => setToast({ message, type })
 
   const fetchTasks = useCallback(async () => {
-    const supabase = createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) { setLoading(false); return }
-
-    const { data } = await supabase
-      .from('tasks')
-      .select('*, assigned_by_profile:assigned_by(full_name)')
-      .eq('assigned_to', user.id)
-      .order('created_at', { ascending: false })
-
-    setTasks((data as unknown as Task[]) || [])
+    const res = await fetch('/api/tasks')
+    const { data } = await res.json()
+    setTasks(data || [])
     setLoading(false)
   }, [])
 
-  useEffect(() => { fetchTasks() }, [fetchTasks])
+  useEffect(() => {
+    import('@/lib/supabase/client').then(({ createClient }) => {
+      const supabase = createClient()
+      supabase.auth.getUser().then(({ data: { user } }) => {
+        if (user) setCurrentUserId(user.id)
+      })
+    })
+    fetchTasks()
+  }, [fetchTasks])
 
-  const handleStatusUpdate = async (taskId: string, newStatus: string) => {
-    setUpdatingId(taskId)
+  const tabs: { key: TabKey; label: string; icon: React.ReactNode }[] = [
+    { key: 'pending', label: 'Todo', icon: <Clock size={14} /> },
+    { key: 'in_progress', label: 'In Progress', icon: <AlertTriangle size={14} /> },
+    { key: 'completed', label: 'Completed', icon: <CheckCircle2 size={14} /> },
+  ]
+
+  const filtered = tasks.filter(t => t.status === activeTab)
+
+  const handleCheckbox = async (task: Task) => {
+    const newStatus = task.status === 'completed' ? 'pending' : 'completed'
+    const res = await fetch(`/api/tasks/${task.id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: newStatus }),
+    })
+    if (res.ok) { showToast(newStatus === 'completed' ? 'Done!' : 'Reopened', 'success'); fetchTasks() }
+  }
+
+  const handleStatusChange = async (taskId: string, newStatus: string) => {
+    const res = await fetch(`/api/tasks/${taskId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: newStatus }),
+    })
+    if (res.ok) { showToast('Updated', 'success'); fetchTasks() }
+  }
+
+  const handleSave = async () => {
+    if (!form.title) { showToast('Title required', 'error'); return }
+    setSaving(true)
     try {
-      const res = await fetch(`/api/tasks/${taskId}`, {
-        method: 'PATCH',
+      const res = await fetch('/api/tasks', {
+        method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: newStatus }),
+        body: JSON.stringify({ ...form, description: form.description || null, due_date: form.due_date || null }),
       })
       if (res.ok) {
-        showToast('Task status updated!', 'success')
-        await fetchTasks()
+        showToast('Task created', 'success')
+        setShowModal(false)
+        setForm({ title: '', description: '', priority: 'medium', due_date: '' })
+        fetchTasks()
       } else {
-        showToast('Failed to update status.', 'error')
+        const { error } = await res.json()
+        showToast(error || 'Failed', 'error')
       }
-    } catch {
-      showToast('An error occurred.', 'error')
-    } finally {
-      setUpdatingId(null)
-    }
+    } finally { setSaving(false) }
   }
 
-  const filteredTasks = tasks.filter((t) => {
-    if (statusFilter === 'all') return true
-    if (statusFilter === 'overdue') {
-      return t.due_date && new Date(t.due_date) < new Date() && t.status !== 'completed'
-    }
-    return t.status === statusFilter
-  })
-
-  const taskRows = filteredTasks.map((t) => [
-    <div key="info">
-      <p className="font-medium text-primary text-sm">{t.title}</p>
-      {t.description && <p className="text-xs text-foreground/50 mt-0.5 line-clamp-1">{t.description}</p>}
-      {t.assigned_by_profile && (
-        <p className="text-xs text-foreground/40 mt-0.5">Assigned by: {(t.assigned_by_profile as { full_name: string }).full_name}</p>
-      )}
-    </div>,
-    <span key="p" className={`text-xs ${priorityStyles[t.priority?.toLowerCase()] || 'text-foreground/50'}`}>{t.priority}</span>,
-    <StatusBadge key="s" status={t.status} />,
-    <span key="d" className="text-foreground/50 text-xs">{t.due_date ? new Date(t.due_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}</span>,
-    <select
-      key="action"
-      value={t.status}
-      onChange={(e) => handleStatusUpdate(t.id, e.target.value)}
-      disabled={updatingId === t.id}
-      className="text-xs border border-border rounded px-2 py-1 bg-white focus:outline-none focus:border-[#35C8E0] disabled:opacity-60"
-    >
-      <option value="pending">Pending</option>
-      <option value="in_progress">In Progress</option>
-      <option value="completed">Completed</option>
-    </select>,
-  ])
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center py-32">
-        <Loader2 size={28} className="animate-spin text-[#1A9AB5]" />
-      </div>
-    )
-  }
+  if (loading) return <div className="flex items-center justify-center py-32"><Loader2 size={28} className="animate-spin text-[#35C8E0]" /></div>
 
   return (
-    <div>
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+        <div>
+          <div className="inline-flex items-center gap-2 bg-[#35C8E0] text-white text-[10px] font-black uppercase tracking-widest px-3 py-1.5 border border-[#1A9AB5] rounded-lg shadow-sm mb-3">
+            <ClipboardList size={12} /> Tasks
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-black text-[#1A9AB5] uppercase tracking-tight leading-none">My Tasks</h1>
+          <p className="text-sm text-foreground/50 font-semibold mt-1">Your tasks and assignments</p>
+        </div>
+        <button onClick={() => { setForm({ title: '', description: '', priority: 'medium', due_date: '' }); setShowModal(true) }}
+          className="flex items-center gap-2 bg-[#1A9AB5] text-white text-sm font-semibold px-5 py-2.5 rounded-lg hover:bg-[#158da5] transition-colors flex-shrink-0">
+          <Plus size={15} /> New Task
+        </button>
+      </div>
+
+      <div className="flex gap-2 flex-wrap">
+        {tabs.map(tab => (
+          <button key={tab.key} onClick={() => setActiveTab(tab.key)}
+            className={`flex items-center gap-2 px-4 py-2.5 text-[10px] font-black uppercase tracking-widest border rounded-lg transition-all ${
+              activeTab === tab.key ? 'bg-[#1A9AB5] text-white border-[#1A9AB5] shadow-sm' : 'bg-white border-border text-foreground/50 hover:border-[#1A9AB5]'
+            }`}>
+            {tab.icon} {tab.label} ({tasks.filter(t => t.status === tab.key).length})
+          </button>
+        ))}
+      </div>
+
+      {filtered.length === 0 ? (
+        <div className="bg-white border border-border rounded-xl shadow-sm p-12 text-center">
+          <p className="text-sm text-foreground/40 font-semibold">No tasks here</p>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {filtered.map(task => (
+            <div key={task.id} className="bg-white border border-border rounded-xl shadow-sm p-5">
+              <div className="flex items-start gap-4">
+                <button onClick={() => handleCheckbox(task)} className="mt-0.5 flex-shrink-0">
+                  {task.status === 'completed'
+                    ? <CheckSquare size={20} className="text-emerald-600" />
+                    : <Square size={20} className="text-foreground/30 hover:text-[#1A9AB5]" />}
+                </button>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap mb-1">
+                    <h3 className={`font-bold text-[#1A9AB5] ${task.status === 'completed' ? 'line-through opacity-60' : ''}`}>{task.title}</h3>
+                    <span className={`text-[10px] px-2 py-0.5 font-black uppercase tracking-wide border ${priorityColors[task.priority] || priorityColors.medium}`}>{task.priority}</span>
+                  </div>
+                  {task.description && <p className="text-xs text-foreground/50 mb-2">{task.description}</p>}
+                  <div className="flex items-center gap-4 text-[10px] text-foreground/40 font-semibold">
+                    {task.due_date && (
+                      <span className="flex items-center gap-1"><Calendar size={10} /> {new Date(task.due_date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</span>
+                    )}
+                    {task.assigned_by_profile && task.assigned_by !== currentUserId && (
+                      <span className="text-purple-600 font-bold">Assigned by: {task.assigned_by_profile.full_name}</span>
+                    )}
+                  </div>
+                </div>
+                {task.status !== 'completed' && (
+                  <select value={task.status} onChange={e => handleStatusChange(task.id, e.target.value)}
+                    className="text-xs border border-border rounded-lg px-2 py-1.5 font-semibold focus:outline-none focus:border-[#35C8E0] bg-white flex-shrink-0">
+                    <option value="pending">Todo</option>
+                    <option value="in_progress">In Progress</option>
+                    <option value="completed">Done</option>
+                  </select>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {showModal && (
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+          <div className="bg-white w-full max-w-md rounded-2xl shadow-xl">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-border bg-[#1A9AB5] rounded-t-2xl">
+              <h2 className="text-sm font-black uppercase tracking-widest text-white">New Task</h2>
+              <button onClick={() => setShowModal(false)} className="text-white/60 hover:text-white"><X size={18} /></button>
+            </div>
+            <div className="p-6 space-y-4">
+              <div>
+                <label className="block text-[10px] font-black text-foreground/60 mb-1.5 uppercase tracking-widest">Title *</label>
+                <input type="text" value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
+                  className="w-full border border-border rounded-lg px-3 py-2.5 text-sm font-semibold focus:outline-none focus:border-[#35C8E0]" placeholder="Task title" />
+              </div>
+              <div>
+                <label className="block text-[10px] font-black text-foreground/60 mb-1.5 uppercase tracking-widest">Description</label>
+                <textarea value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
+                  className="w-full border border-border rounded-lg px-3 py-2.5 text-sm font-semibold focus:outline-none focus:border-[#35C8E0] resize-none" rows={3} />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-[10px] font-black text-foreground/60 mb-1.5 uppercase tracking-widest">Priority</label>
+                  <select value={form.priority} onChange={e => setForm(f => ({ ...f, priority: e.target.value }))}
+                    className="w-full border border-border rounded-lg px-3 py-2.5 text-sm font-semibold focus:outline-none focus:border-[#35C8E0]">
+                    <option value="low">Low</option>
+                    <option value="medium">Medium</option>
+                    <option value="high">High</option>
+                    <option value="urgent">Urgent</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-[10px] font-black text-foreground/60 mb-1.5 uppercase tracking-widest">Due Date</label>
+                  <input type="date" value={form.due_date} onChange={e => setForm(f => ({ ...f, due_date: e.target.value }))}
+                    className="w-full border border-border rounded-lg px-3 py-2.5 text-sm font-semibold focus:outline-none focus:border-[#35C8E0]" />
+                </div>
+              </div>
+              <p className="text-[10px] text-foreground/40 font-semibold">Task assigned to yourself</p>
+            </div>
+            <div className="flex gap-3 px-6 pb-6">
+              <button onClick={() => setShowModal(false)} className="flex-1 py-2.5 text-xs font-black uppercase tracking-widest border border-border rounded-lg text-foreground/60 hover:border-[#1A9AB5]">Cancel</button>
+              <button onClick={handleSave} disabled={saving}
+                className="flex-1 py-2.5 text-sm font-semibold bg-[#1A9AB5] text-white rounded-lg hover:bg-[#158da5] disabled:opacity-50 flex items-center justify-center gap-2">
+                {saving ? <Loader2 size={14} className="animate-spin" /> : <Plus size={14} />}
+                Create
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
-
-      <PageHeader title="My Tasks" description="Tasks assigned to you during your internship" />
-
-      <div className="flex border border-border rounded-lg overflow-hidden mb-6 w-fit flex-wrap">
-        {statusTabs.map((tab) => {
-          const count = tab === 'all'
-            ? tasks.length
-            : tab === 'overdue'
-            ? tasks.filter((t) => t.due_date && new Date(t.due_date) < new Date() && t.status !== 'completed').length
-            : tasks.filter((t) => t.status === tab).length
-          return (
-            <button
-              key={tab}
-              onClick={() => setStatusFilter(tab)}
-              className={`px-4 py-2.5 text-sm font-semibold capitalize transition-colors ${statusFilter === tab ? 'bg-primary text-white' : 'hover:bg-off-white text-foreground/60'}`}
-            >
-              {tab.replace('_', ' ')} ({count})
-            </button>
-          )
-        })}
-      </div>
-
-      <div className="bg-white border border-border rounded-xl">
-        {taskRows.length > 0 ? (
-          <DashboardTable headers={['Task', 'Priority', 'Status', 'Due Date', 'Action']} rows={taskRows} />
-        ) : (
-          <p className="text-sm text-foreground/40 py-12 text-center">No tasks found</p>
-        )}
-      </div>
     </div>
   )
 }

@@ -29,7 +29,7 @@ type Reply = {
 function Toast({ message, type, onClose }: { message: string; type: 'success' | 'error'; onClose: () => void }) {
   useEffect(() => { const t = setTimeout(onClose, 4000); return () => clearTimeout(t) }, [onClose])
   return (
-    <div className={`fixed bottom-6 right-6 z-50 flex items-center gap-3 px-5 py-3 shadow-[4px_4px_0px_rgba(0,0,0,1)] text-sm font-bold text-white border-2 border-black ${type === 'success' ? 'bg-emerald-600' : 'bg-red-600'}`}>
+    <div className={`fixed bottom-6 right-6 z-50 flex items-center gap-3 px-5 py-3 shadow-md text-sm font-bold text-white border border-border rounded-xl ${type === 'success' ? 'bg-emerald-600' : 'bg-red-600'}`}>
       {message}
       <button onClick={onClose}><X size={14} /></button>
     </div>
@@ -182,7 +182,7 @@ export default function AdminTicketsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-2 bg-[#35C8E0] text-white text-[10px] font-black uppercase tracking-widest px-3 py-1.5 border-2 border-[#1A9AB5] shadow-[2px_2px_0px_rgba(0,0,0,0.7)] mb-3">
+          <div className="inline-flex items-center gap-2 bg-[#35C8E0] text-white text-[10px] font-black uppercase tracking-widest px-3 py-1.5 border border-[#1A9AB5] rounded-lg shadow-sm mb-3">
             <LifeBuoy size={12} />
             Support
           </div>
@@ -200,9 +200,9 @@ export default function AdminTicketsPage() {
           { label: 'Resolved', value: stats.resolved, icon: CheckCircle, color: 'bg-emerald-600' },
           { label: 'Unassigned', value: stats.unassigned, icon: UserPlus, color: stats.unassigned > 0 ? 'bg-red-500' : 'bg-gray-500' },
         ].map((card) => (
-          <div key={card.label} className="bg-white border-2 border-black shadow-[3px_3px_0px_rgba(0,0,0,0.8)] p-4">
+          <div key={card.label} className="bg-white border border-border rounded-xl shadow-sm p-4">
             <div className="flex items-center gap-2 mb-3">
-              <div className={`w-8 h-8 ${card.color} border-2 border-black flex items-center justify-center shadow-[2px_2px_0px_rgba(0,0,0,0.5)]`}>
+              <div className={`w-8 h-8 ${card.color} border border-border rounded-xl flex items-center justify-center shadow-sm`}>
                 <card.icon size={15} className="text-white" />
               </div>
               <span className="text-[10px] font-black uppercase tracking-widest text-foreground/50">{card.label}</span>
@@ -213,7 +213,7 @@ export default function AdminTicketsPage() {
       </div>
 
       {/* Filters */}
-      <div className="bg-white border-2 border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] p-4 flex flex-col sm:flex-row gap-3">
+      <div className="bg-white border border-border rounded-xl shadow-md p-4 flex flex-col sm:flex-row gap-3">
         <div className="flex-1 relative">
           <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-foreground/40" />
           <input
@@ -221,7 +221,7 @@ export default function AdminTicketsPage() {
             placeholder="Search by subject or user..."
             value={search}
             onChange={e => setSearch(e.target.value)}
-            className="w-full pl-9 pr-4 py-2.5 border-2 border-black/15 text-sm font-semibold focus:outline-none focus:border-[#35C8E0] focus:shadow-[3px_3px_0px_rgba(53,200,224,0.2)]"
+            className="w-full pl-9 pr-4 py-2.5 border border-border rounded-lg text-sm font-semibold focus:outline-none focus:border-[#35C8E0]"
           />
         </div>
         <div className="flex gap-2 flex-wrap">
@@ -229,10 +229,10 @@ export default function AdminTicketsPage() {
             <button
               key={s}
               onClick={() => setFilterStatus(s)}
-              className={`px-3 py-2 text-[10px] font-black uppercase tracking-widest border-2 transition-all capitalize ${
+              className={`px-3 py-2 text-[10px] font-black uppercase tracking-widest border rounded-lg transition-all capitalize ${
                 filterStatus === s
-                  ? 'bg-[#1A9AB5] text-white border-black shadow-[2px_2px_0px_rgba(0,0,0,0.7)]'
-                  : 'bg-white border-black/20 text-foreground/50 hover:border-black hover:shadow-[2px_2px_0px_rgba(0,0,0,0.5)]'
+                  ? 'bg-[#1A9AB5] text-white border-[#1A9AB5] shadow-sm'
+                  : 'bg-white border-border text-foreground/50 hover:border-[#1A9AB5] hover:shadow-sm'
               }`}
             >
               {s.replace('_', ' ')}
@@ -242,8 +242,8 @@ export default function AdminTicketsPage() {
       </div>
 
       {/* Tickets Table */}
-      <div className="bg-white border-2 border-black shadow-[3px_3px_0px_rgba(0,0,0,0.8)]">
-        <div className="px-5 py-4 border-b-2 border-black bg-[#1A9AB5]">
+      <div className="bg-white border border-border rounded-xl shadow-sm">
+        <div className="px-5 py-4 border-b border-border bg-[#1A9AB5] rounded-t-2xl">
           <h2 className="text-sm font-black uppercase tracking-widest text-white">
             Tickets <span className="text-white/40">({filtered.length})</span>
           </h2>
@@ -254,7 +254,7 @@ export default function AdminTicketsPage() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b-2 border-black bg-[#F4F6FA]">
+                <tr className="border-b border-border bg-[#F4F6FA]">
                   {['#', 'Subject', 'From', 'Priority', 'Status', 'Assigned To', 'Date', 'Actions'].map(h => (
                     <th key={h} className="text-left py-3 px-4 text-[10px] font-black text-foreground/50 uppercase tracking-widest whitespace-nowrap">{h}</th>
                   ))}
@@ -286,7 +286,7 @@ export default function AdminTicketsPage() {
                         value={t.assigned_to || ''}
                         onChange={e => handleAssign(t.id, e.target.value || null)}
                         disabled={assigningId === t.id}
-                        className="text-xs border-2 border-black/15 px-2 py-1.5 font-semibold focus:outline-none focus:border-[#35C8E0] disabled:opacity-50 bg-white w-full max-w-32"
+                        className="text-xs border border-border rounded-lg px-2 py-1.5 font-semibold focus:outline-none focus:border-[#35C8E0] disabled:opacity-50 bg-white w-full max-w-32"
                       >
                         <option value="">Unassigned</option>
                         {employees.map(e => (
@@ -327,9 +327,9 @@ export default function AdminTicketsPage() {
       {/* Ticket Detail Modal */}
       {selectedTicket && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
-          <div className="bg-white w-full max-w-2xl border-2 border-black shadow-[8px_8px_0px_rgba(0,0,0,1)] max-h-[90vh] flex flex-col">
+          <div className="bg-white w-full max-w-2xl rounded-2xl shadow-xl max-h-[90vh] flex flex-col">
             {/* Header */}
-            <div className="flex items-start justify-between px-6 py-4 border-b-2 border-black bg-[#1A9AB5] flex-shrink-0">
+            <div className="flex items-start justify-between px-6 py-4 border-b border-border bg-[#1A9AB5] rounded-t-2xl flex-shrink-0">
               <div className="min-w-0">
                 <h2 className="text-sm font-black uppercase tracking-widest text-white truncate">{selectedTicket.subject}</h2>
                 <div className="flex items-center gap-2 mt-2 flex-wrap">
@@ -350,7 +350,7 @@ export default function AdminTicketsPage() {
             </div>
 
             {/* Description */}
-            <div className="px-6 py-4 border-b-2 border-black/10 bg-[#F4F6FA] flex-shrink-0">
+            <div className="px-6 py-4 border-b border-border/10 bg-[#F4F6FA] flex-shrink-0">
               <p className="text-sm text-foreground/70 font-medium">{selectedTicket.description}</p>
               <div className="flex items-center gap-3 mt-3">
                 {/* Status update buttons */}
@@ -377,7 +377,7 @@ export default function AdminTicketsPage() {
                     handleAssign(selectedTicket.id, e.target.value || null)
                     setSelectedTicket(prev => prev ? { ...prev, assigned_to: e.target.value || null } : null)
                   }}
-                  className="text-xs border-2 border-black/15 px-2 py-1.5 font-semibold focus:outline-none focus:border-[#35C8E0] bg-white"
+                  className="text-xs border border-border rounded-lg px-2 py-1.5 font-semibold focus:outline-none focus:border-[#35C8E0] bg-white"
                 >
                   <option value="">Assign to...</option>
                   {employees.map(e => (
@@ -402,7 +402,7 @@ export default function AdminTicketsPage() {
                     <div className="w-7 h-7 bg-[#35C8E0]/20 border border-[#35C8E0]/30 flex items-center justify-center text-xs font-bold text-[#1A9AB5] shrink-0">
                       {r.author?.full_name?.[0] || '?'}
                     </div>
-                    <div className={`max-w-[75%] px-3 py-2 ${r.author?.role === 'admin' || r.author?.role === 'employee' ? 'bg-[#1A9AB5] text-white border-2 border-[#1A9AB5]' : 'bg-[#F4F6FA] border-2 border-black/10'}`}>
+                    <div className={`max-w-[75%] px-3 py-2 ${r.author?.role === 'admin' || r.author?.role === 'employee' ? 'bg-[#1A9AB5] text-white border border-[#1A9AB5] rounded-lg' : 'bg-[#F4F6FA] border border-border rounded-xl/10'}`}>
                       <p className={`text-[10px] font-black uppercase tracking-widest mb-0.5 ${r.author?.role === 'admin' || r.author?.role === 'employee' ? 'text-white/60' : 'text-foreground/40'}`}>
                         {r.author?.full_name} ({r.author?.role})
                       </p>
@@ -420,13 +420,13 @@ export default function AdminTicketsPage() {
                   value={replyMessage}
                   onChange={e => setReplyMessage(e.target.value)}
                   onKeyDown={e => e.key === 'Enter' && !e.shiftKey && handleReply()}
-                  className="flex-1 border-2 border-black/15 px-3 py-2.5 text-sm font-semibold focus:outline-none focus:border-[#35C8E0] focus:shadow-[3px_3px_0px_rgba(53,200,224,0.2)]"
+                  className="flex-1 border border-border rounded-lg px-3 py-2.5 text-sm font-semibold focus:outline-none focus:border-[#35C8E0]"
                   placeholder="Type a reply..."
                 />
                 <button
                   onClick={handleReply}
                   disabled={replying || !replyMessage.trim()}
-                  className="px-4 py-2.5 bg-[#1A9AB5] text-white border-2 border-black shadow-[2px_2px_0px_rgba(0,0,0,0.7)] hover:shadow-[1px_1px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] transition-all disabled:opacity-50"
+                  className="px-4 py-2.5 bg-[#1A9AB5] text-white rounded-lg hover:bg-[#158da5] transition-all disabled:opacity-50"
                 >
                   {replying ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
                 </button>

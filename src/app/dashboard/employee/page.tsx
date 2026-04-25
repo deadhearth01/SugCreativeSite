@@ -48,8 +48,8 @@ export default function EmployeeDashboard() {
 
   return (
     <div className="space-y-6">
-      <div className="bg-[#1A9AB5] border-2 border-black shadow-[3px_3px_0px_rgba(0,0,0,0.8)] p-6">
-        <div className="inline-flex items-center gap-2 bg-[#35C8E0] text-white text-[10px] font-black uppercase tracking-widest px-3 py-1.5 border-2 border-white/20 shadow-[2px_2px_0px_rgba(0,0,0,0.5)] mb-3">Employee Portal</div>
+      <div className="bg-[#1A9AB5] border border-border rounded-xl shadow-sm p-6">
+        <div className="inline-flex items-center gap-2 bg-[#35C8E0] text-white text-[10px] font-black uppercase tracking-widest px-3 py-1.5 border border-white/20 rounded-lg shadow-sm mb-3">Employee Portal</div>
         <h2 className="text-xl font-black text-white">Welcome back, {userName}!</h2>
         <p className="text-white/60 text-sm font-semibold mt-1">
           {pendingTasksCount > 0 ? `${pendingTasksCount} task${pendingTasksCount === 1 ? '' : 's'} pending.` : 'All tasks are up to date.'}
@@ -64,9 +64,9 @@ export default function EmployeeDashboard() {
           { label: "Today's Status", value: attendanceStatus ? attendanceStatus.charAt(0).toUpperCase() + attendanceStatus.slice(1) : 'Not In', icon: Clock, color: attendanceStatus ? 'bg-emerald-600' : 'bg-amber-500' },
           { label: 'Enrolled Courses', value: String(enrolledCoursesCount), icon: BookOpen, color: 'bg-[#35C8E0]' },
         ].map((card) => (
-          <div key={card.label} className="bg-white border-2 border-black shadow-[3px_3px_0px_rgba(0,0,0,0.8)] p-5">
+          <div key={card.label} className="bg-white border border-border rounded-xl shadow-sm p-5">
             <div className="flex items-center gap-2 mb-3">
-              <div className={`w-9 h-9 ${card.color} border-2 border-black flex items-center justify-center shadow-[2px_2px_0px_rgba(0,0,0,0.5)]`}><card.icon size={16} className="text-white" /></div>
+              <div className={`w-9 h-9 ${card.color} border border-border rounded-xl flex items-center justify-center shadow-sm`}><card.icon size={16} className="text-white" /></div>
               <span className="text-[10px] font-black uppercase tracking-widest text-foreground/50 leading-tight">{card.label}</span>
             </div>
             <div className="text-2xl font-black text-[#1A9AB5]">{card.value}</div>
@@ -81,7 +81,7 @@ export default function EmployeeDashboard() {
           { label: 'Calendar', href: '/dashboard/employee/calendar', icon: Calendar },
           { label: 'Attendance', href: '/dashboard/employee/attendance', icon: Clock },
         ].map((a) => (
-          <Link key={a.label} href={a.href} className="bg-white border-2 border-black shadow-[2px_2px_0px_rgba(0,0,0,0.7)] p-4 flex items-center gap-3 hover:shadow-[1px_1px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all group">
+          <Link key={a.label} href={a.href} className="bg-white border border-border rounded-xl shadow-sm p-4 flex items-center gap-3 hover:shadow-md transition-all group">
             <div className="w-8 h-8 bg-[#1A9AB5] border border-black flex items-center justify-center flex-shrink-0"><a.icon size={15} className="text-white" /></div>
             <span className="text-xs font-black uppercase tracking-wide text-[#1A9AB5]">{a.label}</span>
             <ArrowUpRight size={13} className="ml-auto text-foreground/30 group-hover:text-[#35C8E0] transition-colors" />
@@ -90,19 +90,19 @@ export default function EmployeeDashboard() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white border-2 border-black shadow-[3px_3px_0px_rgba(0,0,0,0.8)]">
-          <div className="flex items-center justify-between px-5 py-4 border-b-2 border-black bg-[#1A9AB5]">
+        <div className="bg-white border border-border rounded-xl shadow-sm">
+          <div className="flex items-center justify-between px-5 py-4 border-b border-border bg-[#1A9AB5]">
             <h3 className="text-sm font-black uppercase tracking-widest text-white">My Tasks</h3>
             <Link href="/dashboard/employee/tasks" className="text-[10px] font-black uppercase tracking-widest text-white/60 hover:text-white flex items-center gap-1">View All <ArrowUpRight size={12} /></Link>
           </div>
           {recentTasks.length === 0 ? <p className="text-sm text-foreground/40 py-8 text-center font-semibold">No tasks assigned</p> : (
             <table className="w-full text-sm">
-              <thead><tr className="bg-[#F4F6FA] border-b-2 border-black">{['Task', 'Priority', 'Status', 'Due'].map(h => <th key={h} className="text-left py-3 px-4 text-[10px] font-black text-foreground/50 uppercase tracking-widest">{h}</th>)}</tr></thead>
+              <thead><tr className="bg-[#F4F6FA] border-b border-border">{['Task', 'Priority', 'Status', 'Due'].map(h => <th key={h} className="text-left py-3 px-4 text-[10px] font-black text-foreground/50 uppercase tracking-widest">{h}</th>)}</tr></thead>
               <tbody>{recentTasks.map((t, i) => (
                 <tr key={i} className="border-b border-black/8 hover:bg-[#F4F6FA]">
                   <td className="py-3 px-4 font-bold text-[#1A9AB5] text-xs">{t.title}</td>
                   <td className="py-3 px-4">
-                    <span className={`text-[10px] px-2 py-1 font-black uppercase tracking-wide border-2 ${t.priority === 'urgent' ? 'bg-red-100 text-red-700 border-red-400' : t.priority === 'high' ? 'bg-orange-100 text-orange-700 border-orange-400' : t.priority === 'medium' ? 'bg-amber-100 text-amber-700 border-amber-400' : 'bg-gray-100 text-gray-600 border-gray-300'}`}>{t.priority}</span>
+                    <span className={`text-[10px] px-2 py-1 font-black uppercase tracking-wide border rounded-md ${t.priority === 'urgent' ? 'bg-red-100 text-red-700 border-red-400' : t.priority === 'high' ? 'bg-orange-100 text-orange-700 border-orange-400' : t.priority === 'medium' ? 'bg-amber-100 text-amber-700 border-amber-400' : 'bg-gray-100 text-gray-600 border-gray-300'}`}>{t.priority}</span>
                   </td>
                   <td className="py-3 px-4"><StatusBadge status={t.status} /></td>
                   <td className="py-3 px-4 text-xs text-foreground/50">{t.due_date ? new Date(t.due_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '—'}</td>
@@ -112,8 +112,8 @@ export default function EmployeeDashboard() {
           )}
         </div>
 
-        <div className="bg-white border-2 border-black shadow-[3px_3px_0px_rgba(0,0,0,0.8)]">
-          <div className="flex items-center justify-between px-5 py-4 border-b-2 border-black bg-[#1A9AB5]">
+        <div className="bg-white border border-border rounded-xl shadow-sm">
+          <div className="flex items-center justify-between px-5 py-4 border-b border-border bg-[#1A9AB5]">
             <h3 className="text-sm font-black uppercase tracking-widest text-white">Announcements</h3>
             <Link href="/dashboard/employee/announcements" className="text-[10px] font-black uppercase tracking-widest text-white/60 hover:text-white flex items-center gap-1">View All <ArrowUpRight size={12} /></Link>
           </div>
@@ -121,7 +121,7 @@ export default function EmployeeDashboard() {
             <div className="divide-y divide-black/8">
               {announcements.map((a) => (
                 <div key={a.id} className="flex items-start gap-3 p-4 hover:bg-[#F4F6FA] transition-colors">
-                  <div className="w-8 h-8 bg-[#35C8E0] border-2 border-black flex items-center justify-center flex-shrink-0 shadow-[2px_2px_0px_rgba(0,0,0,0.5)]">
+                  <div className="w-8 h-8 bg-[#35C8E0] border border-border rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm">
                     <Megaphone size={14} className="text-white" />
                   </div>
                   <div>

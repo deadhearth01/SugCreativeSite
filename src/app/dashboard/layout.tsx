@@ -30,6 +30,8 @@ import {
   Wallet,
   User,
   ChevronDown,
+  MessageSquareMore,
+  Briefcase,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import WelcomeScreen from '@/components/dashboard/WelcomeScreen'
@@ -47,6 +49,9 @@ const roleNavItems: Record<string, NavItem[]> = {
     { label: 'Meetings', href: '/dashboard/admin/meetings', icon: Video },
     { label: 'SUG Calendar', href: '/dashboard/admin/calendar', icon: Calendar },
     { label: 'Course Management', href: '/dashboard/admin/courses', icon: BookOpen },
+    { label: 'Tasks', href: '/dashboard/admin/tasks', icon: ClipboardList },
+    { label: 'Client Management', href: '/dashboard/admin/clients', icon: Briefcase },
+    { label: 'Site Queries', href: '/dashboard/admin/queries', icon: MessageSquareMore },
     { label: 'Budget & Finances', href: '/dashboard/admin/budget', icon: Wallet },
     { label: 'Payments', href: '/dashboard/admin/payments', icon: CreditCard },
     { label: 'Announcements', href: '/dashboard/admin/announcements', icon: Megaphone },

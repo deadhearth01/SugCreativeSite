@@ -29,7 +29,7 @@ type Ticket = {
 function Toast({ message, type, onClose }: { message: string; type: 'success' | 'error'; onClose: () => void }) {
   useEffect(() => { const t = setTimeout(onClose, 4000); return () => clearTimeout(t) }, [onClose])
   return (
-    <div className={`fixed bottom-6 right-6 z-50 flex items-center gap-3 px-5 py-3 shadow-[4px_4px_0px_rgba(0,0,0,1)] text-sm font-bold text-white border-2 border-black ${type === 'success' ? 'bg-emerald-600' : 'bg-red-600'}`}>
+    <div className={`fixed bottom-6 right-6 z-50 flex items-center gap-3 px-5 py-3 shadow-md text-sm font-bold text-white border border-border rounded-xl ${type === 'success' ? 'bg-emerald-600' : 'bg-red-600'}`}>
       {message}<button onClick={onClose}><X size={14} /></button>
     </div>
   )
@@ -172,7 +172,7 @@ export default function EmployeeTicketsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-2 bg-[#35C8E0] text-white text-[10px] font-black uppercase tracking-widest px-3 py-1.5 border-2 border-[#1A9AB5] shadow-[2px_2px_0px_rgba(0,0,0,0.7)] mb-3">
+          <div className="inline-flex items-center gap-2 bg-[#35C8E0] text-white text-[10px] font-black uppercase tracking-widest px-3 py-1.5 border border-[#1A9AB5] rounded-lg shadow-sm mb-3">
             <LifeBuoy size={12} />
             Support
           </div>
@@ -181,7 +181,7 @@ export default function EmployeeTicketsPage() {
         </div>
         <button
           onClick={() => setShowCreateModal(true)}
-          className="flex items-center gap-2 bg-[#1A9AB5] text-white text-xs font-black uppercase tracking-widest px-5 py-3 border-2 border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all flex-shrink-0"
+          className="flex items-center gap-2 bg-[#1A9AB5] text-white text-sm font-semibold px-5 py-2.5 rounded-lg hover:bg-[#158da5] transition-colors flex-shrink-0"
         >
           <Plus size={15} />
           New Ticket
@@ -196,9 +196,9 @@ export default function EmployeeTicketsPage() {
           { label: 'My Tickets', value: stats.myTickets, icon: MessageSquare, color: 'bg-[#1A9AB5]' },
           { label: 'Active', value: stats.open, icon: AlertCircle, color: 'bg-amber-500' },
         ].map((card) => (
-          <div key={card.label} className="bg-white border-2 border-black shadow-[3px_3px_0px_rgba(0,0,0,0.8)] p-4">
+          <div key={card.label} className="bg-white border border-border rounded-xl shadow-sm p-4">
             <div className="flex items-center gap-2 mb-3">
-              <div className={`w-8 h-8 ${card.color} border-2 border-black flex items-center justify-center shadow-[2px_2px_0px_rgba(0,0,0,0.5)]`}>
+              <div className={`w-8 h-8 ${card.color} border border-border rounded-xl flex items-center justify-center shadow-sm`}>
                 <card.icon size={15} className="text-white" />
               </div>
               <span className="text-[10px] font-black uppercase tracking-widest text-foreground/50">{card.label}</span>
@@ -209,7 +209,7 @@ export default function EmployeeTicketsPage() {
       </div>
 
       {/* Filters */}
-      <div className="bg-white border-2 border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] p-4 flex flex-col sm:flex-row gap-3">
+      <div className="bg-white border border-border rounded-xl shadow-md p-4 flex flex-col sm:flex-row gap-3">
         <div className="flex-1 relative">
           <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-foreground/40" />
           <input
@@ -217,7 +217,7 @@ export default function EmployeeTicketsPage() {
             placeholder="Search tickets..."
             value={search}
             onChange={e => setSearch(e.target.value)}
-            className="w-full pl-9 pr-4 py-2.5 border-2 border-black/15 text-sm font-semibold focus:outline-none focus:border-[#35C8E0]"
+            className="w-full pl-9 pr-4 py-2.5 border border-border rounded-lg text-sm font-semibold focus:outline-none focus:border-[#35C8E0]"
           />
         </div>
         <div className="flex gap-2 flex-wrap">
@@ -225,10 +225,10 @@ export default function EmployeeTicketsPage() {
             <button
               key={s}
               onClick={() => setFilterStatus(s)}
-              className={`px-3 py-2 text-[10px] font-black uppercase tracking-widest border-2 transition-all capitalize ${
+              className={`px-3 py-2 text-[10px] font-black uppercase tracking-widest border rounded-lg transition-all capitalize ${
                 filterStatus === s
-                  ? 'bg-[#1A9AB5] text-white border-black shadow-[2px_2px_0px_rgba(0,0,0,0.7)]'
-                  : 'bg-white border-black/20 text-foreground/50 hover:border-black'
+                  ? 'bg-[#1A9AB5] text-white border-[#1A9AB5] shadow-sm'
+                  : 'bg-white border-border text-foreground/50 hover:border-[#1A9AB5]'
               }`}
             >
               {s.replace('_', ' ')}
@@ -238,8 +238,8 @@ export default function EmployeeTicketsPage() {
       </div>
 
       {/* Tickets Table */}
-      <div className="bg-white border-2 border-black shadow-[3px_3px_0px_rgba(0,0,0,0.8)]">
-        <div className="px-5 py-4 border-b-2 border-black bg-[#1A9AB5]">
+      <div className="bg-white border border-border rounded-xl shadow-sm">
+        <div className="px-5 py-4 border-b border-border bg-[#1A9AB5] rounded-t-2xl">
           <h2 className="text-sm font-black uppercase tracking-widest text-white">
             Tickets <span className="text-white/40">({filtered.length})</span>
           </h2>
@@ -250,7 +250,7 @@ export default function EmployeeTicketsPage() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b-2 border-black bg-[#F4F6FA]">
+                <tr className="border-b border-border bg-[#F4F6FA]">
                   {['Subject', 'Priority', 'Status', 'From', 'Date', 'Actions'].map(h => (
                     <th key={h} className="text-left py-3 px-4 text-[10px] font-black text-foreground/50 uppercase tracking-widest">{h}</th>
                   ))}
@@ -315,31 +315,31 @@ export default function EmployeeTicketsPage() {
       {/* Create Modal */}
       {showCreateModal && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
-          <div className="bg-white w-full max-w-md border-2 border-black shadow-[8px_8px_0px_rgba(0,0,0,1)]">
-            <div className="flex items-center justify-between px-6 py-4 border-b-2 border-black bg-[#1A9AB5]">
+          <div className="bg-white w-full max-w-md rounded-2xl shadow-xl">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-border bg-[#1A9AB5] rounded-t-2xl">
               <h2 className="text-sm font-black uppercase tracking-widest text-white">New Support Ticket</h2>
               <button onClick={() => setShowCreateModal(false)} className="text-white/60 hover:text-white"><X size={18} /></button>
             </div>
             <div className="p-6 space-y-4">
               <div>
                 <label className="block text-[10px] font-black text-foreground/60 mb-1.5 uppercase tracking-widest">Subject *</label>
-                <input type="text" value={form.subject} onChange={e => setForm({ ...form, subject: e.target.value })} className="w-full border-2 border-black/20 px-3 py-2.5 text-sm font-semibold focus:outline-none focus:border-[#35C8E0]" placeholder="Brief summary" />
+                <input type="text" value={form.subject} onChange={e => setForm({ ...form, subject: e.target.value })} className="w-full border border-border rounded-lg px-3 py-2.5 text-sm font-semibold focus:outline-none focus:border-[#35C8E0]" placeholder="Brief summary" />
               </div>
               <div>
                 <label className="block text-[10px] font-black text-foreground/60 mb-1.5 uppercase tracking-widest">Description *</label>
-                <textarea value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} className="w-full border-2 border-black/20 px-3 py-2.5 text-sm font-semibold focus:outline-none focus:border-[#35C8E0] resize-none" rows={4} placeholder="Describe your issue..." />
+                <textarea value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} className="w-full border border-border rounded-lg px-3 py-2.5 text-sm font-semibold focus:outline-none focus:border-[#35C8E0] resize-none" rows={4} placeholder="Describe your issue..." />
               </div>
               <div>
                 <label className="block text-[10px] font-black text-foreground/60 mb-1.5 uppercase tracking-widest">Priority</label>
                 <div className="grid grid-cols-3 gap-2">
                   {['low', 'medium', 'high'].map(p => (
                     <button key={p} type="button" onClick={() => setForm({ ...form, priority: p })}
-                      className={`py-2 text-xs font-black uppercase tracking-widest border-2 transition-all capitalize ${
+                      className={`py-2 text-xs font-black uppercase tracking-widest border rounded-lg transition-all capitalize ${
                         form.priority === p
-                          ? p === 'high' ? 'bg-red-600 text-white border-red-800 shadow-[2px_2px_0px_rgba(0,0,0,0.7)]'
-                          : p === 'medium' ? 'bg-amber-500 text-white border-amber-700 shadow-[2px_2px_0px_rgba(0,0,0,0.7)]'
-                          : 'bg-gray-500 text-white border-gray-700 shadow-[2px_2px_0px_rgba(0,0,0,0.7)]'
-                          : 'border-black/20 text-foreground/50 hover:border-black'
+                          ? p === 'high' ? 'bg-red-600 text-white border-red-800 shadow-sm'
+                          : p === 'medium' ? 'bg-amber-500 text-white border-amber-700 shadow-sm'
+                          : 'bg-gray-500 text-white border-gray-700 shadow-sm'
+                          : 'border-border text-foreground/50 hover:border-[#1A9AB5]'
                       }`}
                     >
                       {p}
@@ -349,8 +349,8 @@ export default function EmployeeTicketsPage() {
               </div>
             </div>
             <div className="flex gap-3 px-6 pb-6">
-              <button onClick={() => setShowCreateModal(false)} className="flex-1 py-2.5 text-xs font-black uppercase tracking-widest border-2 border-black/20 text-foreground/60 hover:border-black">Cancel</button>
-              <button onClick={handleCreateTicket} disabled={creating} className="flex-1 py-2.5 text-xs font-black uppercase tracking-widest bg-[#1A9AB5] text-white border-2 border-black shadow-[2px_2px_0px_rgba(0,0,0,0.7)] disabled:opacity-50 flex items-center justify-center gap-2">
+              <button onClick={() => setShowCreateModal(false)} className="flex-1 py-2.5 text-xs font-black uppercase tracking-widest border border-border rounded-lg text-foreground/60 hover:border-[#1A9AB5]">Cancel</button>
+              <button onClick={handleCreateTicket} disabled={creating} className="flex-1 py-2.5 text-sm font-semibold bg-[#1A9AB5] text-white rounded-lg hover:bg-[#158da5] disabled:opacity-50 flex items-center justify-center gap-2">
                 {creating ? <Loader2 size={14} className="animate-spin" /> : <Plus size={14} />}
                 Create
               </button>
@@ -362,8 +362,8 @@ export default function EmployeeTicketsPage() {
       {/* Detail Modal */}
       {selectedTicket && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
-          <div className="bg-white w-full max-w-2xl border-2 border-black shadow-[8px_8px_0px_rgba(0,0,0,1)] max-h-[90vh] flex flex-col">
-            <div className="flex items-start justify-between px-6 py-4 border-b-2 border-black bg-[#1A9AB5] flex-shrink-0">
+          <div className="bg-white w-full max-w-2xl rounded-2xl shadow-xl max-h-[90vh] flex flex-col">
+            <div className="flex items-start justify-between px-6 py-4 border-b border-border bg-[#1A9AB5] rounded-t-2xl flex-shrink-0">
               <div className="min-w-0">
                 <h2 className="text-sm font-black uppercase tracking-widest text-white truncate">{selectedTicket.subject}</h2>
                 <div className="flex items-center gap-2 mt-2 flex-wrap">
@@ -381,7 +381,7 @@ export default function EmployeeTicketsPage() {
               <button onClick={() => setSelectedTicket(null)} className="text-white/60 hover:text-white ml-4 flex-shrink-0"><X size={18} /></button>
             </div>
 
-            <div className="px-6 py-4 border-b-2 border-black/10 bg-[#F4F6FA] flex-shrink-0">
+            <div className="px-6 py-4 border-b border-border/10 bg-[#F4F6FA] flex-shrink-0">
               <p className="text-sm text-foreground/70 font-medium">{selectedTicket.description}</p>
               {selectedTicket.assigned_to === userId && (selectedTicket.status === 'open' || selectedTicket.status === 'in_progress') && (
                 <div className="flex gap-2 mt-3">
@@ -406,7 +406,7 @@ export default function EmployeeTicketsPage() {
                       <div className="w-7 h-7 bg-[#35C8E0]/20 border border-[#35C8E0]/30 flex items-center justify-center text-xs font-bold text-[#1A9AB5] shrink-0">
                         {r.author?.full_name?.[0] || '?'}
                       </div>
-                      <div className={`max-w-[75%] px-3 py-2 ${isStaff ? 'bg-[#1A9AB5] text-white border-2 border-[#1A9AB5]' : 'bg-[#F4F6FA] border-2 border-black/10'}`}>
+                      <div className={`max-w-[75%] px-3 py-2 ${isStaff ? 'bg-[#1A9AB5] text-white border border-[#1A9AB5] rounded-lg' : 'bg-[#F4F6FA] border border-border rounded-xl/10'}`}>
                         <p className={`text-[10px] font-black uppercase tracking-widest mb-0.5 ${isStaff ? 'text-white/60' : 'text-foreground/40'}`}>
                           {r.author?.full_name}
                         </p>
@@ -421,9 +421,9 @@ export default function EmployeeTicketsPage() {
             <div className="px-6 py-4 border-t-2 border-black flex-shrink-0">
               <div className="flex gap-2">
                 <input value={replyText} onChange={e => setReplyText(e.target.value)} onKeyDown={e => e.key === 'Enter' && !e.shiftKey && handleAddReply()}
-                  className="flex-1 border-2 border-black/15 px-3 py-2.5 text-sm font-semibold focus:outline-none focus:border-[#35C8E0]" placeholder="Type a reply..." />
+                  className="flex-1 border border-border rounded-lg px-3 py-2.5 text-sm font-semibold focus:outline-none focus:border-[#35C8E0]" placeholder="Type a reply..." />
                 <button onClick={handleAddReply} disabled={submittingReply || !replyText.trim()}
-                  className="px-4 py-2.5 bg-[#1A9AB5] text-white border-2 border-black shadow-[2px_2px_0px_rgba(0,0,0,0.7)] disabled:opacity-50">
+                  className="px-4 py-2.5 bg-[#1A9AB5] text-white border border-border rounded-xl shadow-sm disabled:opacity-50">
                   {submittingReply ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
                 </button>
               </div>

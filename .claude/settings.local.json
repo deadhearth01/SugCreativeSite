@@ -10,7 +10,9 @@
       "Bash(curl:*)",
       "Bash(awk '{print $2, $11, $12}')",
       "Bash(git show *)",
-      "Read(//tmp/**)"
+      "Read(//tmp/**)",
+      "Bash(npx next *)",
+      "Bash(perl *)"
     ]
   },
   "enableAllProjectMcpServers": true,
