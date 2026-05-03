@@ -54,7 +54,7 @@ export async function PATCH(
 
   // Update profile
   const profileUpdates: Record<string, unknown> = {}
-  if (full_name !== undefined) profileUpdates.full_name = full_name
+  if (full_name !== undefined) profileUpdates.full_name = full_name?.trim() ? full_name.trim() : null
   if (email !== undefined) profileUpdates.email = email
   if (role !== undefined) profileUpdates.role = role
   if (phone !== undefined) profileUpdates.phone = phone || null

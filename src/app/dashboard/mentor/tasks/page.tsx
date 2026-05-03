@@ -36,7 +36,7 @@ function Toast({ message, type, onClose }: { message: string; type: 'success' | 
   )
 }
 
-export default function EmployeeTasksPage() {
+export default function MentorTasksPage() {
   const [tasks, setTasks] = useState<Task[]>([])
   const [assignableUsers, setAssignableUsers] = useState<Profile[]>([])
   const [loading, setLoading] = useState(true)
@@ -61,7 +61,7 @@ export default function EmployeeTasksPage() {
     const [tasksRes, profileRes, usersRes] = await Promise.all([
       fetch('/api/tasks').then(r => r.json()),
       supabase.from('profiles').select('full_name').eq('id', user.id).single(),
-      fetch('/api/profiles/assignable?roles=intern,student').then(r => r.json()),
+      fetch('/api/profiles/assignable?roles=employee,intern,student').then(r => r.json()),
     ])
 
     setTasks(tasksRes.data || [])
@@ -271,6 +271,7 @@ export default function EmployeeTasksPage() {
                     className="w-full border border-border rounded-lg px-3 py-2.5 text-sm font-semibold focus:outline-none focus:border-[#35C8E0]"
                   >
                     <option value="">Myself</option>
+                    <option value="employee">Employee</option>
                     <option value="intern">Intern</option>
                     <option value="student">Student</option>
                   </select>

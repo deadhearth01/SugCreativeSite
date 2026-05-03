@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { username, avatar_id } = body;
+    const { username, avatar_id, full_name, phone, address } = body;
 
     // Validate username
     if (!username || typeof username !== "string") {
@@ -68,12 +68,24 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Validate full_name (required at onboarding)
+    const trimmedName = (full_name || "").trim();
+    if (!trimmedName || trimmedName.length < 2) {
+      return NextResponse.json(
+        { error: "Full name is required (min 2 characters)" },
+        { status: 400 }
+      );
+    }
+
     // Update the user's profile
     const { data, error } = await supabase
       .from("profiles")
       .update({
         username: trimmedUsername,
         avatar_id: avatar_id,
+        full_name: trimmedName,
+        phone: (phone || "").trim() || null,
+        address: (address || "").trim() || null,
         updated_at: new Date().toISOString(),
       })
       .eq("id", user.id)

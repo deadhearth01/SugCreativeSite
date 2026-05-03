@@ -15,6 +15,7 @@ import { createPortal } from 'react-dom'
 type Profile = {
   id: string
   full_name: string
+  username: string | null
   email: string
   role: 'admin' | 'student' | 'client' | 'mentor' | 'employee' | 'intern'
   status: 'active' | 'pending' | 'banned' | 'inactive'
@@ -309,6 +310,12 @@ export default function UsersPage() {
   const [filterStatus, setFilterStatus] = useState('all')
   const [selectedUser, setSelectedUser] = useState<Profile | null>(null)
   const [showCreateModal, setShowCreateModal] = useState(false)
+  const [showBulkModal, setShowBulkModal] = useState(false)
+  const [bulkEmails, setBulkEmails] = useState('')
+  const [bulkRole, setBulkRole] = useState('student')
+  const [bulkTags, setBulkTags] = useState<string[]>([])
+  const [bulkLoading, setBulkLoading] = useState(false)
+  const [bulkResult, setBulkResult] = useState<{ created: { email: string; password: string }[]; failed: { email: string; error: string }[] } | null>(null)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null)
   const [showPassword, setShowPassword] = useState(false)
   const [copiedId, setCopiedId] = useState<string | null>(null)
@@ -359,7 +366,7 @@ export default function UsersPage() {
   const filtered = users.filter((u) => {
     const q = search.toLowerCase()
     const matchSearch = !q ||
-      u.full_name.toLowerCase().includes(q) ||
+      (u.full_name || '').toLowerCase().includes(q) ||
       u.email.toLowerCase().includes(q) ||
       (u.tags || []).some(t => t.toLowerCase().includes(q))
     const matchRole = filterRole === 'all' || u.role === filterRole
@@ -382,8 +389,8 @@ export default function UsersPage() {
 
   // ─── Create User (via API route → auth.admin.createUser) ───
   const handleCreateUser = async () => {
-    if (!formData.name || !formData.email || !formData.password) {
-      setToast({ type: 'error', message: 'Name, email and password are required' })
+    if (!formData.email || !formData.password) {
+      setToast({ type: 'error', message: 'Email and password are required' })
       return
     }
     setActionLoading(true)
@@ -393,15 +400,15 @@ export default function UsersPage() {
       body: JSON.stringify({
         email: formData.email,
         password: formData.password,
-        full_name: formData.name,
+        full_name: '',
         role: formData.role,
-        phone: formData.phone,
+        phone: '',
         tags: formData.tags,
       }),
     })
     const result = await res.json()
     if (res.ok) {
-      setToast({ type: 'success', message: `User "${formData.name}" created successfully` })
+      setToast({ type: 'success', message: `User "${formData.email}" created successfully` })
       setShowCreateModal(false)
       setFormData({ name: '', email: '', role: 'student', phone: '', password: '', tags: [] })
       await loadUsers()
@@ -409,6 +416,36 @@ export default function UsersPage() {
       setToast({ type: 'error', message: result.error || 'Failed to create user' })
     }
     setActionLoading(false)
+  }
+
+  // ─── Bulk Create Users ─────────────────────────────────────────────────────
+  const handleBulkCreate = async () => {
+    const emails = bulkEmails
+      .split(/[\s,]+/)
+      .map(e => e.trim())
+      .filter(e => e && e.includes('@'))
+
+    if (emails.length === 0) {
+      setToast({ type: 'error', message: 'Add at least one valid email' })
+      return
+    }
+
+    setBulkLoading(true)
+    const res = await fetch('/api/admin/users/bulk', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ emails, role: bulkRole, tags: bulkTags }),
+    })
+    const result = await res.json()
+    if (res.ok) {
+      setBulkResult(result)
+      setBulkEmails('')
+      setBulkTags([])
+      await loadUsers()
+    } else {
+      setToast({ type: 'error', message: result.error || 'Bulk create failed' })
+    }
+    setBulkLoading(false)
   }
 
   // ─── Update User (via API route → auth.admin.updateUserById + profile) ───
@@ -530,7 +567,7 @@ export default function UsersPage() {
   const openEdit = (user: Profile) => {
     setSelectedUser(user)
     setFormData({
-      name: user.full_name,
+      name: user.full_name || '',
       email: user.email,
       role: user.role,
       phone: user.phone || '',
@@ -569,6 +606,13 @@ export default function UsersPage() {
               title="Refresh"
             >
               <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />
+            </button>
+            <button
+              onClick={() => setShowBulkModal(true)}
+              className="border border-primary text-primary px-5 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 hover:bg-primary/10 transition-colors"
+            >
+              <Users size={16} />
+              Bulk Create
             </button>
             <button
               onClick={() => {
@@ -704,10 +748,21 @@ export default function UsersPage() {
                     <td className="py-3 px-4">
                       <div className="flex items-center gap-3">
                         <div className="w-9 h-9 rounded-lg bg-[#35C8E0]/20 flex items-center justify-center text-primary text-xs font-bold flex-shrink-0">
-                          {u.full_name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
+                          {((u.full_name || u.email).split(/\s+/).map(n => n[0]).join('').slice(0, 2) || '?').toUpperCase()}
                         </div>
                         <div className="min-w-0">
-                          <p className="font-medium text-primary truncate">{u.full_name}</p>
+                          <p className="font-medium text-primary truncate">
+                            {u.full_name || <span className="italic text-foreground/40">No name yet</span>}
+                          </p>
+                          {u.username ? (
+                            <p className="text-[11px] font-mono font-semibold text-[#5B8E2A] truncate">
+                              @{u.username}
+                            </p>
+                          ) : (
+                            <p className="text-[11px] font-semibold text-amber-600 truncate italic">
+                              @username not set
+                            </p>
+                          )}
                           <div className="flex items-center gap-1">
                             <p className="text-xs text-foreground/50 truncate">{u.email}</p>
                             <button
@@ -811,10 +866,12 @@ export default function UsersPage() {
                 <div key={u.id} className="bg-white border border-border rounded-xl p-4 flex flex-col sm:flex-row items-start sm:items-center gap-4 hover:border-[#35C8E0] transition-colors">
                   <div className="flex items-center gap-3 flex-1 min-w-0">
                     <div className="w-11 h-11 rounded-xl bg-amber-100 flex items-center justify-center text-amber-700 text-sm font-bold flex-shrink-0">
-                      {u.full_name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
+                      {((u.full_name || u.email).split(/\s+/).map(n => n[0]).join('').slice(0, 2) || '?').toUpperCase()}
                     </div>
                     <div className="min-w-0">
-                      <p className="font-semibold text-primary truncate">{u.full_name}</p>
+                      <p className="font-semibold text-primary truncate">
+                        {u.full_name || <span className="italic text-foreground/40">No name yet</span>}
+                      </p>
                       <p className="text-xs text-foreground/50 truncate">{u.email}</p>
                     </div>
                   </div>
@@ -878,10 +935,12 @@ export default function UsersPage() {
                     {roleUsers.slice(0, 3).map((u) => (
                       <div key={u.id} className="flex items-center gap-2 p-2 rounded-lg bg-off-white/60">
                         <div className="w-7 h-7 rounded-lg bg-[#35C8E0]/20 flex items-center justify-center text-primary text-[10px] font-bold flex-shrink-0">
-                          {u.full_name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
+                          {((u.full_name || u.email).split(/\s+/).map(n => n[0]).join('').slice(0, 2) || '?').toUpperCase()}
                         </div>
                         <div className="min-w-0 flex-1">
-                          <p className="text-xs font-medium text-primary truncate">{u.full_name}</p>
+                          <p className="text-xs font-medium text-primary truncate">
+                            {u.full_name || <span className="italic text-foreground/40">No name</span>}
+                          </p>
                           <p className="text-[10px] text-foreground/40 truncate">{u.email}</p>
                         </div>
                         <StatusBadge status={u.status} />
@@ -909,27 +968,22 @@ export default function UsersPage() {
               <button onClick={() => setShowCreateModal(false)} className="p-1 rounded-lg hover:bg-off-white"><X size={18} /></button>
             </div>
             <div className="p-6 space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-foreground/70 mb-1">Full Name *</label>
-                <input type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-[#35C8E0]" placeholder="Enter full name" />
+              <div className="p-3 bg-[#35C8E0]/10 border border-[#35C8E0]/30 rounded-lg">
+                <p className="text-xs text-foreground/70 leading-relaxed">
+                  Only email, role, password and tags. The user fills name, username, phone and address themselves on first login.
+                </p>
               </div>
               <div>
                 <label className="block text-sm font-medium text-foreground/70 mb-1">Email *</label>
                 <input type="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-[#35C8E0]" placeholder="user@example.com" />
               </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-foreground/70 mb-1">Role</label>
-                  <select value={formData.role} onChange={(e) => setFormData({ ...formData, role: e.target.value })} className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-[#35C8E0] bg-white">
-                    {Object.entries(roleLabels).map(([val, label]) => (
-                      <option key={val} value={val}>{label}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-foreground/70 mb-1">Phone</label>
-                  <input type="tel" value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-[#35C8E0]" placeholder="+91 ..." />
-                </div>
+              <div>
+                <label className="block text-sm font-medium text-foreground/70 mb-1">Role *</label>
+                <select value={formData.role} onChange={(e) => setFormData({ ...formData, role: e.target.value })} className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-[#35C8E0] bg-white">
+                  {Object.entries(roleLabels).map(([val, label]) => (
+                    <option key={val} value={val}>{label}</option>
+                  ))}
+                </select>
               </div>
               <div>
                 <label className="block text-sm font-medium text-foreground/70 mb-1">Password *</label>
@@ -985,24 +1039,161 @@ export default function UsersPage() {
         </div>
       )}
 
+      {/* ─── Bulk Create Modal ─── */}
+      {showBulkModal && !bulkResult && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl w-full max-w-lg mx-4 shadow-xl">
+            <div className="flex items-center justify-between p-6 border-b border-border">
+              <h3 className="text-lg font-heading font-bold text-primary">Bulk Create Users</h3>
+              <button onClick={() => { setShowBulkModal(false); setBulkEmails(''); setBulkTags([]) }} className="p-1 rounded-lg hover:bg-off-white"><X size={18} /></button>
+            </div>
+            <div className="p-6 space-y-4">
+              <div className="p-3 bg-[#35C8E0]/10 border border-[#35C8E0]/30 rounded-lg">
+                <p className="text-xs text-foreground/70 leading-relaxed">
+                  Paste emails (one per line or comma-separated). Random passwords are generated and shown once after creation. Users fill name, username, phone and address on first login.
+                </p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-foreground/70 mb-1">Emails *</label>
+                <textarea
+                  value={bulkEmails}
+                  onChange={(e) => setBulkEmails(e.target.value)}
+                  rows={6}
+                  className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-[#35C8E0] font-mono"
+                  placeholder={'alice@example.com\nbob@example.com\ncharlie@example.com'}
+                />
+                <p className="text-[11px] text-foreground/40 mt-1">
+                  {bulkEmails.split(/[\s,]+/).filter(e => e.trim() && e.includes('@')).length} valid emails detected
+                </p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-foreground/70 mb-1">Role *</label>
+                <select value={bulkRole} onChange={(e) => setBulkRole(e.target.value)} className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-[#35C8E0] bg-white">
+                  {Object.entries(roleLabels).map(([val, label]) => (
+                    <option key={val} value={val}>{label}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-foreground/70 mb-1">Tags (applied to all)</label>
+                <TagChipSelector selectedTags={bulkTags} onChange={setBulkTags} />
+              </div>
+            </div>
+            <div className="flex justify-end gap-3 p-6 border-t border-border">
+              <button onClick={() => { setShowBulkModal(false); setBulkEmails(''); setBulkTags([]) }} className="px-5 py-2.5 rounded-lg text-sm font-semibold border border-border hover:bg-off-white transition-colors">Cancel</button>
+              <button
+                onClick={handleBulkCreate}
+                disabled={bulkLoading}
+                className="bg-primary text-white px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-primary/90 transition-colors flex items-center gap-2 disabled:opacity-60"
+              >
+                {bulkLoading && <Loader2 size={14} className="animate-spin" />}
+                Create All
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ─── Bulk Result Modal (one-time password reveal) ─── */}
+      {bulkResult && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl w-full max-w-2xl mx-4 shadow-xl max-h-[90vh] overflow-hidden flex flex-col">
+            <div className="flex items-center justify-between p-6 border-b border-border">
+              <div>
+                <h3 className="text-lg font-heading font-bold text-primary">Bulk Create — Results</h3>
+                <p className="text-xs text-foreground/50 mt-0.5">{bulkResult.created.length} created · {bulkResult.failed.length} failed</p>
+              </div>
+              <button onClick={() => { setBulkResult(null); setShowBulkModal(false) }} className="p-1 rounded-lg hover:bg-off-white"><X size={18} /></button>
+            </div>
+            <div className="p-6 space-y-4 overflow-y-auto">
+              <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl">
+                <p className="text-xs text-amber-700 font-medium flex items-start gap-1.5">
+                  <Lock size={12} className="flex-shrink-0 mt-0.5" />
+                  Passwords are shown only once and not stored. Copy them now and share with users — they cannot be retrieved later.
+                </p>
+              </div>
+              {bulkResult.created.length > 0 && (
+                <div>
+                  <p className="text-xs font-bold text-foreground/60 uppercase tracking-wider mb-2">Created Users</p>
+                  <div className="border border-border rounded-lg overflow-hidden">
+                    <table className="w-full text-sm">
+                      <thead className="bg-off-white">
+                        <tr>
+                          <th className="text-left px-4 py-2 text-xs font-semibold text-foreground/60">Email</th>
+                          <th className="text-left px-4 py-2 text-xs font-semibold text-foreground/60">Password</th>
+                          <th className="px-4 py-2"></th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {bulkResult.created.map((u, i) => (
+                          <tr key={i} className="border-t border-border">
+                            <td className="px-4 py-2 text-foreground/80 break-all">{u.email}</td>
+                            <td className="px-4 py-2 font-mono text-foreground/80">{u.password}</td>
+                            <td className="px-4 py-2 text-right">
+                              <button
+                                onClick={() => copyToClipboard(`${u.email} / ${u.password}`, `bulk-${i}`)}
+                                className="text-[#1A9AB5] hover:underline text-xs flex items-center gap-1 ml-auto"
+                              >
+                                {copiedId === `bulk-${i}` ? <><Check size={11} /> Copied</> : <><Copy size={11} /> Copy</>}
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                  <button
+                    onClick={() => copyToClipboard(
+                      bulkResult.created.map(u => `${u.email} / ${u.password}`).join('\n'),
+                      'bulk-all'
+                    )}
+                    className="mt-3 text-xs text-[#1A9AB5] hover:underline flex items-center gap-1"
+                  >
+                    {copiedId === 'bulk-all' ? <><Check size={11} /> Copied all</> : <><Copy size={11} /> Copy all credentials</>}
+                  </button>
+                </div>
+              )}
+              {bulkResult.failed.length > 0 && (
+                <div>
+                  <p className="text-xs font-bold text-red-600 uppercase tracking-wider mb-2">Failed</p>
+                  <div className="border border-red-200 rounded-lg divide-y divide-red-100">
+                    {bulkResult.failed.map((f, i) => (
+                      <div key={i} className="px-4 py-2 text-sm flex justify-between gap-3">
+                        <span className="text-foreground/80 break-all">{f.email}</span>
+                        <span className="text-red-600 text-xs">{f.error}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+            <div className="flex justify-end p-6 border-t border-border">
+              <button onClick={() => { setBulkResult(null); setShowBulkModal(false) }} className="px-5 py-2.5 rounded-lg text-sm font-semibold bg-primary text-white hover:bg-primary/90 transition-colors">Done</button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* ─── Edit User Modal ─── */}
       {selectedUser && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl w-full max-w-lg mx-4 shadow-xl max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between p-6 border-b border-border">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-2xl w-full max-w-lg shadow-xl flex flex-col max-h-[90vh] overflow-hidden">
+            <div className="flex items-center justify-between p-6 border-b border-border flex-shrink-0">
               <div>
                 <h3 className="text-lg font-heading font-bold text-primary">Edit User</h3>
                 <p className="text-xs text-foreground/50 mt-0.5">Joined {new Date(selectedUser.created_at).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' })}</p>
               </div>
               <button onClick={() => setSelectedUser(null)} className="p-1 rounded-lg hover:bg-off-white"><X size={18} /></button>
             </div>
-            <div className="p-6 space-y-4">
+            <div className="p-6 space-y-4 overflow-y-auto flex-1">
               <div className="flex items-center gap-4 p-4 bg-off-white rounded-xl">
                 <div className="w-14 h-14 rounded-xl bg-[#35C8E0]/20 flex items-center justify-center text-primary text-lg font-bold">
-                  {selectedUser.full_name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
+                  {((selectedUser.full_name || selectedUser.email).split(/\s+/).map(n => n[0]).join('').slice(0, 2) || '?').toUpperCase()}
                 </div>
                 <div>
-                  <p className="font-bold text-primary">{selectedUser.full_name}</p>
+                  <p className="font-bold text-primary">
+                    {selectedUser.full_name || <span className="italic text-foreground/40">Name not set</span>}
+                  </p>
                   <p className="text-xs text-foreground/50">{selectedUser.email}</p>
                   <div className="flex items-center gap-2 mt-1">
                     <StatusBadge status={selectedUser.status} />
@@ -1093,7 +1284,7 @@ export default function UsersPage() {
                 </button>
               </div>
             </div>
-            <div className="flex justify-end gap-3 p-6 border-t border-border">
+            <div className="flex justify-end gap-3 p-6 border-t border-border flex-shrink-0">
               <button onClick={() => setSelectedUser(null)} className="px-5 py-2.5 rounded-lg text-sm font-semibold border border-border hover:bg-off-white transition-colors">Cancel</button>
               <button
                 onClick={handleUpdateUser}
@@ -1110,20 +1301,27 @@ export default function UsersPage() {
 
       {/* ─── View Profile Modal ───────────────────────────────────────────────── */}
       {viewProfileUser && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl w-full max-w-md mx-4 shadow-xl">
-            <div className="flex items-center justify-between p-6 border-b border-border">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-2xl w-full max-w-md shadow-xl flex flex-col max-h-[90vh] overflow-hidden">
+            <div className="flex items-center justify-between p-6 border-b border-border flex-shrink-0">
               <h3 className="text-lg font-heading font-bold text-primary">User Profile</h3>
               <button onClick={() => setViewProfileUser(null)} className="p-1 rounded-lg hover:bg-off-white"><X size={18} /></button>
             </div>
-            <div className="p-6 space-y-5">
+            <div className="p-6 space-y-5 overflow-y-auto flex-1">
               <div className="flex items-center gap-4">
                 <div className="w-16 h-16 rounded-2xl bg-[#35C8E0]/20 flex items-center justify-center text-primary text-xl font-bold flex-shrink-0">
-                  {viewProfileUser.full_name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
+                  {((viewProfileUser.full_name || viewProfileUser.email).split(/\s+/).map(n => n[0]).join('').slice(0, 2) || '?').toUpperCase()}
                 </div>
                 <div>
-                  <p className="text-lg font-bold text-primary">{viewProfileUser.full_name}</p>
-                  <div className="flex items-center gap-2 mt-1">
+                  <p className="text-lg font-bold text-primary">
+                    {viewProfileUser.full_name || <span className="italic text-foreground/40">Name not set</span>}
+                  </p>
+                  {viewProfileUser.username ? (
+                    <p className="text-sm font-mono font-semibold text-[#5B8E2A]">@{viewProfileUser.username}</p>
+                  ) : (
+                    <p className="text-xs italic text-amber-600">@username not set</p>
+                  )}
+                  <div className="flex items-center gap-2 mt-1.5">
                     <StatusBadge status={viewProfileUser.status} />
                     <span className={`text-xs font-semibold uppercase px-2 py-0.5 rounded-md ${roleColors[viewProfileUser.role]}`}>{roleLabels[viewProfileUser.role]}</span>
                   </div>
@@ -1165,7 +1363,7 @@ export default function UsersPage() {
                 )}
               </div>
             </div>
-            <div className="flex justify-end p-6 border-t border-border">
+            <div className="flex justify-end p-6 border-t border-border flex-shrink-0">
               <button onClick={() => setViewProfileUser(null)} className="px-5 py-2.5 rounded-lg text-sm font-semibold border border-border hover:bg-off-white transition-colors">Close</button>
             </div>
           </div>
@@ -1182,15 +1380,17 @@ export default function UsersPage() {
             </div>
             <div className="p-6 space-y-4">
               <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl">
-                <p className="text-xs text-amber-700 font-medium flex items-center gap-1.5"><Lock size={12} /> Password is hashed and cannot be retrieved. Use &quot;Update Password&quot; to reset it.</p>
+                <p className="text-xs text-amber-700 font-medium flex items-center gap-1.5"><Lock size={12} /> Passwords are not stored — use &quot;Update Password&quot; to issue a new one.</p>
               </div>
               <div>
-                <label className="block text-xs font-semibold text-foreground/50 uppercase tracking-wider mb-1.5">User ID</label>
-                <div className="flex items-center gap-2 p-3 bg-off-white rounded-lg font-mono text-xs text-foreground/70 break-all">
-                  {viewCredentialsUser.id}
-                  <button onClick={() => copyToClipboard(viewCredentialsUser.id, 'uid')} className="flex-shrink-0 text-foreground/30 hover:text-primary ml-auto">
-                    {copiedId === 'uid' ? <Check size={12} className="text-green-500" /> : <Copy size={12} />}
-                  </button>
+                <label className="block text-xs font-semibold text-foreground/50 uppercase tracking-wider mb-1.5">Username</label>
+                <div className="flex items-center gap-2 p-3 bg-off-white rounded-lg text-sm font-medium text-foreground/70">
+                  {viewCredentialsUser.username || <span className="italic text-foreground/40">Not set yet (user picks at onboarding)</span>}
+                  {viewCredentialsUser.username && (
+                    <button onClick={() => copyToClipboard(viewCredentialsUser.username!, 'cuname')} className="flex-shrink-0 text-foreground/30 hover:text-primary ml-auto">
+                      {copiedId === 'cuname' ? <Check size={12} className="text-green-500" /> : <Copy size={12} />}
+                    </button>
+                  )}
                 </div>
               </div>
               <div>
@@ -1208,6 +1408,15 @@ export default function UsersPage() {
                   <span className={`text-xs font-semibold uppercase px-2 py-1 rounded-md ${roleColors[viewCredentialsUser.role]}`}>{roleLabels[viewCredentialsUser.role]}</span>
                 </div>
               </div>
+              <button
+                onClick={() => copyToClipboard(
+                  `Email: ${viewCredentialsUser.email}\nUsername: ${viewCredentialsUser.username || '—'}\nRole: ${roleLabels[viewCredentialsUser.role]}`,
+                  'creds-all'
+                )}
+                className="w-full mt-2 bg-primary text-white px-4 py-2.5 rounded-lg text-sm font-semibold hover:bg-primary/90 transition-colors flex items-center justify-center gap-2"
+              >
+                {copiedId === 'creds-all' ? <><Check size={14} /> Copied!</> : <><Copy size={14} /> Copy Credentials</>}
+              </button>
             </div>
             <div className="flex justify-end p-6 border-t border-border">
               <button onClick={() => setViewCredentialsUser(null)} className="px-5 py-2.5 rounded-lg text-sm font-semibold border border-border hover:bg-off-white transition-colors">Close</button>

@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { Plus, ClipboardList, Loader2, X, ArrowUpRight, CheckSquare, Square, Calendar, User, AlertTriangle, Clock, CheckCircle2, Trash2 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 
-type Profile = { id: string; full_name: string; email: string; role: string }
+type Profile = { id: string; full_name: string | null; username: string | null; email: string; role: string }
 type Task = {
   id: string
   title: string
@@ -54,6 +54,7 @@ export default function AdminTasksPage() {
     priority: 'medium',
     due_date: '',
     assigned_to: '',
+    assigned_role: '',
   })
 
   const showToast = (message: string, type: 'success' | 'error') => setToast({ message, type })
@@ -74,7 +75,7 @@ export default function AdminTasksPage() {
     }
     const { data } = await supabase
       .from('profiles')
-      .select('id, full_name, email, role')
+      .select('id, full_name, username, email, role')
       .order('full_name')
     setUsers(data || [])
   }, [])
@@ -128,12 +129,13 @@ export default function AdminTasksPage() {
   }
 
   const openCreate = () => {
-    setForm({ title: '', description: '', priority: 'medium', due_date: '', assigned_to: currentUserId })
+    setForm({ title: '', description: '', priority: 'medium', due_date: '', assigned_to: currentUserId, assigned_role: '' })
     setShowModal(true)
   }
 
   const handleSave = async () => {
     if (!form.title) { showToast('Title is required', 'error'); return }
+    if (form.assigned_role && !form.assigned_to) { showToast('Pick a person for the selected role', 'error'); return }
     setSaving(true)
     try {
       const res = await fetch('/api/tasks', {
@@ -377,20 +379,47 @@ export default function AdminTasksPage() {
                   />
                 </div>
               </div>
-              <div>
-                <label className="block text-[10px] font-black text-foreground/60 mb-1.5 uppercase tracking-widest">Assign To</label>
-                <select
-                  value={form.assigned_to}
-                  onChange={e => setForm(f => ({ ...f, assigned_to: e.target.value }))}
-                  className="w-full border border-border rounded-lg px-3 py-2 text-sm font-semibold focus:outline-none focus:border-[#35C8E0]"
-                >
-                  <option value={currentUserId}>Myself</option>
-                  {users.filter(u => u.id !== currentUserId).map(u => (
-                    <option key={u.id} value={u.id}>
-                      {u.full_name || u.email} ({u.role})
-                    </option>
-                  ))}
-                </select>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-[10px] font-black text-foreground/60 mb-1.5 uppercase tracking-widest">Role</label>
+                  <select
+                    value={form.assigned_role}
+                    onChange={e => setForm(f => ({ ...f, assigned_role: e.target.value, assigned_to: e.target.value === '' ? currentUserId : '' }))}
+                    className="w-full border border-border rounded-lg px-3 py-2 text-sm font-semibold focus:outline-none focus:border-[#35C8E0]"
+                  >
+                    <option value="">Myself</option>
+                    <option value="admin">Admin</option>
+                    <option value="mentor">Mentor</option>
+                    <option value="employee">Employee</option>
+                    <option value="intern">Intern</option>
+                    <option value="student">Student</option>
+                    <option value="client">Client</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-[10px] font-black text-foreground/60 mb-1.5 uppercase tracking-widest">Person</label>
+                  <select
+                    value={form.assigned_to}
+                    onChange={e => setForm(f => ({ ...f, assigned_to: e.target.value }))}
+                    disabled={!form.assigned_role}
+                    className="w-full border border-border rounded-lg px-3 py-2 text-sm font-semibold focus:outline-none focus:border-[#35C8E0] disabled:bg-off-white disabled:opacity-60"
+                  >
+                    {!form.assigned_role ? (
+                      <option value={currentUserId}>Myself</option>
+                    ) : (
+                      <>
+                        <option value="">Select person...</option>
+                        {users
+                          .filter(u => u.role === form.assigned_role && u.id !== currentUserId)
+                          .map(u => (
+                            <option key={u.id} value={u.id}>
+                              {u.full_name || (u.username ? `@${u.username}` : 'Unnamed user')}
+                            </option>
+                          ))}
+                      </>
+                    )}
+                  </select>
+                </div>
               </div>
             </div>
             <div className="flex gap-3 px-6 pb-6">

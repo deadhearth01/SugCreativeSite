@@ -12,7 +12,9 @@
       "Bash(git show *)",
       "Read(//tmp/**)",
       "Bash(npx next *)",
-      "Bash(perl *)"
+      "Bash(perl *)",
+      "Bash(cp /Volumes/SSD_1TB/vscode/SugCreativeSite/src/app/dashboard/employee/tasks/page.tsx /tmp/employee-tasks.tsx)",
+      "Bash(cp /tmp/employee-tasks.tsx /Volumes/SSD_1TB/vscode/SugCreativeSite/src/app/dashboard/mentor/tasks/page.tsx)"
     ]
   },
   "enableAllProjectMcpServers": true,

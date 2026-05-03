@@ -46,6 +46,7 @@ const roleNavItems: Record<string, NavItem[]> = {
   admin: [
     { label: 'Dashboard', href: '/dashboard/admin', icon: LayoutDashboard },
     { label: 'User Management', href: '/dashboard/admin/users', icon: Users },
+    { label: 'Mentor Mapping', href: '/dashboard/admin/mentor-mapping', icon: UserCheck },
     { label: 'Meetings', href: '/dashboard/admin/meetings', icon: Video },
     { label: 'SUG Calendar', href: '/dashboard/admin/calendar', icon: Calendar },
     { label: 'Course Management', href: '/dashboard/admin/courses', icon: BookOpen },
@@ -66,6 +67,7 @@ const roleNavItems: Record<string, NavItem[]> = {
   ],
   client: [
     { label: 'Dashboard', href: '/dashboard/client', icon: LayoutDashboard },
+    { label: 'My Tasks', href: '/dashboard/client/tasks', icon: ClipboardList },
     { label: 'Projects', href: '/dashboard/client/projects', icon: FolderKanban },
     { label: 'Invoices & Payments', href: '/dashboard/client/payments', icon: Receipt },
     { label: 'Meetings', href: '/dashboard/client/meetings', icon: Video },
@@ -73,7 +75,8 @@ const roleNavItems: Record<string, NavItem[]> = {
   ],
   mentor: [
     { label: 'Dashboard', href: '/dashboard/mentor', icon: LayoutDashboard },
-    { label: 'My Students', href: '/dashboard/mentor/students', icon: UserCheck },
+    { label: 'Tasks', href: '/dashboard/mentor/tasks', icon: ClipboardList },
+    { label: 'Assigned Students', href: '/dashboard/mentor/students', icon: UserCheck },
     { label: 'Sessions', href: '/dashboard/mentor/sessions', icon: Video },
     { label: 'Meetings', href: '/dashboard/mentor/meetings', icon: Calendar },
     { label: 'Calendar', href: '/dashboard/mentor/calendar', icon: Calendar },
@@ -139,6 +142,7 @@ type UserProfile = {
   full_name: string | null
   email: string | null
   avatar_url: string | null
+  username: string | null
 }
 
 function NavLink({ item, collapsed, isActive, onClick }: {
@@ -186,7 +190,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       if (!user) return
       supabase
         .from('profiles')
-        .select('full_name, email, avatar_url')
+        .select('full_name, email, avatar_url, username')
         .eq('id', user.id)
         .single()
         .then(({ data }) => {
@@ -365,7 +369,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 <div className="px-4 py-3 border-b border-black/5">
                   <p className="text-xs font-black uppercase tracking-widest text-[#1A9AB5]">{roleLabels[role]}</p>
                   <p className="text-sm font-semibold text-foreground truncate mt-0.5">{userProfile?.full_name || 'User'}</p>
-                  <p className="text-xs text-foreground/40 truncate">{userProfile?.email || ''}</p>
+                  {userProfile?.username ? (
+                    <p className="text-xs font-mono text-[#5B8E2A] truncate">@{userProfile.username}</p>
+                  ) : (
+                    <p className="text-xs italic text-amber-600 truncate">@username not set</p>
+                  )}
                 </div>
                 <div className="py-1">
                   <Link
@@ -407,6 +415,36 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
       {/* First-login Welcome Screen */}
       <WelcomeScreen name={userProfile?.full_name || null} role={role} />
+
+      {/* Username gate — blocks dashboard until user picks a username */}
+      {userProfile && !userProfile.username && (
+        <div className="fixed inset-0 z-[100] bg-black/70 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl p-8 text-center">
+            <div className="w-16 h-16 mx-auto rounded-2xl bg-[#35C8E0]/20 flex items-center justify-center mb-4">
+              <span className="text-3xl">@</span>
+            </div>
+            <h2 className="text-xl font-heading font-bold text-primary mb-2">
+              Set up your username
+            </h2>
+            <p className="text-sm text-foreground/60 leading-relaxed mb-6">
+              Pick a unique username and complete your profile to start using the dashboard.
+              You can&apos;t access any features until this is done.
+            </p>
+            <Link
+              href="/setup-profile"
+              className="inline-flex items-center justify-center gap-2 w-full bg-primary text-white px-5 py-3 rounded-xl text-sm font-bold hover:bg-primary/90 transition-colors"
+            >
+              Continue Setup <ChevronRight size={16} />
+            </Link>
+            <button
+              onClick={handleLogout}
+              className="block w-full mt-3 text-xs text-foreground/40 hover:text-foreground/70 transition-colors"
+            >
+              or sign out
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

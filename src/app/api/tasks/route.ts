@@ -21,10 +21,9 @@ export async function GET(_req: NextRequest) {
 
     if (profile?.role === 'admin') {
       // Admin sees all tasks — no filter
-    } else if (profile?.role === 'employee') {
-      // Employee sees: tasks assigned to them + tasks they created + tasks assigned to interns/students
-      // We fetch all and filter server-side since Supabase doesn't support complex OR with joins easily
-      // Alternatively use .or() filter
+    } else if (profile?.role === 'mentor' || profile?.role === 'employee') {
+      // Mentor/employee sees: tasks assigned to them + tasks they created
+      // (Tasks for lower roles they manage are merged below.)
       query = query.or(`assigned_to.eq.${user.id},assigned_by.eq.${user.id}`)
     } else {
       // Everyone else sees only tasks assigned to them
@@ -34,23 +33,34 @@ export async function GET(_req: NextRequest) {
     const { data, error } = await query
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 
-    // For employees, also include tasks assigned to interns/students (even if not created by them)
-    if (profile?.role === 'employee') {
-      const { data: internStudentTasks } = await supabase
-        .from('tasks')
-        .select(`
-          *,
-          assigned_to_profile:assigned_to(full_name, email, role),
-          assigned_by_profile:assigned_by(full_name)
-        `)
-        .in('assigned_to_profile.role', ['intern', 'student'])
-        .order('created_at', { ascending: false })
+    // For mentor/employee, also include tasks assigned to lower roles they manage
+    if (profile?.role === 'mentor' || profile?.role === 'employee') {
+      const lowerRoles = profile.role === 'mentor'
+        ? ['employee', 'intern', 'student']
+        : ['intern', 'student']
 
-      // Merge without duplicates
-      const existingIds = new Set((data || []).map((t: { id: string }) => t.id))
-      const additional = (internStudentTasks || []).filter((t: { id: string }) => !existingIds.has(t.id))
-      const merged = [...(data || []), ...additional]
-      return NextResponse.json({ data: merged })
+      const { data: lowerIds } = await supabase
+        .from('profiles')
+        .select('id')
+        .in('role', lowerRoles)
+
+      const ids = (lowerIds || []).map((p: { id: string }) => p.id)
+      if (ids.length > 0) {
+        const { data: lowerTasks } = await supabase
+          .from('tasks')
+          .select(`
+            *,
+            assigned_to_profile:assigned_to(full_name, email, role),
+            assigned_by_profile:assigned_by(full_name)
+          `)
+          .in('assigned_to', ids)
+          .order('created_at', { ascending: false })
+
+        const existingIds = new Set((data || []).map((t: { id: string }) => t.id))
+        const additional = (lowerTasks || []).filter((t: { id: string }) => !existingIds.has(t.id))
+        const merged = [...(data || []), ...additional]
+        return NextResponse.json({ data: merged })
+      }
     }
 
     return NextResponse.json({ data })
@@ -80,23 +90,30 @@ export async function POST(req: NextRequest) {
     // Default assigned_to to self if not provided
     const targetUserId = assigned_to || user.id
 
-    // Role-based assignment validation
+    // Role-based assignment validation (real-company hierarchy)
+    // admin → anyone; mentor → employee/intern/student; employee → intern/student;
+    // intern/student/client → self only
+    const allowedTargetsByRole: Record<string, string[]> = {
+      mentor: ['employee', 'intern', 'student'],
+      employee: ['intern', 'student'],
+    }
+
     if (role === 'admin') {
-      // Admin can assign to anyone — no restriction
-    } else if (role === 'employee') {
-      // Employee can assign to self, or to interns/students
+      // no restriction
+    } else if (role === 'mentor' || role === 'employee') {
       if (targetUserId !== user.id) {
         const { data: targetProfile } = await supabase
           .from('profiles')
           .select('role')
           .eq('id', targetUserId)
           .single()
-        if (!targetProfile || !['intern', 'student'].includes(targetProfile.role)) {
-          return NextResponse.json({ error: 'Employees can only assign tasks to themselves, interns, or students' }, { status: 403 })
+        const allowed = allowedTargetsByRole[role]
+        if (!targetProfile || !allowed.includes(targetProfile.role)) {
+          return NextResponse.json({ error: `${role}s can only assign tasks to themselves or to: ${allowed.join(', ')}` }, { status: 403 })
         }
       }
     } else {
-      // Everyone else can only assign to self
+      // intern, student, client → self only
       if (targetUserId !== user.id) {
         return NextResponse.json({ error: 'You can only create tasks for yourself' }, { status: 403 })
       }

@@ -28,8 +28,8 @@ export async function POST(req: NextRequest) {
     const body = await req.json()
     const { email, password, full_name, role, phone, tags } = body
 
-    if (!email || !password || !full_name || !role) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
+    if (!email || !password || !role) {
+      return NextResponse.json({ error: 'Email, password and role are required' }, { status: 400 })
     }
 
     // Validate role is a valid enum value
@@ -97,7 +97,7 @@ export async function POST(req: NextRequest) {
     // Ensure metadata values are valid and sanitized
     const sanitizedEmail = email.toLowerCase().trim()
     const sanitizedMetadata = {
-      full_name: (full_name || '').trim() || 'User',
+      full_name: (full_name || '').trim(),
       role: validRoles.includes(role) ? role : 'student'
     }
 
@@ -135,7 +135,7 @@ export async function POST(req: NextRequest) {
         .upsert({
           id: authData.user.id,
           email,
-          full_name,
+          full_name: full_name || null,
           role,
           phone: phone || null,
           tags: tags || [],

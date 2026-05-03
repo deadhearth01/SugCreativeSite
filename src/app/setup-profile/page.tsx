@@ -113,9 +113,12 @@ const avatars: Avatar[] = [
 
 export default function SetupProfilePage() {
   const router = useRouter()
-  const [step, setStep] = useState<'avatar' | 'username'>('avatar')
+  const [step, setStep] = useState<'avatar' | 'details' | 'username'>('avatar')
   const [selectedAvatar, setSelectedAvatar] = useState<number | null>(null)
   const [username, setUsername] = useState('')
+  const [fullName, setFullName] = useState('')
+  const [phone, setPhone] = useState('')
+  const [address, setAddress] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [checking, setChecking] = useState(false)
@@ -192,6 +195,11 @@ export default function SetupProfilePage() {
       return
     }
 
+    if (!fullName.trim() || fullName.trim().length < 2) {
+      setError('Full name is required')
+      return
+    }
+
     setLoading(true)
     setError('')
 
@@ -202,6 +210,9 @@ export default function SetupProfilePage() {
         body: JSON.stringify({
           username: username.toLowerCase(),
           avatar_id: selectedAvatar,
+          full_name: fullName.trim(),
+          phone: phone.trim(),
+          address: address.trim(),
         }),
       })
 
@@ -239,7 +250,7 @@ export default function SetupProfilePage() {
             Complete Your Profile
           </h1>
           <p className="text-sm text-gray-600">
-            Choose an avatar and pick a unique username
+            Pick an avatar, fill in your details, and choose a username
           </p>
         </div>
 
@@ -302,7 +313,7 @@ export default function SetupProfilePage() {
 
             <button
               type="button"
-              onClick={() => selectedAvatar && setStep('username')}
+              onClick={() => selectedAvatar && setStep('details')}
               disabled={!selectedAvatar}
               className="w-full mt-6 flex items-center justify-center gap-2 px-6 py-4 bg-primary-dark text-white font-black text-sm uppercase tracking-widest border-2 border-primary-dark hover:bg-white hover:text-primary-dark hover:shadow-[4px_4px_0px_rgba(0,0,0,1)] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
@@ -311,11 +322,86 @@ export default function SetupProfilePage() {
           </div>
         )}
 
+        {/* Personal Details */}
+        {step === 'details' && (
+          <div className="space-y-5">
+            <div className="text-xs font-black uppercase tracking-widest text-primary-dark mb-2 text-center">
+              Step 2: Your Details
+            </div>
+
+            <div>
+              <label className="block text-xs font-black uppercase tracking-widest text-primary-dark mb-2">
+                Full Name *
+              </label>
+              <input
+                type="text"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                placeholder="Jane Doe"
+                maxLength={80}
+                className="w-full px-4 py-4 bg-white border-2 border-black/10 text-primary-dark font-medium text-sm focus:border-primary-dark focus:shadow-[4px_4px_0px_rgba(0,0,0,1)] focus:outline-none transition-all rounded-3xl placeholder:text-black/30"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-black uppercase tracking-widest text-primary-dark mb-2">
+                Phone
+              </label>
+              <input
+                type="tel"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                placeholder="+91 ..."
+                maxLength={20}
+                className="w-full px-4 py-4 bg-white border-2 border-black/10 text-primary-dark font-medium text-sm focus:border-primary-dark focus:shadow-[4px_4px_0px_rgba(0,0,0,1)] focus:outline-none transition-all rounded-3xl placeholder:text-black/30"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-black uppercase tracking-widest text-primary-dark mb-2">
+                Address
+              </label>
+              <textarea
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                placeholder="Street, city, state, pincode"
+                rows={3}
+                maxLength={300}
+                className="w-full px-4 py-3 bg-white border-2 border-black/10 text-primary-dark font-medium text-sm focus:border-primary-dark focus:shadow-[4px_4px_0px_rgba(0,0,0,1)] focus:outline-none transition-all rounded-3xl placeholder:text-black/30 resize-none"
+              />
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                type="button"
+                onClick={() => setStep('avatar')}
+                className="flex-1 px-4 py-4 bg-white text-primary-dark font-black text-sm uppercase tracking-widest border-2 border-primary-dark hover:shadow-[4px_4px_0px_rgba(0,0,0,1)] transition-all"
+              >
+                Back
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  if (!fullName.trim() || fullName.trim().length < 2) {
+                    setError('Full name is required')
+                    return
+                  }
+                  setError('')
+                  setStep('username')
+                }}
+                className="flex-1 flex items-center justify-center gap-2 px-4 py-4 bg-primary-dark text-white font-black text-sm uppercase tracking-widest border-2 border-primary-dark hover:bg-[#82C93D] hover:border-[#82C93D] transition-all"
+              >
+                Continue <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Username Selection */}
         {step === 'username' && (
           <div className="space-y-6">
             <div className="text-xs font-black uppercase tracking-widest text-primary-dark mb-4 text-center">
-              Step 2: Choose Your Username
+              Step 3: Choose Your Username
             </div>
 
             {/* Show selected avatar */}
@@ -359,7 +445,7 @@ export default function SetupProfilePage() {
             <div className="flex gap-3">
               <button
                 type="button"
-                onClick={() => setStep('avatar')}
+                onClick={() => setStep('details')}
                 className="flex-1 px-4 py-4 bg-white text-primary-dark font-black text-sm uppercase tracking-widest border-2 border-primary-dark hover:shadow-[4px_4px_0px_rgba(0,0,0,1)] transition-all"
               >
                 Back

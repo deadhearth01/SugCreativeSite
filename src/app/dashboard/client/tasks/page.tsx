@@ -1,10 +1,8 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { ClipboardList, Plus, Loader2, X, CheckSquare, Square, Clock, AlertTriangle, CheckCircle2, Calendar, User } from 'lucide-react'
-import { createClient } from '@/lib/supabase/client'
+import { ClipboardList, Plus, Loader2, X, CheckSquare, Square, Clock, AlertTriangle, CheckCircle2, Calendar } from 'lucide-react'
 
-type Profile = { id: string; full_name: string | null; username: string | null; role: string }
 type Task = {
   id: string
   title: string
@@ -13,10 +11,9 @@ type Task = {
   status: string
   due_date: string | null
   created_at: string
-  assigned_to: string
-  assigned_by: string
-  assigned_to_profile: { full_name: string; email: string; role: string } | null
   assigned_by_profile: { full_name: string } | null
+  assigned_by: string
+  assigned_to: string
 }
 type TabKey = 'pending' | 'in_progress' | 'completed'
 
@@ -36,41 +33,35 @@ function Toast({ message, type, onClose }: { message: string; type: 'success' | 
   )
 }
 
-export default function EmployeeTasksPage() {
+export default function ClientTasksPage() {
   const [tasks, setTasks] = useState<Task[]>([])
-  const [assignableUsers, setAssignableUsers] = useState<Profile[]>([])
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState<TabKey>('pending')
   const [showModal, setShowModal] = useState(false)
   const [saving, setSaving] = useState(false)
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
   const [currentUserId, setCurrentUserId] = useState('')
-  const [currentUserName, setCurrentUserName] = useState('')
 
-  const [form, setForm] = useState({ title: '', description: '', priority: 'medium', due_date: '', assigned_to: '', assigned_role: '' })
+  const [form, setForm] = useState({ title: '', description: '', priority: 'medium', due_date: '' })
 
   const showToast = (message: string, type: 'success' | 'error') => setToast({ message, type })
 
-  const fetchData = useCallback(async () => {
-    const supabase = createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) { setLoading(false); return }
-    setCurrentUserId(user.id)
-    setForm(f => ({ ...f, assigned_to: user.id }))
-
-    const [tasksRes, profileRes, usersRes] = await Promise.all([
-      fetch('/api/tasks').then(r => r.json()),
-      supabase.from('profiles').select('full_name').eq('id', user.id).single(),
-      fetch('/api/profiles/assignable?roles=intern,student').then(r => r.json()),
-    ])
-
-    setTasks(tasksRes.data || [])
-    setCurrentUserName(profileRes.data?.full_name || 'You')
-    setAssignableUsers(usersRes.data || [])
+  const fetchTasks = useCallback(async () => {
+    const res = await fetch('/api/tasks')
+    const { data } = await res.json()
+    setTasks(data || [])
     setLoading(false)
   }, [])
 
-  useEffect(() => { fetchData() }, [fetchData])
+  useEffect(() => {
+    import('@/lib/supabase/client').then(({ createClient }) => {
+      const supabase = createClient()
+      supabase.auth.getUser().then(({ data: { user } }) => {
+        if (user) setCurrentUserId(user.id)
+      })
+    })
+    fetchTasks()
+  }, [fetchTasks])
 
   const tabs: { key: TabKey; label: string; icon: React.ReactNode }[] = [
     { key: 'pending', label: 'Todo', icon: <Clock size={14} /> },
@@ -87,10 +78,7 @@ export default function EmployeeTasksPage() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ status: newStatus }),
     })
-    if (res.ok) {
-      showToast(newStatus === 'completed' ? 'Task completed!' : 'Task reopened', 'success')
-      fetchData()
-    }
+    if (res.ok) { showToast(newStatus === 'completed' ? 'Done!' : 'Reopened', 'success'); fetchTasks() }
   }
 
   const handleStatusChange = async (taskId: string, newStatus: string) => {
@@ -99,33 +87,26 @@ export default function EmployeeTasksPage() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ status: newStatus }),
     })
-    if (res.ok) { showToast('Status updated', 'success'); fetchData() }
+    if (res.ok) { showToast('Updated', 'success'); fetchTasks() }
   }
 
   const handleSave = async () => {
     if (!form.title) { showToast('Title required', 'error'); return }
-    if (form.assigned_role && !form.assigned_to) { showToast('Pick a person for the selected role', 'error'); return }
     setSaving(true)
     try {
       const res = await fetch('/api/tasks', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          title: form.title,
-          description: form.description || null,
-          priority: form.priority,
-          due_date: form.due_date || null,
-          assigned_to: form.assigned_to || currentUserId,
-        }),
+        body: JSON.stringify({ ...form, description: form.description || null, due_date: form.due_date || null }),
       })
       if (res.ok) {
         showToast('Task created', 'success')
         setShowModal(false)
-        setForm({ title: '', description: '', priority: 'medium', due_date: '', assigned_to: currentUserId, assigned_role: '' })
-        fetchData()
+        setForm({ title: '', description: '', priority: 'medium', due_date: '' })
+        fetchTasks()
       } else {
         const { error } = await res.json()
-        showToast(error || 'Failed to create', 'error')
+        showToast(error || 'Failed', 'error')
       }
     } finally { setSaving(false) }
   }
@@ -134,39 +115,20 @@ export default function EmployeeTasksPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
         <div>
           <div className="inline-flex items-center gap-2 bg-[#35C8E0] text-white text-[10px] font-black uppercase tracking-widest px-3 py-1.5 border border-[#1A9AB5] rounded-lg shadow-sm mb-3">
-            <ClipboardList size={12} />
-            Tasks
+            <ClipboardList size={12} /> Tasks
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-[#1A9AB5] uppercase tracking-tight leading-none">My Tasks</h1>
           <p className="text-sm text-foreground/50 font-semibold mt-1">Your tasks and assignments</p>
         </div>
-        <button onClick={() => { setForm({ title: '', description: '', priority: 'medium', due_date: '', assigned_to: currentUserId, assigned_role: '' }); setShowModal(true) }}
+        <button onClick={() => { setForm({ title: '', description: '', priority: 'medium', due_date: '' }); setShowModal(true) }}
           className="flex items-center gap-2 bg-[#1A9AB5] text-white text-sm font-semibold px-5 py-2.5 rounded-lg hover:bg-[#158da5] transition-colors flex-shrink-0">
           <Plus size={15} /> New Task
         </button>
       </div>
 
-      {/* Stat Cards */}
-      <div className="grid grid-cols-3 gap-4">
-        {tabs.map(tab => {
-          const count = tasks.filter(t => t.status === tab.key).length
-          return (
-            <div key={tab.key} className="bg-white border border-border rounded-xl shadow-sm p-4">
-              <div className="flex items-center gap-2 mb-2">
-                {tab.icon}
-                <span className="text-[10px] font-black uppercase tracking-widest text-foreground/50">{tab.label}</span>
-              </div>
-              <div className="text-2xl font-black text-[#1A9AB5]">{count}</div>
-            </div>
-          )
-        })}
-      </div>
-
-      {/* Tabs */}
       <div className="flex gap-2 flex-wrap">
         {tabs.map(tab => (
           <button key={tab.key} onClick={() => setActiveTab(tab.key)}
@@ -178,10 +140,9 @@ export default function EmployeeTasksPage() {
         ))}
       </div>
 
-      {/* Task Cards */}
       {filtered.length === 0 ? (
         <div className="bg-white border border-border rounded-xl shadow-sm p-12 text-center">
-          <p className="text-sm text-foreground/40 font-semibold">No tasks in this category</p>
+          <p className="text-sm text-foreground/40 font-semibold">No tasks here</p>
         </div>
       ) : (
         <div className="space-y-3">
@@ -191,8 +152,7 @@ export default function EmployeeTasksPage() {
                 <button onClick={() => handleCheckbox(task)} className="mt-0.5 flex-shrink-0">
                   {task.status === 'completed'
                     ? <CheckSquare size={20} className="text-emerald-600" />
-                    : <Square size={20} className="text-foreground/30 hover:text-[#1A9AB5]" />
-                  }
+                    : <Square size={20} className="text-foreground/30 hover:text-[#1A9AB5]" />}
                 </button>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap mb-1">
@@ -203,9 +163,6 @@ export default function EmployeeTasksPage() {
                   <div className="flex items-center gap-4 text-[10px] text-foreground/40 font-semibold">
                     {task.due_date && (
                       <span className="flex items-center gap-1"><Calendar size={10} /> {new Date(task.due_date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</span>
-                    )}
-                    {task.assigned_to_profile && task.assigned_to !== currentUserId && (
-                      <span className="flex items-center gap-1"><User size={10} /> Assigned to: {task.assigned_to_profile.full_name}</span>
                     )}
                     {task.assigned_by_profile && task.assigned_by !== currentUserId && (
                       <span className="text-purple-600 font-bold">Assigned by: {task.assigned_by_profile.full_name}</span>
@@ -226,7 +183,6 @@ export default function EmployeeTasksPage() {
         </div>
       )}
 
-      {/* Create Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
           <div className="bg-white w-full max-w-md rounded-2xl shadow-xl">
@@ -243,7 +199,7 @@ export default function EmployeeTasksPage() {
               <div>
                 <label className="block text-[10px] font-black text-foreground/60 mb-1.5 uppercase tracking-widest">Description</label>
                 <textarea value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
-                  className="w-full border border-border rounded-lg px-3 py-2.5 text-sm font-semibold focus:outline-none focus:border-[#35C8E0] resize-none" rows={3} placeholder="Optional details..." />
+                  className="w-full border border-border rounded-lg px-3 py-2.5 text-sm font-semibold focus:outline-none focus:border-[#35C8E0] resize-none" rows={3} />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
@@ -262,47 +218,14 @@ export default function EmployeeTasksPage() {
                     className="w-full border border-border rounded-lg px-3 py-2.5 text-sm font-semibold focus:outline-none focus:border-[#35C8E0]" />
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-[10px] font-black text-foreground/60 mb-1.5 uppercase tracking-widest">Role</label>
-                  <select
-                    value={form.assigned_role}
-                    onChange={e => setForm(f => ({ ...f, assigned_role: e.target.value, assigned_to: e.target.value === '' ? currentUserId : '' }))}
-                    className="w-full border border-border rounded-lg px-3 py-2.5 text-sm font-semibold focus:outline-none focus:border-[#35C8E0]"
-                  >
-                    <option value="">Myself</option>
-                    <option value="intern">Intern</option>
-                    <option value="student">Student</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-[10px] font-black text-foreground/60 mb-1.5 uppercase tracking-widest">Person</label>
-                  <select
-                    value={form.assigned_to}
-                    onChange={e => setForm(f => ({ ...f, assigned_to: e.target.value }))}
-                    disabled={!form.assigned_role}
-                    className="w-full border border-border rounded-lg px-3 py-2.5 text-sm font-semibold focus:outline-none focus:border-[#35C8E0] disabled:bg-off-white disabled:opacity-60"
-                  >
-                    {!form.assigned_role ? (
-                      <option value={currentUserId}>Myself ({currentUserName})</option>
-                    ) : (
-                      <>
-                        <option value="">Select person...</option>
-                        {assignableUsers.filter(u => u.role === form.assigned_role).map(u => (
-                          <option key={u.id} value={u.id}>{u.full_name || (u.username ? `@${u.username}` : 'Unnamed user')}</option>
-                        ))}
-                      </>
-                    )}
-                  </select>
-                </div>
-              </div>
+              <p className="text-[10px] text-foreground/40 font-semibold">Task assigned to yourself</p>
             </div>
             <div className="flex gap-3 px-6 pb-6">
               <button onClick={() => setShowModal(false)} className="flex-1 py-2.5 text-xs font-black uppercase tracking-widest border border-border rounded-lg text-foreground/60 hover:border-[#1A9AB5]">Cancel</button>
               <button onClick={handleSave} disabled={saving}
                 className="flex-1 py-2.5 text-sm font-semibold bg-[#1A9AB5] text-white rounded-lg hover:bg-[#158da5] disabled:opacity-50 flex items-center justify-center gap-2">
                 {saving ? <Loader2 size={14} className="animate-spin" /> : <Plus size={14} />}
-                Create Task
+                Create
               </button>
             </div>
           </div>

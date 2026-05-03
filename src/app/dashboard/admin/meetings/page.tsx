@@ -25,10 +25,21 @@ type Meeting = {
 
 type Profile = {
   id: string
-  full_name: string
+  full_name: string | null
+  username: string | null
   email: string
   role: string
 }
+
+const ROLE_LABELS: Record<string, string> = {
+  admin: 'Admins',
+  mentor: 'Mentors',
+  employee: 'Employees',
+  intern: 'Interns',
+  student: 'Students',
+  client: 'Clients',
+}
+const ROLE_ORDER = ['mentor', 'employee', 'intern', 'student', 'client', 'admin']
 
 function generateMeetLink() {
   const chars = 'abcdefghijklmnopqrstuvwxyz'
@@ -62,6 +73,7 @@ export default function MeetingsPage() {
   const [currentUserId, setCurrentUserId] = useState<string | null>(null)
   const [googleConnected, setGoogleConnected] = useState(false)
   const [checkingGoogle, setCheckingGoogle] = useState(true)
+  const [participantSearch, setParticipantSearch] = useState('')
 
   const [form, setForm] = useState({
     title: '',
@@ -108,7 +120,7 @@ export default function MeetingsPage() {
         .from('meetings')
         .select('*, organizer:profiles!meetings_organizer_id_fkey(full_name)')
         .order('scheduled_at', { ascending: false }),
-      supabase.from('profiles').select('id, full_name, email, role').order('full_name'),
+      supabase.from('profiles').select('id, full_name, username, email, role').order('full_name'),
     ])
 
     if (meetingsRes.data) {
@@ -189,9 +201,10 @@ export default function MeetingsPage() {
         message: `Meeting "${meetingTitle}" created${googleMeetCreated ? ' with Google Meet' : ''}` 
       })
       setShowCreateModal(false)
+      setParticipantSearch('')
       setForm({
         title: '', description: '', meeting_type: 'general',
-        meeting_link: '', scheduled_at: '', duration_minutes: 30, 
+        meeting_link: '', scheduled_at: '', duration_minutes: 30,
         participant_ids: [], create_google_meet: true,
       })
       await loadMeetings()
@@ -242,6 +255,37 @@ export default function MeetingsPage() {
         : [...f.participant_ids, id],
     }))
   }
+
+  const toggleRoleBulk = (role: string) => {
+    const idsInRole = profiles.filter(p => p.role === role && p.id !== currentUserId).map(p => p.id)
+    if (idsInRole.length === 0) return
+    setForm(f => {
+      const allIn = idsInRole.every(id => f.participant_ids.includes(id))
+      return {
+        ...f,
+        participant_ids: allIn
+          ? f.participant_ids.filter(id => !idsInRole.includes(id))
+          : Array.from(new Set([...f.participant_ids, ...idsInRole])),
+      }
+    })
+  }
+
+  const clearParticipants = () => setForm(f => ({ ...f, participant_ids: [] }))
+
+  const filteredProfiles = profiles.filter(p => {
+    if (p.id === currentUserId) return false
+    const q = participantSearch.toLowerCase().trim()
+    if (!q) return true
+    return (p.full_name || '').toLowerCase().includes(q)
+      || (p.username || '').toLowerCase().includes(q)
+  })
+
+  const profilesByRole = ROLE_ORDER.map(role => ({
+    role,
+    label: ROLE_LABELS[role],
+    items: filteredProfiles.filter(p => p.role === role),
+    totalInRole: profiles.filter(p => p.role === role && p.id !== currentUserId).length,
+  })).filter(g => g.items.length > 0 || (!participantSearch && g.totalInRole > 0))
 
   const statusColors: Record<string, string> = {
     scheduled: 'bg-blue-100 text-blue-700',
@@ -480,13 +524,13 @@ export default function MeetingsPage() {
 
       {/* ─── Create Meeting Modal ─── */}
       {showCreateModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl w-full max-w-lg mx-4 shadow-xl max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between p-6 border-b border-border">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-2xl w-full max-w-lg shadow-xl flex flex-col max-h-[90vh] overflow-hidden">
+            <div className="flex items-center justify-between p-6 border-b border-border flex-shrink-0">
               <h3 className="text-lg font-heading font-bold text-primary">New Meeting</h3>
               <button onClick={() => setShowCreateModal(false)} className="p-1 rounded-lg hover:bg-off-white"><X size={18} /></button>
             </div>
-            <div className="p-6 space-y-4">
+            <div className="p-6 space-y-4 overflow-y-auto flex-1">
               <div>
                 <label className="block text-sm font-medium text-foreground/70 mb-1">Title *</label>
                 <input type="text" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-[#35C8E0]" placeholder="Meeting title" />
@@ -581,36 +625,105 @@ export default function MeetingsPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-foreground/70 mb-1">
-                  Participants ({form.participant_ids.length} selected)
-                </label>
-                <div className="border border-border rounded-lg max-h-40 overflow-y-auto">
-                  {profiles.filter(p => p.id !== currentUserId).map(p => (
+                <div className="flex items-center justify-between mb-2">
+                  <label className="block text-sm font-medium text-foreground/70">
+                    Participants ({form.participant_ids.length} selected)
+                  </label>
+                  {form.participant_ids.length > 0 && (
                     <button
-                      key={p.id}
-                      onClick={() => toggleParticipant(p.id)}
-                      className={`w-full flex items-center gap-3 px-4 py-2 text-left hover:bg-off-white transition-colors text-sm border-b border-border/50 last:border-0 ${
-                        form.participant_ids.includes(p.id) ? 'bg-[#35C8E0]/10' : ''
-                      }`}
+                      type="button"
+                      onClick={clearParticipants}
+                      className="text-[11px] font-semibold text-foreground/50 hover:text-red-500"
                     >
-                      <div className={`w-5 h-5 rounded border flex items-center justify-center flex-shrink-0 ${
-                        form.participant_ids.includes(p.id) ? 'bg-primary border-primary' : 'border-border'
-                      }`}>
-                        {form.participant_ids.includes(p.id) && <Check size={12} className="text-white" />}
-                      </div>
-                      <div className="min-w-0">
-                        <p className="font-medium text-primary truncate text-xs">{p.full_name}</p>
-                        <p className="text-[10px] text-foreground/40">{p.email} &middot; {p.role}</p>
-                      </div>
+                      Clear
                     </button>
-                  ))}
-                  {profiles.filter(p => p.id !== currentUserId).length === 0 && (
-                    <p className="px-4 py-3 text-xs text-foreground/40">No other users to invite</p>
+                  )}
+                </div>
+
+                {/* Bulk-by-role tags */}
+                <div className="flex flex-wrap gap-1.5 mb-2">
+                  {ROLE_ORDER.map(role => {
+                    const idsInRole = profiles.filter(p => p.role === role && p.id !== currentUserId).map(p => p.id)
+                    if (idsInRole.length === 0) return null
+                    const allIn = idsInRole.every(id => form.participant_ids.includes(id))
+                    return (
+                      <button
+                        key={role}
+                        type="button"
+                        onClick={() => toggleRoleBulk(role)}
+                        className={`text-[11px] font-bold px-2.5 py-1 rounded-full border transition-colors ${
+                          allIn
+                            ? 'bg-[#1A9AB5] text-white border-[#1A9AB5]'
+                            : 'bg-white text-foreground/70 border-border hover:border-[#1A9AB5]'
+                        }`}
+                      >
+                        {allIn ? <Check size={11} className="inline -mt-0.5 mr-0.5" /> : '+ '}
+                        All {ROLE_LABELS[role]} ({idsInRole.length})
+                      </button>
+                    )
+                  })}
+                </div>
+
+                {/* Search */}
+                <div className="relative mb-2">
+                  <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-foreground/40" />
+                  <input
+                    type="text"
+                    value={participantSearch}
+                    onChange={(e) => setParticipantSearch(e.target.value)}
+                    placeholder="Search by name or @username..."
+                    className="w-full pl-9 pr-3 py-2 text-sm border border-border rounded-lg focus:outline-none focus:border-[#35C8E0]"
+                  />
+                </div>
+
+                {/* Grouped list */}
+                <div className="border border-border rounded-lg max-h-56 overflow-y-auto">
+                  {profilesByRole.length === 0 ? (
+                    <p className="px-4 py-6 text-xs text-foreground/40 text-center">
+                      {profiles.length <= 1 ? 'No other users to invite' : 'No matches for your search'}
+                    </p>
+                  ) : (
+                    profilesByRole.map(group => (
+                      <div key={group.role}>
+                        <div className="sticky top-0 bg-off-white px-3 py-1.5 text-[10px] font-black text-foreground/60 uppercase tracking-widest border-b border-border">
+                          {group.label} ({group.items.length})
+                        </div>
+                        {group.items.map(p => {
+                          const checked = form.participant_ids.includes(p.id)
+                          return (
+                            <button
+                              key={p.id}
+                              type="button"
+                              onClick={() => toggleParticipant(p.id)}
+                              className={`w-full flex items-center gap-3 px-4 py-2 text-left hover:bg-off-white transition-colors text-sm border-b border-border/50 last:border-0 ${
+                                checked ? 'bg-[#35C8E0]/10' : ''
+                              }`}
+                            >
+                              <div className={`w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 ${
+                                checked ? 'bg-primary border-primary' : 'border-border'
+                              }`}>
+                                {checked && <Check size={12} className="text-white" />}
+                              </div>
+                              <div className="min-w-0 flex-1">
+                                <p className="font-medium text-primary truncate text-xs">
+                                  {p.full_name || <span className="italic text-foreground/40">No name yet</span>}
+                                </p>
+                                {p.username ? (
+                                  <p className="text-[10px] font-mono text-[#5B8E2A]">@{p.username}</p>
+                                ) : (
+                                  <p className="text-[10px] italic text-amber-600">@username not set</p>
+                                )}
+                              </div>
+                            </button>
+                          )
+                        })}
+                      </div>
+                    ))
                   )}
                 </div>
               </div>
             </div>
-            <div className="flex justify-end gap-3 p-6 border-t border-border">
+            <div className="flex justify-end gap-3 p-6 border-t border-border flex-shrink-0">
               <button onClick={() => setShowCreateModal(false)} className="px-5 py-2.5 rounded-lg text-sm font-semibold border border-border hover:bg-off-white transition-colors">Cancel</button>
               <button
                 onClick={handleCreateMeeting}
