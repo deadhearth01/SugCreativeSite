@@ -4,6 +4,10 @@ import { NextRequest, NextResponse } from 'next/server'
 
 const VALID_ROLES = ['admin', 'student', 'client', 'mentor', 'employee', 'intern']
 
+function getProfileFullName(email: string) {
+  return email.split('@')[0] || 'User'
+}
+
 function generatePassword() {
   const upper = 'ABCDEFGHJKLMNPQRSTUVWXYZ'
   const lower = 'abcdefghjkmnpqrstuvwxyz'
@@ -58,11 +62,12 @@ export async function POST(req: NextRequest) {
       }
 
       const password = generatePassword()
+      const fullName = getProfileFullName(email)
       const { data: authData, error: authError } = await adminClient.auth.admin.createUser({
         email,
         password,
         email_confirm: true,
-        user_metadata: { full_name: '', role },
+        user_metadata: { full_name: fullName, role },
       })
 
       if (authError || !authData.user) {
@@ -75,7 +80,7 @@ export async function POST(req: NextRequest) {
         .upsert({
           id: authData.user.id,
           email,
-          full_name: null,
+          full_name: fullName,
           role,
           tags: tags || [],
         }, { onConflict: 'id' })

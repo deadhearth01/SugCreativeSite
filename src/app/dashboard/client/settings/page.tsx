@@ -9,6 +9,7 @@ type Profile = {
   full_name: string
   email: string
   phone: string | null
+  address: string | null
   bio: string | null
 }
 
@@ -22,7 +23,7 @@ function Toast({ message, type, onClose }: { message: string; type: 'success' | 
 }
 
 export default function ClientSettingsPage() {
-  const [profile, setProfile] = useState<Profile>({ full_name: '', email: '', phone: '', bio: '' })
+  const [profile, setProfile] = useState<Profile>({ full_name: '', email: '', phone: '', address: '', bio: '' })
   const [loading, setLoading] = useState(true)
   const [savingProfile, setSavingProfile] = useState(false)
   const [savingPassword, setSavingPassword] = useState(false)
@@ -34,7 +35,7 @@ export default function ClientSettingsPage() {
       const supabase = createClient()
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) return
-      const { data } = await supabase.from('profiles').select('full_name, email, phone, bio').eq('id', user.id).single()
+      const { data } = await supabase.from('profiles').select('full_name, email, phone, address, bio').eq('id', user.id).single()
       if (data) setProfile(data)
       setLoading(false)
     }
@@ -47,7 +48,7 @@ export default function ClientSettingsPage() {
       const res = await fetch('/api/profile', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ full_name: profile.full_name, phone: profile.phone, bio: profile.bio }),
+        body: JSON.stringify({ full_name: profile.full_name, phone: profile.phone, address: profile.address, bio: profile.bio }),
       })
       if (res.ok) setToast({ message: 'Profile saved', type: 'success' })
       else { const { error } = await res.json(); setToast({ message: error || 'Failed to save', type: 'error' }) }
@@ -109,6 +110,16 @@ export default function ClientSettingsPage() {
                 onChange={e => setProfile(p => ({ ...p, phone: e.target.value }))}
                 className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-[#35C8E0]"
                 placeholder="+91 98765 43210"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-foreground/70 mb-1">Address</label>
+              <textarea
+                value={profile.address || ''}
+                onChange={e => setProfile(p => ({ ...p, address: e.target.value }))}
+                className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-[#35C8E0] resize-none"
+                rows={2}
+                placeholder="City, state or full address"
               />
             </div>
             <div>

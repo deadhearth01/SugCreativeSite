@@ -1,6 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
-import { createMeetSpace, refreshAccessToken, getValidAccessToken } from '@/lib/google-meet'
+import { createMeetSpace, refreshAccessToken } from '@/lib/google-meet'
 
 // GET — List meetings for the current user
 export async function GET(_req: NextRequest) {
@@ -110,6 +110,25 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Title and scheduled time are required' }, { status: 400 })
     }
 
+    const requestedParticipants = Array.isArray(participant_ids)
+      ? Array.from(new Set(participant_ids.filter((id: unknown): id is string => typeof id === 'string' && id.trim().length > 0)))
+      : []
+
+    if (profile?.role === 'mentor' && requestedParticipants.length > 0) {
+      const { data: assignments, error: assignmentError } = await supabase
+        .from('mentor_assignments')
+        .select('mentee_id')
+        .eq('mentor_id', user.id)
+
+      if (assignmentError) return NextResponse.json({ error: assignmentError.message }, { status: 500 })
+
+      const assignedIds = new Set((assignments || []).map(a => a.mentee_id))
+      const hasUnassignedParticipant = requestedParticipants.some(id => !assignedIds.has(id))
+      if (hasUnassignedParticipant) {
+        return NextResponse.json({ error: 'Mentors can only invite assigned students and interns' }, { status: 403 })
+      }
+    }
+
     let finalMeetingLink = meeting_link
     let googleMeetSpaceName: string | null = null
     let googleMeetCode: string | null = null
@@ -117,8 +136,24 @@ export async function POST(req: NextRequest) {
 
     // Create Google Meet if requested
     if (create_google_meet) {
-      // Just provide an instant meeting link without requiring OAuth login     
-      finalMeetingLink = 'https://meet.google.com/new'
+      const accessToken = await getGoogleAccessToken(supabase, user.id)
+      if (!accessToken) {
+        return NextResponse.json({
+          error: 'Connect your Google account before creating a Google Meet.',
+          needsGoogleAuth: true,
+        }, { status: 400 })
+      }
+
+      const meetResult = await createMeetSpace(accessToken)
+      if (!meetResult.success || !meetResult.meetingLink) {
+        return NextResponse.json({
+          error: meetResult.error || 'Failed to create Google Meet space',
+        }, { status: 502 })
+      }
+
+      finalMeetingLink = meetResult.meetingLink
+      googleMeetSpaceName = meetResult.spaceName || null
+      googleMeetCode = meetResult.meetingCode || null
       isGoogleMeet = true
     }
 
@@ -144,16 +179,19 @@ export async function POST(req: NextRequest) {
     if (meetingError) return NextResponse.json({ error: meetingError.message }, { status: 500 })
 
     // Add participants
-    if (participant_ids && participant_ids.length > 0) {
-      const participants = participant_ids.map((uid: string) => ({
+    const allParticipantIds = Array.from(new Set([...requestedParticipants, user.id]))
+    if (allParticipantIds.length > 0) {
+      const participants = allParticipantIds.map((uid: string) => ({
         meeting_id: meeting.id,
         user_id: uid,
-        status: 'invited',
+        status: uid === user.id ? 'accepted' : 'invited',
       }))
-      // Also add organizer
-      participants.push({ meeting_id: meeting.id, user_id: user.id, status: 'accepted' })
 
-      await supabase.from('meeting_participants').insert(participants)
+      const { error: participantsError } = await supabase.from('meeting_participants').insert(participants)
+      if (participantsError) {
+        await supabase.from('meetings').delete().eq('id', meeting.id)
+        return NextResponse.json({ error: participantsError.message }, { status: 500 })
+      }
     }
 
     return NextResponse.json({ 

@@ -69,7 +69,7 @@
   --shadow-xl: 0 24px 48px -8px rgba(53, 200, 224, 0.14);
 
   /* ── shadcn required tokens — mapped to brand ── */
-  --radius: 1.5rem;
+  --radius: 0.25rem;
   --background: #FFFFFF;
   --card: #FFFFFF;
   --card-foreground: #111827;

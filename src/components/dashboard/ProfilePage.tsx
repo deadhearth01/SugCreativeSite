@@ -15,6 +15,7 @@ type Profile = {
   role: string
   status: string
   phone: string | null
+  address: string | null
   avatar_url: string | null
   bio: string | null
   username: string | null
@@ -49,6 +50,7 @@ export default function ProfilePage() {
   const [form, setForm] = useState({
     full_name: '',
     phone: '',
+    address: '',
     bio: '',
   })
 
@@ -73,6 +75,7 @@ export default function ProfilePage() {
         setForm({
           full_name: data.full_name || '',
           phone: data.phone || '',
+          address: data.address || '',
           bio: data.bio || '',
         })
       }
@@ -232,7 +235,7 @@ export default function ProfilePage() {
               {editing ? (
                 <>
                   <button
-                    onClick={() => { setEditing(false); setForm({ full_name: profile.full_name || '', phone: profile.phone || '', bio: profile.bio || '' }) }}
+                    onClick={() => { setEditing(false); setForm({ full_name: profile.full_name || '', phone: profile.phone || '', address: profile.address || '', bio: profile.bio || '' }) }}
                     className="flex items-center gap-2 px-4 py-2 text-xs font-black uppercase tracking-widest border-2 border-black/10 text-foreground/50 hover:text-foreground hover:border-black/20 transition-colors"
                   >
                     <X size={14} /> Cancel
@@ -292,6 +295,17 @@ export default function ProfilePage() {
               onInput={v => setForm(f => ({ ...f, phone: v }))}
               placeholder="+91 98765 43210"
             />
+            <InfoRow
+              icon={<MapPin size={15} />}
+              label="Address"
+              editing={editing}
+              value={editing ? form.address : (profile.address || '—')}
+              inputValue={form.address}
+              onInput={v => setForm(f => ({ ...f, address: v }))}
+              placeholder="City, state or full address"
+              className="sm:col-span-2"
+              wrapValue
+            />
             <InfoRow icon={<Shield size={15} />} label="Role" value={roleLabels[profile.role] || profile.role} />
             <InfoRow icon={<Calendar size={15} />} label="Member Since" value={formatDate(profile.created_at)} />
           </div>
@@ -339,7 +353,7 @@ export default function ProfilePage() {
 }
 
 function InfoRow({
-  icon, label, value, editing, inputValue, onInput, placeholder,
+  icon, label, value, editing, inputValue, onInput, placeholder, className = '', wrapValue = false,
 }: {
   icon: React.ReactNode
   label: string
@@ -348,9 +362,11 @@ function InfoRow({
   inputValue?: string
   onInput?: (v: string) => void
   placeholder?: string
+  className?: string
+  wrapValue?: boolean
 }) {
   return (
-    <div className="flex items-start gap-3">
+    <div className={`flex items-start gap-3 ${className}`}>
       <span className="mt-0.5 text-[#1A9AB5] flex-shrink-0">{icon}</span>
       <div className="min-w-0 flex-1">
         <p className="text-xs font-black uppercase tracking-widest text-foreground/30 mb-0.5">{label}</p>
@@ -362,7 +378,7 @@ function InfoRow({
             className="border-b-2 border-[#1A9AB5] bg-transparent focus:outline-none text-sm font-semibold text-foreground w-full pb-0.5 placeholder:text-foreground/20"
           />
         ) : (
-          <p className="text-sm font-semibold text-foreground/80 truncate">{value || '—'}</p>
+          <p className={`text-sm font-semibold text-foreground/80 ${wrapValue ? 'whitespace-pre-wrap break-words' : 'truncate'}`}>{value || '—'}</p>
         )}
       </div>
     </div>

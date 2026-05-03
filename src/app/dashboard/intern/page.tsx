@@ -2,13 +2,14 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { ClipboardList, FileText, Calendar, BookOpen, Clock, ArrowUpRight, Loader2, CheckCircle2 } from 'lucide-react'
+import { ClipboardList, FileText, Calendar, BookOpen, Clock, ArrowUpRight, Loader2, CheckCircle2, MessageSquareMore } from 'lucide-react'
 import { StatusBadge } from '@/components/dashboard/DashboardUI'
 import { createClient } from '@/lib/supabase/client'
 
 type Task = { id: string; title: string; priority: string; status: string; due_date: string | null; created_at: string }
 type LearningMaterial = { id: string; title: string; material_type: string | null }
 type LearningProgress = { material_id: string; completed_at: string | null }
+type MentorNote = { id: string; title: string | null; message: string; created_at: string; mentor: { full_name: string | null; email: string } | null }
 
 export default function InternDashboard() {
   const [loading, setLoading] = useState(true)
@@ -19,6 +20,7 @@ export default function InternDashboard() {
   const [recentTasks, setRecentTasks] = useState<Task[]>([])
   const [materials, setMaterials] = useState<LearningMaterial[]>([])
   const [progress, setProgress] = useState<LearningProgress[]>([])
+  const [mentorNotes, setMentorNotes] = useState<MentorNote[]>([])
 
   useEffect(() => {
     const fetchData = async () => {
@@ -43,6 +45,11 @@ export default function InternDashboard() {
       setAttendanceCount(attendanceRes.count || 0)
       setMaterials((materialsRes.data as unknown as LearningMaterial[]) || [])
       setProgress((progressRes.data as unknown as LearningProgress[]) || [])
+      const notesRes = await fetch('/api/mentor/notes')
+      if (notesRes.ok) {
+        const notesResult = await notesRes.json()
+        setMentorNotes((notesResult.data || []).slice(0, 3))
+      }
       setLoading(false)
     }
     fetchData()
@@ -84,6 +91,7 @@ export default function InternDashboard() {
           { label: 'My Tasks', href: '/dashboard/intern/tasks', icon: ClipboardList },
           { label: 'Reports', href: '/dashboard/intern/reports', icon: FileText },
           { label: 'Calendar', href: '/dashboard/intern/calendar', icon: Calendar },
+          { label: 'Mentor Notes', href: '/dashboard/intern/mentor-notes', icon: MessageSquareMore },
           { label: 'Learning', href: '/dashboard/intern/learning', icon: BookOpen },
         ].map((a) => (
           <Link key={a.label} href={a.href} className="bg-white border border-border rounded-xl shadow-sm p-4 flex items-center gap-3 hover:shadow-md transition-all group">
@@ -92,6 +100,30 @@ export default function InternDashboard() {
             <ArrowUpRight size={13} className="ml-auto text-foreground/30 group-hover:text-[#35C8E0] transition-colors" />
           </Link>
         ))}
+      </div>
+
+      <div className="bg-white border border-border rounded-xl shadow-sm">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-border bg-[#1A9AB5] rounded-t-2xl">
+          <h3 className="text-sm font-black uppercase tracking-widest text-white">Mentor Notes</h3>
+          <Link href="/dashboard/intern/mentor-notes" className="text-[10px] font-black uppercase tracking-widest text-white/60 hover:text-white flex items-center gap-1">View All <ArrowUpRight size={12} /></Link>
+        </div>
+        {mentorNotes.length === 0 ? (
+          <p className="text-sm text-foreground/40 py-8 text-center font-semibold">No mentor notes yet</p>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 p-4">
+            {mentorNotes.map(note => (
+              <Link key={note.id} href="/dashboard/intern/mentor-notes" className="rounded-xl border border-border bg-[#F4F6FA] p-4 hover:border-[#35C8E0] transition-colors">
+                <div className="flex items-center gap-2 mb-2">
+                  <MessageSquareMore size={15} className="text-[#1A9AB5]" />
+                  <span className="text-[10px] font-black uppercase tracking-widest text-foreground/45">{new Date(note.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</span>
+                </div>
+                <p className="text-sm font-black text-[#1A9AB5] truncate">{note.title || 'Mentor note'}</p>
+                <p className="mt-1 line-clamp-2 text-xs leading-5 text-foreground/60">{note.message}</p>
+                <p className="mt-3 text-[10px] font-bold text-foreground/40">From {note.mentor?.full_name || note.mentor?.email || 'Mentor'}</p>
+              </Link>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

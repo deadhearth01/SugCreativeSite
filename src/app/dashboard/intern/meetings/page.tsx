@@ -12,7 +12,7 @@ type Meeting = {
   meeting_type: string
   meeting_link?: string
   scheduled_at: string
-  duration: number
+  duration_minutes: number
   status: string
   organizer: { full_name: string } | null
   meeting_participants: { user_id: string; status: string }[]
@@ -103,7 +103,7 @@ export default function InternMeetingsPage() {
                         <Calendar size={13} /> {formatDateTime(m.scheduled_at)}
                       </span>
                       <span className="flex items-center gap-1.5 text-xs text-foreground/50">
-                        <Clock size={13} /> {m.duration} min
+                        <Clock size={13} /> {m.duration_minutes} min
                       </span>
                       <span className="flex items-center gap-1.5 text-xs text-foreground/50">
                         <Users size={13} /> Organized by {m.organizer?.full_name || 'Admin'}

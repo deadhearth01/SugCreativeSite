@@ -2,8 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { PageHeader } from '@/components/dashboard/DashboardUI'
-import { UserCheck, Loader2, GraduationCap, Briefcase, Calendar } from 'lucide-react'
-import { createClient } from '@/lib/supabase/client'
+import { UserCheck, Loader2, GraduationCap, Briefcase, Calendar, MessageSquarePlus, X } from 'lucide-react'
 
 type Mentee = {
   id: string
@@ -12,6 +11,7 @@ type Mentee = {
   email: string
   avatar_url: string | null
   role: string
+  status?: string
 }
 
 type Assignment = {
@@ -21,40 +21,94 @@ type Assignment = {
   mentee: Mentee | null
 }
 
+function Toast({ message, type, onClose }: { message: string; type: 'success' | 'error'; onClose: () => void }) {
+  useEffect(() => { const t = setTimeout(onClose, 3500); return () => clearTimeout(t) }, [onClose])
+  return (
+    <div className={`fixed bottom-6 right-6 z-50 px-5 py-3 rounded-xl shadow-lg text-sm font-semibold text-white ${type === 'success' ? 'bg-emerald-600' : 'bg-red-500'}`}>
+      {message}
+    </div>
+  )
+}
+
 export default function MentorStudentsPage() {
   const [loading, setLoading] = useState(true)
   const [assignments, setAssignments] = useState<Assignment[]>([])
   const [filter, setFilter] = useState<'all' | 'intern' | 'student'>('all')
+  const [selectedMentee, setSelectedMentee] = useState<Mentee | null>(null)
+  const [noteTitle, setNoteTitle] = useState('')
+  const [noteMessage, setNoteMessage] = useState('')
+  const [sendingNote, setSendingNote] = useState(false)
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
 
-  useEffect(() => {
-    const load = async () => {
-      const supabase = createClient()
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) return
-
-      const { data } = await supabase
-        .from('mentor_assignments')
-        .select(`
-          id, assigned_at, notes,
-          mentee:mentee_id(id, full_name, username, email, avatar_url, role)
-        `)
-        .eq('mentor_id', user.id)
-        .order('assigned_at', { ascending: false })
-
-      setAssignments((data as unknown as Assignment[]) || [])
+  const load = async () => {
+    setLoading(true)
+    try {
+      const res = await fetch('/api/mentor/mentees')
+      const result = await res.json()
+      if (!res.ok) {
+        setToast({ message: result.error || 'Failed to load assigned mentees', type: 'error' })
+        setAssignments([])
+      } else {
+        const rows = (result.data || []).map((row: Assignment & { mentee: Mentee | Mentee[] | null }) => ({
+          ...row,
+          mentee: Array.isArray(row.mentee) ? row.mentee[0] || null : row.mentee,
+        }))
+        setAssignments(rows)
+      }
+    } finally {
       setLoading(false)
     }
+  }
+
+  useEffect(() => {
     load()
   }, [])
 
+  const openNoteModal = (mentee: Mentee) => {
+    setSelectedMentee(mentee)
+    setNoteTitle('')
+    setNoteMessage('')
+  }
+
+  const sendNote = async () => {
+    if (!selectedMentee || !noteMessage.trim()) {
+      setToast({ message: 'Write a note before sending', type: 'error' })
+      return
+    }
+    setSendingNote(true)
+    try {
+      const res = await fetch('/api/mentor/notes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          mentee_id: selectedMentee.id,
+          title: noteTitle,
+          message: noteMessage,
+        }),
+      })
+      const result = await res.json()
+      if (!res.ok) {
+        setToast({ message: result.error || 'Failed to send note', type: 'error' })
+        return
+      }
+      setToast({ message: 'Mentor note sent', type: 'success' })
+      setSelectedMentee(null)
+      setNoteTitle('')
+      setNoteMessage('')
+    } finally {
+      setSendingNote(false)
+    }
+  }
+
   if (loading) return <div className="flex items-center justify-center py-32"><Loader2 size={28} className="animate-spin text-[#1A9AB5]" /></div>
 
+  const visibleAssignments = assignments.filter(a => a.mentee)
   const counts = {
-    all: assignments.length,
-    intern: assignments.filter(a => a.mentee?.role === 'intern').length,
-    student: assignments.filter(a => a.mentee?.role === 'student').length,
+    all: visibleAssignments.length,
+    intern: visibleAssignments.filter(a => a.mentee?.role === 'intern').length,
+    student: visibleAssignments.filter(a => a.mentee?.role === 'student').length,
   }
-  const filtered = filter === 'all' ? assignments : assignments.filter(a => a.mentee?.role === filter)
+  const filtered = filter === 'all' ? visibleAssignments : visibleAssignments.filter(a => a.mentee?.role === filter)
 
   const initials = (name: string | null, email: string) => {
     const base = (name && name.trim()) || email
@@ -100,7 +154,7 @@ export default function MentorStudentsPage() {
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
           {filtered.map(a => {
             if (!a.mentee) return null
             const m = a.mentee
@@ -143,11 +197,74 @@ export default function MentorStudentsPage() {
                     {a.notes}
                   </div>
                 )}
+                <button
+                  onClick={() => openNoteModal(m)}
+                  className="mt-4 w-full inline-flex items-center justify-center gap-2 rounded-lg bg-[#1A9AB5] px-3 py-2.5 text-xs font-black uppercase tracking-widest text-white hover:bg-[#15809A] transition-colors"
+                >
+                  <MessageSquarePlus size={14} />
+                  Send Mentor Note
+                </button>
               </div>
             )
           })}
         </div>
       )}
+
+      {selectedMentee && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/45 p-4">
+          <div className="w-full max-w-lg rounded-2xl bg-white shadow-xl">
+            <div className="flex items-center justify-between border-b border-border px-6 py-5">
+              <div>
+                <h2 className="text-lg font-heading font-bold text-primary">Send Mentor Note</h2>
+                <p className="text-xs text-foreground/50 mt-1">
+                  To {selectedMentee.full_name || selectedMentee.email}
+                </p>
+              </div>
+              <button onClick={() => setSelectedMentee(null)} className="rounded-lg p-1.5 text-foreground/40 hover:bg-off-white hover:text-primary">
+                <X size={18} />
+              </button>
+            </div>
+            <div className="space-y-4 p-6">
+              <div>
+                <label className="block text-[10px] font-black uppercase tracking-widest text-foreground/50 mb-1.5">Title</label>
+                <input
+                  value={noteTitle}
+                  onChange={e => setNoteTitle(e.target.value)}
+                  className="w-full rounded-lg border border-border px-3 py-2.5 text-sm focus:outline-none focus:border-[#35C8E0]"
+                  placeholder="Optional note title"
+                />
+              </div>
+              <div>
+                <label className="block text-[10px] font-black uppercase tracking-widest text-foreground/50 mb-1.5">Message</label>
+                <textarea
+                  value={noteMessage}
+                  onChange={e => setNoteMessage(e.target.value)}
+                  rows={5}
+                  className="w-full resize-none rounded-lg border border-border px-3 py-2.5 text-sm focus:outline-none focus:border-[#35C8E0]"
+                  placeholder="Share feedback, next steps, reminders, or encouragement..."
+                />
+              </div>
+            </div>
+            <div className="flex gap-3 border-t border-border px-6 py-5">
+              <button
+                onClick={() => setSelectedMentee(null)}
+                className="flex-1 rounded-lg border border-border py-2.5 text-sm font-semibold text-foreground/60 hover:bg-off-white"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={sendNote}
+                disabled={sendingNote}
+                className="flex-1 rounded-lg bg-[#1A9AB5] py-2.5 text-sm font-semibold text-white hover:bg-[#15809A] disabled:opacity-60"
+              >
+                {sendingNote ? 'Sending...' : 'Send Note'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
     </div>
   )
 }

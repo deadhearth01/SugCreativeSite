@@ -2,12 +2,13 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { GraduationCap, FileText, Video, Calendar, Award, ArrowUpRight, Clock, Loader2 } from 'lucide-react'
+import { GraduationCap, FileText, Video, Calendar, Award, ArrowUpRight, Clock, Loader2, MessageSquareMore } from 'lucide-react'
 import { StatusBadge } from '@/components/dashboard/DashboardUI'
 import { createClient } from '@/lib/supabase/client'
 
 type EnrolledCourse = { id: string; progress: number; status: string; courses: { title: string; total_lessons?: number } | null }
-type UpcomingMeeting = { id: string; title: string; scheduled_at: string; meet_link: string | null; status: string; organizer: { full_name: string } | null }
+type UpcomingMeeting = { id: string; title: string; scheduled_at: string; meeting_link: string | null; status: string; organizer: { full_name: string } | null }
+type MentorNote = { id: string; title: string | null; message: string; created_at: string; mentor: { full_name: string | null; email: string } | null }
 
 export default function StudentDashboard() {
   const [loading, setLoading] = useState(true)
@@ -16,6 +17,7 @@ export default function StudentDashboard() {
   const [certCount, setCertCount] = useState(0)
   const [hoursStudied, setHoursStudied] = useState(0)
   const [userName, setUserName] = useState('Student')
+  const [mentorNotes, setMentorNotes] = useState<MentorNote[]>([])
 
   useEffect(() => {
     const fetchData = async () => {
@@ -27,7 +29,7 @@ export default function StudentDashboard() {
       const { data: enrollments } = await supabase.from('enrollments').select('id, progress, status, courses(title, total_lessons)').eq('student_id', user.id).eq('status', 'active').limit(5)
       setEnrolledCourses((enrollments as unknown as EnrolledCourse[]) || [])
       const now = new Date().toISOString()
-      const { data: meetingsData } = await supabase.from('meetings').select('id, title, scheduled_at, meet_link, status, organizer:organizer_id(full_name)').gte('scheduled_at', now).order('scheduled_at').limit(5)
+      const { data: meetingsData } = await supabase.from('meetings').select('id, title, scheduled_at, meeting_link, status, organizer:organizer_id(full_name)').gte('scheduled_at', now).order('scheduled_at').limit(5)
       if (meetingsData) {
         const meetingIds = meetingsData.map((m: { id: string }) => m.id)
         const { data: participantRows } = await supabase.from('meeting_participants').select('meeting_id').eq('user_id', user.id).in('meeting_id', meetingIds)
@@ -36,6 +38,11 @@ export default function StudentDashboard() {
       }
       const { count } = await supabase.from('certificates').select('id', { count: 'exact', head: true }).eq('student_id', user.id)
       setCertCount(count || 0)
+      const notesRes = await fetch('/api/mentor/notes')
+      if (notesRes.ok) {
+        const notesResult = await notesRes.json()
+        setMentorNotes((notesResult.data || []).slice(0, 3))
+      }
       setLoading(false)
     }
     fetchData()
@@ -77,6 +84,7 @@ export default function StudentDashboard() {
           { label: 'My Courses', href: '/dashboard/student/courses', icon: GraduationCap },
           { label: 'Resume Builder', href: '/dashboard/student/resume', icon: FileText },
           { label: 'Book Meeting', href: '/dashboard/student/meetings', icon: Video },
+          { label: 'Mentor Notes', href: '/dashboard/student/mentor-notes', icon: MessageSquareMore },
           { label: 'Calendar', href: '/dashboard/student/calendar', icon: Calendar },
         ].map((a) => (
           <Link key={a.label} href={a.href} className="bg-white border border-border rounded-xl shadow-sm p-4 flex items-center gap-3 hover:shadow-md transition-all group">
@@ -85,6 +93,30 @@ export default function StudentDashboard() {
             <ArrowUpRight size={13} className="ml-auto text-foreground/30 group-hover:text-[#35C8E0] transition-colors" />
           </Link>
         ))}
+      </div>
+
+      <div className="bg-white border border-border rounded-xl shadow-sm">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-border bg-[#1A9AB5] rounded-t-2xl">
+          <h3 className="text-sm font-black uppercase tracking-widest text-white">Mentor Notes</h3>
+          <Link href="/dashboard/student/mentor-notes" className="text-[10px] font-black uppercase tracking-widest text-white/60 hover:text-white flex items-center gap-1">View All <ArrowUpRight size={12} /></Link>
+        </div>
+        {mentorNotes.length === 0 ? (
+          <p className="text-sm text-foreground/40 py-8 text-center font-semibold">No mentor notes yet</p>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 p-4">
+            {mentorNotes.map(note => (
+              <Link key={note.id} href="/dashboard/student/mentor-notes" className="rounded-xl border border-border bg-[#F4F6FA] p-4 hover:border-[#35C8E0] transition-colors">
+                <div className="flex items-center gap-2 mb-2">
+                  <MessageSquareMore size={15} className="text-[#1A9AB5]" />
+                  <span className="text-[10px] font-black uppercase tracking-widest text-foreground/45">{new Date(note.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</span>
+                </div>
+                <p className="text-sm font-black text-[#1A9AB5] truncate">{note.title || 'Mentor note'}</p>
+                <p className="mt-1 line-clamp-2 text-xs leading-5 text-foreground/60">{note.message}</p>
+                <p className="mt-3 text-[10px] font-bold text-foreground/40">From {note.mentor?.full_name || note.mentor?.email || 'Mentor'}</p>
+              </Link>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

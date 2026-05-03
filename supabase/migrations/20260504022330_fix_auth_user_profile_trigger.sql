@@ -1,8 +1,8 @@
 -- Fix admin-created Supabase Auth users failing with:
 -- "Database error creating new user" / "unexpected_failure".
 --
--- Run this in Supabase Dashboard > SQL Editor if Supabase CLI cannot push
--- migrations for this project.
+-- The auth.users trigger must never block Auth user creation. Profile creation
+-- can be repaired by the API route after the auth user exists.
 
 ALTER TABLE public.profiles
 ALTER COLUMN full_name DROP NOT NULL;
@@ -38,10 +38,8 @@ BEGIN
     role = EXCLUDED.role;
 
   RETURN NEW;
-
 EXCEPTION WHEN OTHERS THEN
-  RAISE WARNING 'Profile trigger error for auth user %: % (SQLSTATE: %)',
-    NEW.id, SQLERRM, SQLSTATE;
+  RAISE WARNING 'Profile trigger error for auth user %: % (SQLSTATE: %)', NEW.id, SQLERRM, SQLSTATE;
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public, auth;
@@ -49,7 +47,3 @@ $$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public, auth;
 CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
-
-SELECT tgname, tgtype, tgenabled
-FROM pg_trigger
-WHERE tgname = 'on_auth_user_created';

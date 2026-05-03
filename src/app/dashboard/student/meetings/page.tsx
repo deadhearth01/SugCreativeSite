@@ -9,7 +9,7 @@ type Meeting = {
   id: string
   title: string
   scheduled_at: string
-  meet_link: string | null
+  meeting_link: string | null
   status: string
   organizer: { full_name: string } | null
   meeting_participants: { user_id: string; status: string }[]
@@ -31,7 +31,7 @@ export default function StudentMeetingsPage() {
 
       const { data: meetingsData } = await supabase
         .from('meetings')
-        .select('id, title, scheduled_at, meet_link, status, organizer:organizer_id(full_name), meeting_participants(user_id, status)')
+        .select('id, title, scheduled_at, meeting_link, status, organizer:organizer_id(full_name), meeting_participants(user_id, status)')
         .order('scheduled_at')
 
       if (meetingsData) {
@@ -131,17 +131,17 @@ export default function StudentMeetingsPage() {
                   </div>
                   <div className="flex items-center gap-2 sm:flex-shrink-0">
                     <StatusBadge status={m.status || (isUpcoming ? 'scheduled' : 'completed')} />
-                    {m.meet_link && isUpcoming && (
+                    {m.meeting_link && isUpcoming && (
                       <>
                         <button
-                          onClick={() => copyLink(m.meet_link!, m.id)}
+                          onClick={() => copyLink(m.meeting_link!, m.id)}
                           className="p-2 rounded-lg border border-border hover:bg-off-white text-foreground/50 hover:text-primary transition-colors"
                           title="Copy Meet link"
                         >
                           {copied === m.id ? <Check size={14} className="text-green-500" /> : <Copy size={14} />}
                         </button>
                         <a
-                          href={m.meet_link}
+                          href={m.meeting_link}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 hover:bg-green-700 transition-colors"
@@ -152,9 +152,9 @@ export default function StudentMeetingsPage() {
                     )}
                   </div>
                 </div>
-                {m.meet_link && (
+                {m.meeting_link && (
                   <div className="mt-3 pt-3 border-t border-border/50">
-                    <p className="text-xs text-foreground/40 font-mono">{m.meet_link}</p>
+                    <p className="text-xs text-foreground/40 font-mono">{m.meeting_link}</p>
                   </div>
                 )}
               </div>

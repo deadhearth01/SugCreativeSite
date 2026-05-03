@@ -26,6 +26,7 @@ export default function EmployeeSettingsPage() {
     full_name: '',
     email: '',
     phone: '',
+    address: '',
     bio: '',
   })
 
@@ -44,7 +45,7 @@ export default function EmployeeSettingsPage() {
 
       const { data } = await supabase
         .from('profiles')
-        .select('full_name, phone, bio')
+        .select('full_name, phone, address, bio')
         .eq('id', user.id)
         .single()
 
@@ -52,6 +53,7 @@ export default function EmployeeSettingsPage() {
         full_name: data?.full_name || '',
         email: user.email || '',
         phone: data?.phone || '',
+        address: data?.address || '',
         bio: data?.bio || '',
       })
       setLoading(false)
@@ -68,6 +70,7 @@ export default function EmployeeSettingsPage() {
         body: JSON.stringify({
           full_name: profile.full_name,
           phone: profile.phone,
+          address: profile.address,
           bio: profile.bio,
         }),
       })
@@ -148,6 +151,16 @@ export default function EmployeeSettingsPage() {
                 onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
                 placeholder="+91 98765 43210"
                 className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-[#35C8E0]"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-foreground/70 mb-1">Address</label>
+              <textarea
+                rows={2}
+                value={profile.address}
+                onChange={(e) => setProfile({ ...profile, address: e.target.value })}
+                placeholder="City, state or full address"
+                className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-[#35C8E0] resize-none"
               />
             </div>
             <div>

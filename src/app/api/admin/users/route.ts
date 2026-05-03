@@ -2,6 +2,14 @@ import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { NextRequest, NextResponse } from 'next/server'
 
+const VALID_ROLES = ['admin', 'student', 'client', 'mentor', 'employee', 'intern']
+
+function getProfileFullName(email: string, fullName?: string) {
+  const trimmed = fullName?.trim()
+  if (trimmed) return trimmed
+  return email.split('@')[0] || 'User'
+}
+
 async function verifyAdmin() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -33,9 +41,8 @@ export async function POST(req: NextRequest) {
     }
 
     // Validate role is a valid enum value
-    const validRoles = ['admin', 'student', 'client', 'mentor', 'employee', 'intern']
-    if (!validRoles.includes(role)) {
-      return NextResponse.json({ error: `Invalid role. Must be one of: ${validRoles.join(', ')}` }, { status: 400 })
+    if (!VALID_ROLES.includes(role)) {
+      return NextResponse.json({ error: `Invalid role. Must be one of: ${VALID_ROLES.join(', ')}` }, { status: 400 })
     }
 
     const adminClient = createAdminClient()
@@ -96,9 +103,10 @@ export async function POST(req: NextRequest) {
     // Step 3: Create auth user
     // Ensure metadata values are valid and sanitized
     const sanitizedEmail = email.toLowerCase().trim()
+    const profileFullName = getProfileFullName(sanitizedEmail, full_name)
     const sanitizedMetadata = {
-      full_name: (full_name || '').trim(),
-      role: validRoles.includes(role) ? role : 'student'
+      full_name: profileFullName,
+      role: VALID_ROLES.includes(role) ? role : 'student'
     }
 
     console.log('Creating user:', sanitizedEmail, 'with metadata:', sanitizedMetadata)
@@ -134,8 +142,8 @@ export async function POST(req: NextRequest) {
         .from('profiles')
         .upsert({
           id: authData.user.id,
-          email,
-          full_name: full_name || null,
+          email: sanitizedEmail,
+          full_name: profileFullName,
           role,
           phone: phone || null,
           tags: tags || [],
