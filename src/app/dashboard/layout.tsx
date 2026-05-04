@@ -140,6 +140,78 @@ const roleLabels: Record<string, string> = {
   intern: 'Intern',
 }
 
+// Categorised admin sidebar — collapsible accordion sections.
+type NavGroup = {
+  id: string
+  label: string
+  icon: React.ComponentType<{ size?: number; className?: string }>
+  items: NavItem[]
+}
+
+const adminNavGroups: NavGroup[] = [
+  {
+    id: 'overview',
+    label: 'Overview',
+    icon: LayoutDashboard,
+    items: [
+      { label: 'Dashboard', href: '/dashboard/admin', icon: LayoutDashboard },
+    ],
+  },
+  {
+    id: 'people',
+    label: 'People',
+    icon: Users,
+    items: [
+      { label: 'User Management', href: '/dashboard/admin/users', icon: Users },
+      { label: 'Mentor Mapping', href: '/dashboard/admin/mentor-mapping', icon: UserCheck },
+    ],
+  },
+  {
+    id: 'operations',
+    label: 'Operations',
+    icon: ClipboardList,
+    items: [
+      { label: 'Tasks', href: '/dashboard/admin/tasks', icon: ClipboardList },
+      { label: 'Meetings', href: '/dashboard/admin/meetings', icon: Video },
+      { label: 'SUG Calendar', href: '/dashboard/admin/calendar', icon: Calendar },
+    ],
+  },
+  {
+    id: 'education',
+    label: 'Education',
+    icon: BookOpen,
+    items: [
+      { label: 'Course Management', href: '/dashboard/admin/courses', icon: BookOpen },
+    ],
+  },
+  {
+    id: 'clients',
+    label: 'Clients',
+    icon: Briefcase,
+    items: [
+      { label: 'Client Management', href: '/dashboard/admin/clients', icon: Briefcase },
+      { label: 'Site Queries', href: '/dashboard/admin/queries', icon: MessageSquareMore },
+    ],
+  },
+  {
+    id: 'finance',
+    label: 'Finance',
+    icon: Wallet,
+    items: [
+      { label: 'Budget & Finances', href: '/dashboard/admin/budget', icon: Wallet },
+      { label: 'Payments', href: '/dashboard/admin/payments', icon: CreditCard },
+    ],
+  },
+  {
+    id: 'communications',
+    label: 'Communications',
+    icon: Megaphone,
+    items: [
+      { label: 'Announcements', href: '/dashboard/admin/announcements', icon: Megaphone },
+    ],
+  },
+]
+
 type UserProfile = {
   full_name: string | null
   email: string | null
@@ -185,6 +257,34 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const navItems = roleNavItems[role] || roleNavItems.admin
   const bottomItems = roleBottomItems[role] || []
   const allItems = [...navItems, ...bottomItems]
+
+  // Admin-only: collapsible nav-group open state. Persisted in localStorage.
+  // The group containing the current page is auto-expanded on first load.
+  const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({})
+
+  useEffect(() => {
+    if (role !== 'admin') return
+    let stored: Record<string, boolean> = {}
+    try {
+      const raw = localStorage.getItem('sug:adminNavGroups')
+      if (raw) stored = JSON.parse(raw)
+    } catch {}
+    // Always force-open the group containing the active page so users can
+    // see where they are after navigation.
+    const activeGroup = adminNavGroups.find(g => g.items.some(i => i.href === pathname))
+    if (activeGroup) stored[activeGroup.id] = true
+    // First-load default: open the first group if nothing's stored yet
+    if (Object.keys(stored).length === 0) stored[adminNavGroups[0].id] = true
+    setOpenGroups(stored)
+  }, [role, pathname])
+
+  const toggleGroup = (id: string) => {
+    setOpenGroups(prev => {
+      const next = { ...prev, [id]: !prev[id] }
+      try { localStorage.setItem('sug:adminNavGroups', JSON.stringify(next)) } catch {}
+      return next
+    })
+  }
 
   useEffect(() => {
     const supabase = createClient()
@@ -257,15 +357,57 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
       {/* Main Navigation */}
       <nav className="flex-1 overflow-y-auto py-3 px-2 space-y-0.5">
-        {navItems.map((item) => (
-          <NavLink
-            key={item.href}
-            item={item}
-            collapsed={sidebarCollapsed && !mobile}
-            isActive={pathname === item.href}
-            onClick={mobile ? () => setSidebarOpen(false) : undefined}
-          />
-        ))}
+        {role === 'admin' && (!sidebarCollapsed || mobile) ? (
+          // Categorised collapsible sections
+          adminNavGroups.map(group => {
+            const isOpen = !!openGroups[group.id]
+            const hasActive = group.items.some(i => i.href === pathname)
+            return (
+              <div key={group.id} className="mb-0.5">
+                <button
+                  type="button"
+                  onClick={() => toggleGroup(group.id)}
+                  className={`w-full flex items-center gap-2.5 px-3 py-2 text-[10px] font-black uppercase tracking-widest rounded-xl transition-colors ${
+                    hasActive
+                      ? 'text-white bg-white/8'
+                      : 'text-white/45 hover:text-white/80 hover:bg-white/5'
+                  }`}
+                >
+                  <group.icon size={14} className="flex-shrink-0" />
+                  <span className="flex-1 text-left">{group.label}</span>
+                  <ChevronDown
+                    size={13}
+                    className={`flex-shrink-0 transition-transform duration-200 ${isOpen ? '' : '-rotate-90'}`}
+                  />
+                </button>
+                {isOpen && (
+                  <div className="mt-0.5 space-y-0.5 pl-2 border-l border-white/10 ml-3">
+                    {group.items.map(item => (
+                      <NavLink
+                        key={item.href}
+                        item={item}
+                        collapsed={false}
+                        isActive={pathname === item.href}
+                        onClick={mobile ? () => setSidebarOpen(false) : undefined}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+            )
+          })
+        ) : (
+          // Flat nav for non-admin roles, OR admin in collapsed sidebar mode
+          navItems.map((item) => (
+            <NavLink
+              key={item.href}
+              item={item}
+              collapsed={sidebarCollapsed && !mobile}
+              isActive={pathname === item.href}
+              onClick={mobile ? () => setSidebarOpen(false) : undefined}
+            />
+          ))
+        )}
       </nav>
 
       {/* Bottom Items (Support + Settings) */}
