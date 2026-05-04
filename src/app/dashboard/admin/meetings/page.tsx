@@ -641,6 +641,7 @@ export default function MeetingsPage() {
                 </div>
 
                 {/* Bulk-by-role tags */}
+                <p className="text-[10px] font-black uppercase tracking-widest text-foreground/50 mb-1.5">Quick add by role</p>
                 <div className="flex flex-wrap gap-1.5 mb-2">
                   {ROLE_ORDER.map(role => {
                     const idsInRole = profiles.filter(p => p.role === role && p.id !== currentUserId).map(p => p.id)

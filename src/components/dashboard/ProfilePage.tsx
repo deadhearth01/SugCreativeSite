@@ -3,10 +3,9 @@
 import { useState, useEffect, useRef } from 'react'
 import Image from 'next/image'
 import {
-  User, Mail, Phone, MapPin, Briefcase, Edit2, Save, X,
+  Mail, Phone, MapPin, Briefcase, Edit2, Save, X,
   Camera, CheckCircle, AlertCircle, Loader2, Shield, Calendar, Trash2, AtSign,
 } from 'lucide-react'
-import { createClient } from '@/lib/supabase/client'
 
 type Profile = {
   id: string
@@ -112,7 +111,7 @@ export default function ProfilePage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ avatar_url: null }),
       })
-      const { data, error } = await res.json()
+      const { error } = await res.json()
       if (error) throw new Error(error)
       setProfile(prev => prev ? { ...prev, avatar_url: null } : prev)
       setToast({ type: 'success', message: 'Profile photo removed.' })
@@ -143,9 +142,9 @@ export default function ProfilePage() {
     }
   }
 
-  function getInitials(name: string | null) {
-    if (!name) return 'U'
-    return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
+  function getInitials(name: string | null, email: string | null) {
+    const base = (name && name.trim()) || email || 'U'
+    return base.split(/\s+/).map(n => n[0]).join('').slice(0, 2).toUpperCase()
   }
 
   function formatDate(dateStr: string) {
@@ -173,10 +172,10 @@ export default function ProfilePage() {
 
       {/* Toast */}
       {toast && (
-        <div className={`fixed top-20 right-4 z-50 flex items-center gap-3 px-5 py-3.5 border-2 shadow-[4px_4px_0px_rgba(0,0,0,0.12)] text-sm font-bold animate-in slide-in-from-right duration-300 ${
+        <div className={`fixed top-20 right-4 z-50 flex items-center gap-3 px-5 py-3.5 rounded-2xl shadow-lg text-sm font-bold animate-in slide-in-from-right duration-300 ${
           toast.type === 'success'
-            ? 'bg-white border-[#1A9AB5] text-[#1A9AB5]'
-            : 'bg-white border-red-500 text-red-500'
+            ? 'bg-white border border-[#1A9AB5] text-[#1A9AB5]'
+            : 'bg-white border border-red-500 text-red-500'
         }`}>
           {toast.type === 'success' ? <CheckCircle size={18} /> : <AlertCircle size={18} />}
           {toast.message}
@@ -184,75 +183,80 @@ export default function ProfilePage() {
       )}
 
       {/* Profile Card */}
-      <div className="bg-white border-2 border-black/8 shadow-[4px_4px_0px_rgba(0,0,0,0.06)]">
-        {/* Header band */}
-        <div className="h-24 bg-gradient-to-r from-[#1A9AB5] to-[#35C8E0] relative">
-          <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.15) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.15) 1px, transparent 1px)', backgroundSize: '20px 20px' }} />
+      <div className="bg-white rounded-3xl border border-border shadow-sm overflow-hidden">
+        {/* Hero band — clean, no overlay text */}
+        <div className="h-32 bg-gradient-to-br from-[#1A9AB5] via-[#35C8E0] to-[#82C93D] relative">
+          <div
+            className="absolute inset-0 opacity-15"
+            style={{
+              backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(255,255,255,0.4) 1px, transparent 0)',
+              backgroundSize: '24px 24px',
+            }}
+          />
         </div>
 
         <div className="px-6 sm:px-8 pb-8">
-          {/* Avatar */}
-          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 -mt-10 mb-6">
-            <div className="relative w-20 h-20 flex-shrink-0">
+          {/* Avatar overlapping band; Edit button parked top-right */}
+          <div className="flex items-start justify-between -mt-14 mb-2">
+            <div className="relative w-24 h-24 flex-shrink-0">
               {profile.avatar_url ? (
                 <Image
                   src={profile.avatar_url}
                   alt={profile.full_name || 'Avatar'}
-                  width={80}
-                  height={80}
-                  className="w-20 h-20 object-cover border-4 border-white shadow-[2px_2px_0px_rgba(0,0,0,0.1)]"
+                  width={96}
+                  height={96}
+                  className="w-24 h-24 object-cover rounded-3xl border-4 border-white shadow-md"
                 />
               ) : (
-                <div className="w-20 h-20 bg-[#1A9AB5] border-4 border-white shadow-[2px_2px_0px_rgba(0,0,0,0.1)] flex items-center justify-center text-white text-2xl font-black">
-                  {getInitials(profile.full_name)}
+                <div className="w-24 h-24 bg-gradient-to-br from-[#1A9AB5] to-[#35C8E0] rounded-3xl border-4 border-white shadow-md flex items-center justify-center text-white text-2xl font-black">
+                  {getInitials(profile.full_name, profile.email)}
                 </div>
               )}
               <button
                 onClick={() => fileInputRef.current?.click()}
                 disabled={uploadingAvatar}
-                className="absolute bottom-0 right-0 w-7 h-7 bg-[#1A9AB5] text-white flex items-center justify-center border-2 border-white hover:bg-[#1580A0] transition-colors disabled:opacity-50"
+                className="absolute bottom-1 right-1 w-8 h-8 bg-[#1A9AB5] text-white rounded-xl flex items-center justify-center border-2 border-white hover:bg-[#1580A0] transition-colors disabled:opacity-50 shadow-sm"
                 title="Change photo"
               >
-                {uploadingAvatar ? <Loader2 size={12} className="animate-spin" /> : <Camera size={12} />}
+                {uploadingAvatar ? <Loader2 size={13} className="animate-spin" /> : <Camera size={13} />}
               </button>
               <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarUpload} />
             </div>
 
-            {/* Remove photo — only in edit mode when a photo exists */}
-            {editing && profile.avatar_url && (
-              <button
-                onClick={handleRemovePhoto}
-                disabled={uploadingAvatar}
-                className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-red-500 hover:text-red-600 border border-red-200 hover:border-red-400 px-3 py-1.5 transition-colors disabled:opacity-40 self-end sm:self-auto"
-                title="Remove profile photo"
-              >
-                {uploadingAvatar ? <Loader2 size={12} className="animate-spin" /> : <Trash2 size={12} />}
-                Remove photo
-              </button>
-            )}
-
-            <div className="flex gap-2">
+            {/* Top-right action buttons */}
+            <div className="flex gap-2 mt-16">
+              {editing && profile.avatar_url && (
+                <button
+                  onClick={handleRemovePhoto}
+                  disabled={uploadingAvatar}
+                  className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-red-500 hover:text-red-600 border border-red-200 hover:border-red-400 rounded-xl px-3 py-2 transition-colors disabled:opacity-40"
+                  title="Remove profile photo"
+                >
+                  {uploadingAvatar ? <Loader2 size={12} className="animate-spin" /> : <Trash2 size={12} />}
+                  Remove photo
+                </button>
+              )}
               {editing ? (
                 <>
                   <button
                     onClick={() => { setEditing(false); setForm({ full_name: profile.full_name || '', phone: profile.phone || '', address: profile.address || '', bio: profile.bio || '' }) }}
-                    className="flex items-center gap-2 px-4 py-2 text-xs font-black uppercase tracking-widest border-2 border-black/10 text-foreground/50 hover:text-foreground hover:border-black/20 transition-colors"
+                    className="flex items-center gap-2 px-4 py-2 text-xs font-black uppercase tracking-widest border border-border rounded-xl text-foreground/60 hover:text-foreground hover:border-foreground/30 transition-colors"
                   >
                     <X size={14} /> Cancel
                   </button>
                   <button
                     onClick={handleSave}
                     disabled={saving}
-                    className="flex items-center gap-2 px-4 py-2 text-xs font-black uppercase tracking-widest bg-[#1A9AB5] text-white border-2 border-[#1A9AB5] hover:bg-[#1580A0] transition-colors disabled:opacity-60 shadow-[2px_2px_0px_rgba(0,0,0,0.15)]"
+                    className="flex items-center gap-2 px-4 py-2 text-xs font-black uppercase tracking-widest bg-[#1A9AB5] text-white rounded-xl hover:bg-[#1580A0] transition-colors disabled:opacity-60 shadow-sm"
                   >
                     {saving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
-                    {saving ? 'Saving...' : 'Save Changes'}
+                    {saving ? 'Saving...' : 'Save'}
                   </button>
                 </>
               ) : (
                 <button
                   onClick={() => setEditing(true)}
-                  className="flex items-center gap-2 px-4 py-2 text-xs font-black uppercase tracking-widest border-2 border-[#1A9AB5] text-[#1A9AB5] hover:bg-[#1A9AB5] hover:text-white transition-all shadow-[2px_2px_0px_rgba(0,0,0,0.1)]"
+                  className="flex items-center gap-2 px-4 py-2 text-xs font-black uppercase tracking-widest border-2 border-[#1A9AB5] text-[#1A9AB5] rounded-xl hover:bg-[#1A9AB5] hover:text-white transition-all shadow-sm"
                 >
                   <Edit2 size={14} /> Edit Profile
                 </button>
@@ -260,33 +264,40 @@ export default function ProfilePage() {
             </div>
           </div>
 
-          {/* Name + role */}
+          {/* Name + handle + role badges — sits cleanly on white below avatar */}
           <div className="mb-6">
             {editing ? (
               <input
                 value={form.full_name}
                 onChange={e => setForm(f => ({ ...f, full_name: e.target.value }))}
-                className="text-2xl font-black text-foreground border-b-2 border-[#1A9AB5] bg-transparent focus:outline-none w-full max-w-sm pb-1"
+                className="text-2xl font-black text-foreground border-b-2 border-[#1A9AB5] bg-transparent focus:outline-none w-full max-w-md pb-1"
                 placeholder="Full Name"
               />
             ) : (
-              <h2 className="text-2xl font-black text-foreground">{profile.full_name || 'Unknown User'}</h2>
+              <h2 className="text-2xl font-black text-foreground leading-tight">
+                {profile.full_name || <span className="italic text-foreground/40">Name not set</span>}
+              </h2>
             )}
-            <div className="flex items-center gap-2 mt-2 flex-wrap">
-              <span className={`text-xs font-black uppercase tracking-widest px-2.5 py-1 border ${roleColors[profile.role] || 'bg-gray-100 text-gray-600'}`}>
+            {profile.username ? (
+              <p className="text-sm font-mono font-semibold text-[#5B8E2A] mt-1">@{profile.username}</p>
+            ) : (
+              <p className="text-sm italic text-amber-600 mt-1">@username not set</p>
+            )}
+            <div className="flex items-center gap-2 mt-3 flex-wrap">
+              <span className={`text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full ${roleColors[profile.role] || 'bg-gray-100 text-gray-600'}`}>
                 {roleLabels[profile.role] || profile.role}
               </span>
-              <span className={`text-xs font-bold px-2.5 py-1 ${profile.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
+              <span className={`text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full ${profile.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
                 {profile.status}
               </span>
             </div>
           </div>
 
           {/* Info grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            <InfoRow icon={<AtSign size={15} />} label="Username" value={profile.username ? `@${profile.username}` : '—'} />
-            <InfoRow icon={<Mail size={15} />} label="Email" value={profile.email} />
-            <InfoRow
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <InfoCard icon={<AtSign size={15} />} label="Username" value={profile.username ? `@${profile.username}` : '—'} mono={!!profile.username} />
+            <InfoCard icon={<Mail size={15} />} label="Email" value={profile.email} />
+            <InfoCard
               icon={<Phone size={15} />}
               label="Phone"
               editing={editing}
@@ -295,7 +306,12 @@ export default function ProfilePage() {
               onInput={v => setForm(f => ({ ...f, phone: v }))}
               placeholder="+91 98765 43210"
             />
-            <InfoRow
+            <InfoCard
+              icon={<Shield size={15} />}
+              label="Role"
+              value={roleLabels[profile.role] || profile.role}
+            />
+            <InfoCard
               icon={<MapPin size={15} />}
               label="Address"
               editing={editing}
@@ -306,21 +322,19 @@ export default function ProfilePage() {
               className="sm:col-span-2"
               wrapValue
             />
-            <InfoRow icon={<Shield size={15} />} label="Role" value={roleLabels[profile.role] || profile.role} />
-            <InfoRow icon={<Calendar size={15} />} label="Member Since" value={formatDate(profile.created_at)} />
           </div>
 
           {/* Bio */}
-          <div className="mt-6 pt-6 border-t border-black/8">
-            <label className="text-xs font-black uppercase tracking-widest text-foreground/40 flex items-center gap-2 mb-3">
-              <Briefcase size={13} /> Bio / About
+          <div className="mt-6 pt-6 border-t border-border">
+            <label className="text-[10px] font-black uppercase tracking-widest text-foreground/50 flex items-center gap-1.5 mb-3">
+              <Briefcase size={12} /> Bio / About
             </label>
             {editing ? (
               <textarea
                 value={form.bio}
                 onChange={e => setForm(f => ({ ...f, bio: e.target.value }))}
                 rows={4}
-                className="w-full border-2 border-black/10 focus:border-[#1A9AB5] focus:outline-none px-4 py-3 text-sm font-medium text-foreground placeholder:text-foreground/30 resize-none"
+                className="w-full border border-border focus:border-[#1A9AB5] focus:outline-none rounded-2xl px-4 py-3 text-sm font-medium text-foreground placeholder:text-foreground/30 resize-none transition-colors"
                 placeholder="Tell us a bit about yourself..."
               />
             ) : (
@@ -329,22 +343,15 @@ export default function ProfilePage() {
               </p>
             )}
           </div>
-        </div>
-      </div>
 
-      {/* Account Info */}
-      <div className="bg-white border-2 border-black/8 shadow-[4px_4px_0px_rgba(0,0,0,0.06)] p-6 sm:p-8">
-        <h3 className="text-xs font-black uppercase tracking-widest text-foreground/40 mb-5 flex items-center gap-2">
-          <Shield size={13} /> Account Details
-        </h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-          <div>
-            <p className="text-xs font-bold uppercase tracking-widest text-foreground/30 mb-1">User ID</p>
-            <p className="font-mono text-xs text-foreground/60 break-all">{profile.id}</p>
-          </div>
-          <div>
-            <p className="text-xs font-bold uppercase tracking-widest text-foreground/30 mb-1">Last Updated</p>
-            <p className="font-semibold text-foreground/60">{formatDate(profile.updated_at)}</p>
+          {/* Footer meta */}
+          <div className="mt-6 pt-4 border-t border-border flex flex-wrap items-center gap-x-5 gap-y-1 text-[11px] font-semibold text-foreground/40">
+            <span className="inline-flex items-center gap-1.5">
+              <Calendar size={11} /> Joined {formatDate(profile.created_at)}
+            </span>
+            <span className="inline-flex items-center gap-1.5">
+              <Edit2 size={11} /> Updated {formatDate(profile.updated_at)}
+            </span>
           </div>
         </div>
       </div>
@@ -352,8 +359,8 @@ export default function ProfilePage() {
   )
 }
 
-function InfoRow({
-  icon, label, value, editing, inputValue, onInput, placeholder, className = '', wrapValue = false,
+function InfoCard({
+  icon, label, value, editing, inputValue, onInput, placeholder, className = '', wrapValue = false, mono = false,
 }: {
   icon: React.ReactNode
   label: string
@@ -364,21 +371,22 @@ function InfoRow({
   placeholder?: string
   className?: string
   wrapValue?: boolean
+  mono?: boolean
 }) {
   return (
-    <div className={`flex items-start gap-3 ${className}`}>
-      <span className="mt-0.5 text-[#1A9AB5] flex-shrink-0">{icon}</span>
+    <div className={`flex items-start gap-3 p-3.5 rounded-2xl bg-off-white/60 border border-border/60 hover:border-[#35C8E0]/40 transition-colors ${className}`}>
+      <span className="mt-0.5 text-[#1A9AB5] flex-shrink-0 w-7 h-7 rounded-lg bg-[#35C8E0]/15 flex items-center justify-center">{icon}</span>
       <div className="min-w-0 flex-1">
-        <p className="text-xs font-black uppercase tracking-widest text-foreground/30 mb-0.5">{label}</p>
+        <p className="text-[10px] font-black uppercase tracking-widest text-foreground/40 mb-1">{label}</p>
         {editing && onInput ? (
           <input
             value={inputValue || ''}
             onChange={e => onInput(e.target.value)}
             placeholder={placeholder}
-            className="border-b-2 border-[#1A9AB5] bg-transparent focus:outline-none text-sm font-semibold text-foreground w-full pb-0.5 placeholder:text-foreground/20"
+            className="border-b border-[#1A9AB5] bg-transparent focus:outline-none text-sm font-semibold text-foreground w-full pb-0.5 placeholder:text-foreground/20"
           />
         ) : (
-          <p className={`text-sm font-semibold text-foreground/80 ${wrapValue ? 'whitespace-pre-wrap break-words' : 'truncate'}`}>{value || '—'}</p>
+          <p className={`text-sm font-semibold text-foreground/80 ${mono ? 'font-mono text-[#5B8E2A]' : ''} ${wrapValue ? 'whitespace-pre-wrap break-words' : 'truncate'}`}>{value || '—'}</p>
         )}
       </div>
     </div>

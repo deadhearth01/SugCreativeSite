@@ -40,12 +40,13 @@ export async function POST(req: NextRequest) {
     if (profile?.role !== 'admin') return NextResponse.json({ error: 'Admin only' }, { status: 403 })
 
     const body = await req.json()
-    const { title, description, client_id, budget, start_date, end_date } = body
+    const { title, description, client_id, budget, start_date, end_date, deadline, comments } = body
 
     if (!title || !client_id) {
       return NextResponse.json({ error: 'Title and client_id are required' }, { status: 400 })
     }
 
+    // UI sends `end_date`; DB column is `deadline`.
     const { data, error } = await supabase
       .from('projects')
       .insert({
@@ -56,7 +57,8 @@ export async function POST(req: NextRequest) {
         progress_percent: 0,
         budget,
         start_date,
-        end_date,
+        deadline: deadline ?? end_date ?? null,
+        comments: comments ?? null,
       })
       .select()
       .single()

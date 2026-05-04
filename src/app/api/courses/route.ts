@@ -1,6 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
-import { createAdminClient } from '@/lib/supabase/admin'
 import { NextRequest, NextResponse } from 'next/server'
+import { mapCoursePayload as mapCoursePayloadLib, slugify as slugifyLib } from '@/lib/courses'
 
 // GET — List all courses (public for active, auth required for all statuses)
 export async function GET(req: NextRequest) {
@@ -78,28 +78,34 @@ export async function POST(req: NextRequest) {
     if (profile?.role !== 'admin') return NextResponse.json({ error: 'Admin only' }, { status: 403 })
 
     const body = await req.json()
-    const { title, description, category, price, duration, lessons, thumbnail, syllabus, start_date, end_date, enrollment_limit } = body
-
-    if (!title || !category) {
+    if (!body.title || !body.category) {
       return NextResponse.json({ error: 'Title and category are required' }, { status: 400 })
+    }
+
+    const mapped = mapCoursePayloadLib(body)
+
+    // Auto-slug if missing — required by public courses page (?slug=...)
+    if (!mapped.slug) {
+      const base = slugifyLib(String(body.title))
+      // Check for collision and append short suffix if needed
+      const { data: existing } = await supabase
+        .from('courses')
+        .select('id')
+        .eq('slug', base)
+        .maybeSingle()
+      mapped.slug = existing
+        ? `${base}-${Math.random().toString(36).slice(2, 6)}`
+        : base
     }
 
     const { data, error } = await supabase
       .from('courses')
       .insert({
-        title,
-        description,
-        category,
-        price: price || 0,
-        duration,
-        lessons: lessons || 0,
-        thumbnail,
-        syllabus,
-        start_date,
-        end_date,
-        enrollment_limit,
+        ...mapped,
+        price: (mapped.price as number) || 0,
+        total_lessons: (mapped.total_lessons as number) || 0,
         instructor_id: user.id,
-        status: 'draft',
+        status: mapped.status || 'draft',
       })
       .select()
       .single()
@@ -111,3 +117,4 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
+

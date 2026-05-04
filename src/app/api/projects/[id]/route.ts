@@ -13,9 +13,14 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     if (!['admin', 'employee'].includes(profile?.role || '')) return NextResponse.json({ error: 'Admin or employee only' }, { status: 403 })
 
     const body = await req.json()
+    // UI sends `end_date`; DB column is `deadline`.
+    const { end_date, ...rest } = body
+    const updates: Record<string, unknown> = { ...rest, updated_at: new Date().toISOString() }
+    if (end_date !== undefined && updates.deadline === undefined) updates.deadline = end_date
+
     const { data, error } = await supabase
       .from('projects')
-      .update({ ...body, updated_at: new Date().toISOString() })
+      .update(updates)
       .eq('id', id)
       .select()
       .single()

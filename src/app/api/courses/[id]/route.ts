@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
+import { mapCoursePayload } from '@/lib/courses'
 
 // GET — Single course
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -35,9 +36,10 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     if (profile?.role !== 'admin') return NextResponse.json({ error: 'Admin only' }, { status: 403 })
 
     const body = await req.json()
+    const mapped = mapCoursePayload(body)
     const { data, error } = await supabase
       .from('courses')
-      .update({ ...body, updated_at: new Date().toISOString() })
+      .update({ ...mapped, updated_at: new Date().toISOString() })
       .eq('id', id)
       .select()
       .single()

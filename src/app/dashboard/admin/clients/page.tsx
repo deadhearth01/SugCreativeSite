@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Briefcase, Plus, Loader2, X, Search, Edit, Trash2, TrendingUp, ArrowUpRight } from 'lucide-react'
+import { Briefcase, Plus, Loader2, X, Search, Edit, Trash2, ArrowUpRight, MessageSquare, Send, ChevronDown, ChevronUp, Calendar } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 
 type Profile = { id: string; full_name: string; email: string; role: string }
@@ -13,11 +13,20 @@ type Project = {
   progress_percent: number
   budget: number | null
   start_date: string | null
-  end_date: string | null
+  deadline: string | null
   created_at: string
   client_id: string
   client: { full_name: string; email: string } | null
   comments: string | null
+}
+type ProjectUpdate = {
+  id: string
+  title: string | null
+  body: string
+  progress_at_post: number | null
+  status_at_post: string | null
+  created_at: string
+  author: { full_name: string | null; username: string | null; role: string } | null
 }
 
 const PROJECT_STATUSES = ['planning', 'in_progress', 'review', 'completed', 'on_hold', 'cancelled']
@@ -52,8 +61,14 @@ export default function ClientManagementPage() {
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
 
   const [form, setForm] = useState({
-    title: '', description: '', client_id: '', budget: '', start_date: '', end_date: '', comments: '',
+    title: '', description: '', client_id: '', budget: '', start_date: '', deadline: '', comments: '',
   })
+
+  // Per-project update feed state
+  const [openUpdates, setOpenUpdates] = useState<Record<string, boolean>>({})
+  const [updates, setUpdates] = useState<Record<string, ProjectUpdate[]>>({})
+  const [updateDraft, setUpdateDraft] = useState<Record<string, { title: string; body: string }>>({})
+  const [postingUpdate, setPostingUpdate] = useState<string | null>(null)
 
   const showToast = (message: string, type: 'success' | 'error') => setToast({ message, type })
 
@@ -84,7 +99,7 @@ export default function ClientManagementPage() {
 
   const openCreate = () => {
     setEditProject(null)
-    setForm({ title: '', description: '', client_id: '', budget: '', start_date: '', end_date: '', comments: '' })
+    setForm({ title: '', description: '', client_id: '', budget: '', start_date: '', deadline: '', comments: '' })
     setShowModal(true)
   }
 
@@ -96,7 +111,7 @@ export default function ClientManagementPage() {
       client_id: proj.client_id,
       budget: proj.budget ? String(proj.budget) : '',
       start_date: proj.start_date || '',
-      end_date: proj.end_date || '',
+      deadline: proj.deadline || '',
       comments: proj.comments || '',
     })
     setShowModal(true)
@@ -106,7 +121,7 @@ export default function ClientManagementPage() {
     if (!form.title || !form.client_id) { showToast('Title and client required', 'error'); return }
     setSaving(true)
     try {
-      const payload = { ...form, budget: form.budget ? parseFloat(form.budget) : null, start_date: form.start_date || null, end_date: form.end_date || null, description: form.description || null, comments: form.comments || null }
+      const payload = { ...form, budget: form.budget ? parseFloat(form.budget) : null, start_date: form.start_date || null, deadline: form.deadline || null, description: form.description || null, comments: form.comments || null }
       const url = editProject ? `/api/projects/${editProject.id}` : '/api/projects'
       const method = editProject ? 'PATCH' : 'POST'
       const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
@@ -129,6 +144,37 @@ export default function ClientManagementPage() {
       method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ progress_percent: progress }),
     })
     loadData()
+  }
+
+  const toggleUpdates = async (projectId: string) => {
+    const isOpen = !openUpdates[projectId]
+    setOpenUpdates(prev => ({ ...prev, [projectId]: isOpen }))
+    if (isOpen && !updates[projectId]) {
+      const res = await fetch(`/api/projects/${projectId}/updates`)
+      const json = await res.json()
+      setUpdates(prev => ({ ...prev, [projectId]: json.data || [] }))
+    }
+  }
+
+  const postUpdate = async (projectId: string) => {
+    const draft = updateDraft[projectId]
+    if (!draft?.body?.trim()) { showToast('Update body is required', 'error'); return }
+    setPostingUpdate(projectId)
+    const res = await fetch(`/api/projects/${projectId}/updates`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ title: draft.title?.trim() || null, body: draft.body.trim() }),
+    })
+    if (res.ok) {
+      const { data } = await res.json()
+      setUpdates(prev => ({ ...prev, [projectId]: [data, ...(prev[projectId] || [])] }))
+      setUpdateDraft(prev => ({ ...prev, [projectId]: { title: '', body: '' } }))
+      showToast('Update posted — visible to client', 'success')
+    } else {
+      const { error } = await res.json()
+      showToast(error || 'Failed to post update', 'error')
+    }
+    setPostingUpdate(null)
   }
 
   const handleDelete = async (id: string) => {
@@ -230,7 +276,7 @@ export default function ClientManagementPage() {
                 {proj.start_date && (
                   <span className="text-[10px] text-foreground/40 font-semibold">
                     {new Date(proj.start_date).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })}
-                    {proj.end_date && ` — ${new Date(proj.end_date).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })}`}
+                    {proj.deadline && ` — ${new Date(proj.deadline).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })}`}
                   </span>
                 )}
               </div>
@@ -259,10 +305,79 @@ export default function ClientManagementPage() {
 
               {proj.comments && (
                 <div className="mt-3 pt-3 border-t-2 border-black/5">
-                  <span className="text-[10px] font-black text-foreground/40 uppercase tracking-widest">Notes</span>
+                  <span className="text-[10px] font-black text-foreground/40 uppercase tracking-widest">Internal Notes</span>
                   <p className="text-xs text-foreground/60 mt-1">{proj.comments}</p>
                 </div>
               )}
+
+              {/* Live updates feed (visible to client) */}
+              <div className="mt-3 pt-3 border-t border-border/60">
+                <button
+                  onClick={() => toggleUpdates(proj.id)}
+                  className="w-full flex items-center justify-between text-[10px] font-black text-[#1A9AB5] uppercase tracking-widest hover:bg-[#35C8E0]/10 rounded-lg px-2 py-1.5 transition-colors"
+                >
+                  <span className="flex items-center gap-1.5">
+                    <MessageSquare size={11} /> Updates for client
+                    {updates[proj.id] && updates[proj.id].length > 0 && (
+                      <span className="bg-[#1A9AB5] text-white px-1.5 py-0.5 rounded-full text-[9px]">{updates[proj.id].length}</span>
+                    )}
+                  </span>
+                  {openUpdates[proj.id] ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
+                </button>
+
+                {openUpdates[proj.id] && (
+                  <div className="mt-2 space-y-2">
+                    {/* Compose */}
+                    <div className="bg-off-white/60 border border-border rounded-xl p-3 space-y-2">
+                      <input
+                        type="text"
+                        value={updateDraft[proj.id]?.title || ''}
+                        onChange={e => setUpdateDraft(prev => ({ ...prev, [proj.id]: { ...(prev[proj.id] || { body: '' }), title: e.target.value } }))}
+                        placeholder="Update title (optional)..."
+                        className="w-full text-xs font-semibold border border-border rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-[#35C8E0]"
+                      />
+                      <textarea
+                        value={updateDraft[proj.id]?.body || ''}
+                        onChange={e => setUpdateDraft(prev => ({ ...prev, [proj.id]: { ...(prev[proj.id] || { title: '' }), body: e.target.value } }))}
+                        rows={2}
+                        placeholder="What's the latest? Client will see this immediately."
+                        className="w-full text-xs border border-border rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-[#35C8E0] resize-none"
+                      />
+                      <button
+                        onClick={() => postUpdate(proj.id)}
+                        disabled={postingUpdate === proj.id}
+                        className="w-full flex items-center justify-center gap-1.5 bg-[#1A9AB5] text-white text-[11px] font-black uppercase tracking-widest py-1.5 rounded-lg hover:bg-[#158da5] transition-colors disabled:opacity-50"
+                      >
+                        {postingUpdate === proj.id ? <Loader2 size={11} className="animate-spin" /> : <Send size={11} />}
+                        Post Update
+                      </button>
+                    </div>
+
+                    {/* Feed */}
+                    {(updates[proj.id] || []).length === 0 ? (
+                      <p className="text-[11px] text-foreground/40 text-center py-2">No updates yet — post the first one above.</p>
+                    ) : (
+                      <ul className="space-y-1.5">
+                        {(updates[proj.id] || []).map(u => (
+                          <li key={u.id} className="bg-white border border-border rounded-lg p-2.5">
+                            {u.title && <p className="text-xs font-bold text-[#1A9AB5]">{u.title}</p>}
+                            <p className="text-xs text-foreground/70 whitespace-pre-wrap mt-0.5">{u.body}</p>
+                            <div className="flex items-center gap-2 mt-1.5 text-[10px] text-foreground/40">
+                              <Calendar size={9} />
+                              {new Date(u.created_at).toLocaleString('en-IN', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}
+                              {u.author && (
+                                <span className="ml-auto font-semibold">
+                                  {u.author.full_name || (u.author.username ? `@${u.author.username}` : u.author.role)}
+                                </span>
+                              )}
+                            </div>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
           ))}
         </div>
@@ -308,7 +423,7 @@ export default function ClientManagementPage() {
                 </div>
                 <div>
                   <label className="block text-[10px] font-black text-foreground/60 mb-1.5 uppercase tracking-widest">End</label>
-                  <input type="date" value={form.end_date} onChange={e => setForm(f => ({ ...f, end_date: e.target.value }))}
+                  <input type="date" value={form.deadline} onChange={e => setForm(f => ({ ...f, deadline: e.target.value }))}
                     className="w-full border border-border rounded-lg px-3 py-2.5 text-sm font-semibold focus:outline-none focus:border-[#35C8E0]" />
                 </div>
               </div>
