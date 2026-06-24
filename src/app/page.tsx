@@ -525,12 +525,9 @@ export default function HomePage() {
             <p className="text-white/50 text-xs font-black uppercase tracking-widest text-center mb-6">Watch Their Stories</p>
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
               {videoTestimonials.map((v, i) => (
-                <div key={i}>
-                  <div
-                    className="relative rounded-3xl border-2 border-black shadow-[6px_6px_0px_rgba(130,201,61,1)] overflow-hidden aspect-[9/16] cursor-pointer"
-                    onClick={() => setActiveVideo(i)}
-                  >
-                    {activeVideo === i ? (
+                <div key={v.name}>
+                  {activeVideo === i ? (
+                    <div className="relative rounded-3xl border-2 border-black shadow-[6px_6px_0px_rgba(130,201,61,1)] overflow-hidden aspect-[9/16]">
                       <video
                         autoPlay
                         controls
@@ -539,21 +536,26 @@ export default function HomePage() {
                       >
                         <source src={v.url} type="video/mp4" />
                       </video>
-                    ) : (
-                      <>
-                        <img
-                          src={v.poster}
-                          alt={v.name}
-                          className="w-full h-full object-cover"
-                        />
-                        <div className="absolute inset-0 flex items-center justify-center bg-black/20">
-                          <div className="w-16 h-16 rounded-full bg-[#82C93D] border-2 border-black flex items-center justify-center shadow-[4px_4px_0px_rgba(0,0,0,1)]">
-                            <Play size={28} className="text-white ml-1" />
-                          </div>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setActiveVideo(i)}
+                      aria-label={`Play ${v.name}'s video testimonial`}
+                      className="relative block w-full rounded-3xl border-2 border-black shadow-[6px_6px_0px_rgba(130,201,61,1)] overflow-hidden aspect-[9/16] cursor-pointer"
+                    >
+                      <img
+                        src={v.poster}
+                        alt={v.name}
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+                        <div className="w-16 h-16 rounded-full bg-[#82C93D] border-2 border-black flex items-center justify-center shadow-[4px_4px_0px_rgba(0,0,0,1)]">
+                          <Play size={28} className="text-white ml-1" />
                         </div>
-                      </>
-                    )}
-                  </div>
+                      </div>
+                    </button>
+                  )}
                   <div className="mt-3 text-center">
                     <p className="text-white font-black text-sm">{v.name}</p>
                     <p className="text-white/60 text-xs font-bold">{v.company}</p>
