@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { ArrowUpRight, CheckCircle2, TrendingUp, GraduationCap, Award, Users, Clock, Play, Briefcase, Calendar, Star, Quote, Building2, Shield, Cpu, Globe, Server, Code2, Palette, Settings, Zap, Target, Rocket, BadgeCheck, ArrowRight } from 'lucide-react'
+import { ArrowUpRight, CheckCircle2, TrendingUp, GraduationCap, Award, Users, Clock, Play, Briefcase, Calendar, Star, Quote, Building2, Shield, Cpu, Globe, Server, Zap, Target, Rocket, BadgeCheck, ArrowRight, Plane, BookOpen } from 'lucide-react'
 import RotatingText from '@/components/RotatingText'
 import dynamic from 'next/dynamic'
 import Navbar from '@/components/Navbar'
@@ -150,12 +150,12 @@ const courses = [
   }
 ]
 
-// Business services
-const businessServices = [
-  { Icon: Globe, title: 'Web Development', desc: 'Custom websites & web applications' },
-  { Icon: Palette, title: 'UI/UX Design', desc: 'User-centered design solutions' },
-  { Icon: Code2, title: 'Software Development', desc: 'Scalable enterprise software' },
-  { Icon: Settings, title: 'IT Consulting', desc: 'Digital transformation strategy' },
+// Service pillars — Study Abroad leads. Links jump to the matching /services anchor.
+const servicePillars = [
+  { Icon: Plane, title: 'Study Abroad', desc: 'Global education & overseas admissions', href: '/services#study-abroad' },
+  { Icon: GraduationCap, title: 'Trainings', desc: 'Industry-led professional training', href: '/services#trainings' },
+  { Icon: Briefcase, title: 'Student Career Services', desc: 'Resume, interviews & placement support', href: '/services#career-services' },
+  { Icon: BookOpen, title: 'Edu Services', desc: 'Curriculum & ed-tech solutions', href: '/services#edu-services' },
 ]
 
 const courseColors: Record<string, { bg: string; accent: string; shadow: string; gradient: string }> = {
@@ -400,17 +400,17 @@ export default function HomePage() {
             <div>
               <div className="inline-block bg-primary text-white font-black text-xs uppercase tracking-widest px-4 py-2 mb-6 rounded-3xl shadow-[4px_4px_0px_rgba(0,0,0,1)] border-2 border-primary-dark">
                 <Zap size={14} className="inline mr-2" />
-                Business Solutions
+                Our Services
               </div>
               <h2 className="text-4xl md:text-5xl font-heading font-black text-primary-dark tracking-tight leading-tight mb-6">
-                We Also Excel In<br /><span className="text-primary">Digital Transformation</span>
+                Everything You Need<br /><span className="text-primary">To Go Global</span>
               </h2>
               <p className="text-primary-dark/70 text-lg font-medium leading-relaxed mb-8">
-                Beyond education, we help businesses thrive with cutting-edge technology solutions. From web development to IT consulting, we've partnered with <strong className="text-primary-dark">200+ businesses</strong> across industries.
+                From studying abroad to landing your first role, our services cover every step. We've guided <strong className="text-primary-dark">thousands of students</strong> across study-abroad journeys, training, and careers.
               </p>
               <div className="grid grid-cols-2 gap-4 mb-8">
-                {businessServices.map((service) => (
-                  <div key={service.title} className="flex items-start gap-3 p-4 bg-gray-50 rounded-2xl border border-black/8 hover:border-primary/30 transition-colors">
+                {servicePillars.map((service) => (
+                  <Link key={service.title} href={service.href} className="flex items-start gap-3 p-4 bg-gray-50 rounded-2xl border border-black/8 hover:border-primary/30 hover:-translate-y-0.5 transition-all">
                     <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center text-primary flex-shrink-0">
                       <service.Icon size={20} />
                     </div>
@@ -418,7 +418,7 @@ export default function HomePage() {
                       <div className="font-black text-primary-dark text-sm">{service.title}</div>
                       <div className="text-xs text-primary-dark/60">{service.desc}</div>
                     </div>
-                  </div>
+                  </Link>
                 ))}
               </div>
               <Button asChild size="lg" className="bg-primary-dark hover:bg-black text-white font-black text-sm uppercase tracking-widest rounded-3xl border-2 border-primary-dark px-8 h-14 shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-[6px_6px_0px_rgba(0,0,0,1)] hover:-translate-y-1 transition-all">
