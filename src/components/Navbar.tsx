@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
-import { ArrowUpRight, ChevronDown, Server, Shield, Cpu, Globe, Code2, Palette, Settings, Rocket, Megaphone, Users } from 'lucide-react'
+import { ArrowUpRight, ChevronDown, Server, Shield, Cpu, Globe, Plane, GraduationCap, Briefcase, BookOpen } from 'lucide-react'
 import StaggeredMenu from './StaggeredMenu'
 
 // Navigation with submenus
@@ -32,14 +32,14 @@ const navLinks: NavLink[] = [
       { href: '/courses/fullstack-dev-internship', label: 'Full Stack Dev', icon: Globe, desc: 'React, Node.js, Databases' },
     ]
   },
-  { 
-    href: '/services', 
+  {
+    href: '/services',
     label: 'Services',
     subItems: [
-      { href: '/services#web-development', label: 'Web Development', icon: Code2, desc: 'Custom websites & apps' },
-      { href: '/services#ui-ux-design', label: 'UI/UX Design', icon: Palette, desc: 'User-centered design' },
-      { href: '/services#it-consulting', label: 'IT Consulting', icon: Settings, desc: 'Strategic tech guidance' },
-      { href: '/services#digital-marketing', label: 'Digital Marketing', icon: Megaphone, desc: 'SEO, Social & Ads' },
+      { href: '/services#study-abroad', label: 'Study Abroad', icon: Plane, desc: 'Global education & admissions' },
+      { href: '/services#trainings', label: 'Trainings', icon: GraduationCap, desc: 'Job-ready, hands-on programs' },
+      { href: '/services#career-services', label: 'Student Career Services', icon: Briefcase, desc: 'Resume, interviews & placement' },
+      { href: '/services#edu-services', label: 'Edu Services', icon: BookOpen, desc: 'LMS, content & partnerships' },
     ]
   },
   { href: '/business-solutions', label: 'Business Solutions' },
