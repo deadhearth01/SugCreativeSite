@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { ArrowUpRight, CheckCircle2, TrendingUp, GraduationCap, Award, Users, Clock, Play, Briefcase, Calendar, Star, Quote, Building2, Shield, Cpu, Globe, Server, Zap, Target, Rocket, BadgeCheck, ArrowRight, Plane, BookOpen } from 'lucide-react'
@@ -133,8 +133,9 @@ const videoTestimonials = [
   },
 ]
 
-// Courses data - matching poster exactly with professional icons
-const courses = [
+// Courses data - matching poster exactly with professional icons.
+// Used as the fallback when the DB has no featured courses or the fetch fails.
+const fallbackCourses = [
   {
     title: 'DevOps Program',
     desc: 'Master CI/CD pipelines, container orchestration with Docker & Kubernetes, cloud automation & DevSecOps practices.',
@@ -200,8 +201,96 @@ const courseColors: Record<string, { bg: string; accent: string; shadow: string;
   gold: { bg: 'bg-amber-500', accent: 'text-amber-500', shadow: 'shadow-[8px_8px_0px_rgba(245,158,11,1)]', gradient: 'from-amber-500 to-orange-600' },
 }
 
+// Shape of a course card the section renders (DB rows are mapped into this).
+type CourseCard = {
+  title: string
+  desc: string
+  href: string
+  image: string | null
+  price: number
+  originalPrice: number
+  savings: number
+  color: string
+  tech: string[]
+  Icon: typeof Server
+}
+
+// Minimal shape of a course row returned by /api/courses
+type DbCourse = {
+  slug?: string
+  title: string
+  description?: string | null
+  category?: string | null
+  price?: number | null
+  offer_price?: number | null
+  original_price?: number | null
+  thumbnail_url?: string | null
+  color_theme?: string | null
+  tech_stack?: string[] | null
+  tags?: string[] | null
+  display_order?: number | null
+  is_featured?: boolean | null
+}
+
+// Pick a sensible default icon per category.
+const categoryIcons: Record<string, typeof Server> = {
+  business_solutions: Briefcase,
+  career_guidance: Target,
+  startup_hub: Rocket,
+  edu_tech: BookOpen,
+  young_compete: Award,
+}
+
+// Map a DB course row into the card shape the existing UI expects.
+function mapDbCourse(c: DbCourse): CourseCard {
+  const price = c.offer_price ?? c.price ?? 0
+  const originalPrice = c.original_price ?? 0
+  const savings = originalPrice > price ? originalPrice - price : 0
+  const color = c.color_theme && courseColors[c.color_theme] ? c.color_theme : 'gold'
+  return {
+    title: c.title,
+    desc: c.description || '',
+    href: c.slug ? `/courses/${c.slug}` : '/courses',
+    image: c.thumbnail_url || null,
+    price,
+    originalPrice,
+    savings,
+    color,
+    tech: (c.tech_stack && c.tech_stack.length > 0 ? c.tech_stack : c.tags) || [],
+    Icon: (c.category && categoryIcons[c.category]) || GraduationCap,
+  }
+}
+
 export default function HomePage() {
   const [activeVideo, setActiveVideo] = useState<number | null>(null)
+
+  // Featured courses from the DB, ordered by display_order. Falls back to the
+  // hardcoded list when the fetch fails or returns nothing, so the section is
+  // never empty.
+  const [courses, setCourses] = useState<CourseCard[]>(fallbackCourses)
+
+  useEffect(() => {
+    let cancelled = false
+    ;(async () => {
+      try {
+        const res = await fetch('/api/courses?public=true&featured=true')
+        if (!res.ok) return
+        const json = await res.json()
+        const rows: DbCourse[] = Array.isArray(json?.data) ? json.data : []
+        if (cancelled || rows.length === 0) return
+        const mapped = rows
+          .slice()
+          .sort((a, b) => (a.display_order ?? 0) - (b.display_order ?? 0))
+          .map(mapDbCourse)
+        if (mapped.length > 0) setCourses(mapped)
+      } catch {
+        // Keep the fallback courses on any error.
+      }
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   return (
     <>
@@ -362,17 +451,29 @@ export default function HomePage() {
                 <AnimatedSection key={course.title} delay={index * 0.1}>
                   <Link href={course.href} className={`group block relative h-[560px] border-2 border-primary-dark rounded-3xl overflow-hidden ${colors.shadow} transition-all duration-500 hover:-translate-y-2 hover:shadow-[12px_12px_0px_rgba(0,0,0,1)] bg-white focus:outline-none`}>
                     <div className="absolute inset-0 bg-gradient-to-br from-gray-100 to-gray-200">
+                      {course.image && (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={course.image}
+                          alt={course.title}
+                          className="absolute inset-0 w-full h-full object-cover"
+                        />
+                      )}
                       <div className={`absolute inset-0 bg-gradient-to-br ${colors.gradient} opacity-20`} />
                     </div>
-                    
+
                     <div className="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-transparent" />
-                    
+
                     {/* Price Tag with Savings */}
                     <div className="absolute top-4 right-4 bg-white border-2 border-black shadow-[2px_2px_0px_rgba(0,0,0,1)] p-3 rounded-2xl">
-                      <div className="text-[10px] font-bold uppercase text-red-500 bg-red-50 px-2 py-0.5 mb-1 border border-red-200 rounded-full flex items-center gap-1">
-                        <Target size={10} /> Save ₹{course.savings.toLocaleString()}
-                      </div>
-                      <div className="text-xs text-gray-400 line-through">₹{course.originalPrice.toLocaleString()}</div>
+                      {course.savings > 0 && (
+                        <div className="text-[10px] font-bold uppercase text-red-500 bg-red-50 px-2 py-0.5 mb-1 border border-red-200 rounded-full flex items-center gap-1">
+                          <Target size={10} /> Save ₹{course.savings.toLocaleString()}
+                        </div>
+                      )}
+                      {course.originalPrice > course.price && (
+                        <div className="text-xs text-gray-400 line-through">₹{course.originalPrice.toLocaleString()}</div>
+                      )}
                       <div className="text-xl font-black text-primary-dark">₹{course.price.toLocaleString()}</div>
                     </div>
 

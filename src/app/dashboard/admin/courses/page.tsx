@@ -1,10 +1,11 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import {
   Plus, Search, Edit, Trash2, Loader2, X,
   ExternalLink, Calendar, Tag, Layers, IndianRupee,
+  Star, ImageIcon, Clock,
 } from 'lucide-react'
 import { PageHeader, StatusBadge } from '@/components/dashboard/DashboardUI'
 import { createClient } from '@/lib/supabase/client'
@@ -26,8 +27,22 @@ type Course = {
   end_date?: string
   batch_start_date?: string
   enrollment_limit?: number
+  display_order?: number
+  is_featured?: boolean
+  tags?: string[]
+  thumbnail_url?: string
+  color_theme?: string
   tech_stack?: string[]
   enrollments?: { count: number }[]
+}
+
+type UnsplashImage = {
+  id: string
+  thumb: string
+  full: string
+  alt: string
+  credit: string
+  creditUrl: string
 }
 
 const CATEGORIES = [
@@ -94,8 +109,24 @@ export default function CoursesPage() {
     end_date: '',
     batch_start_date: '',
     enrollment_limit: '',
+    display_order: '',
     tech_stack: '',
+    thumbnail: '',
+    is_featured: false,
+    tags: [] as string[],
   })
+
+  // Tags input — chip entry + debounced auto-suggest from /api/course-tags
+  const [tagInput, setTagInput] = useState('')
+  const [tagSuggestions, setTagSuggestions] = useState<string[]>([])
+  const [showTagSuggestions, setShowTagSuggestions] = useState(false)
+  const tagDebounce = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  // Image search picker (Unsplash via /api/images/search)
+  const [imageQuery, setImageQuery] = useState('')
+  const [imageResults, setImageResults] = useState<UnsplashImage[]>([])
+  const [imageSearching, setImageSearching] = useState(false)
+  const [imageError, setImageError] = useState('')
 
   const showToast = (message: string, type: 'success' | 'error') =>
     setToast({ message, type })
@@ -120,6 +151,15 @@ export default function CoursesPage() {
       categoryLabel(c.category).toLowerCase().includes(search.toLowerCase())
   )
 
+  const resetImageAndTagState = () => {
+    setTagInput('')
+    setTagSuggestions([])
+    setShowTagSuggestions(false)
+    setImageQuery('')
+    setImageResults([])
+    setImageError('')
+  }
+
   const openCreate = () => {
     setEditCourse(null)
     setForm({
@@ -136,8 +176,13 @@ export default function CoursesPage() {
       end_date: '',
       batch_start_date: '',
       enrollment_limit: '',
+      display_order: '',
       tech_stack: '',
+      thumbnail: '',
+      is_featured: false,
+      tags: [],
     })
+    resetImageAndTagState()
     setShowModal(true)
   }
 
@@ -159,8 +204,14 @@ export default function CoursesPage() {
       enrollment_limit: course.enrollment_limit
         ? String(course.enrollment_limit)
         : '',
+      display_order:
+        course.display_order != null ? String(course.display_order) : '',
       tech_stack: (course.tech_stack || []).join(', '),
+      thumbnail: course.thumbnail_url || '',
+      is_featured: !!course.is_featured,
+      tags: course.tags || [],
     })
+    resetImageAndTagState()
     setShowModal(true)
   }
 
@@ -194,7 +245,11 @@ export default function CoursesPage() {
         enrollment_limit: form.enrollment_limit
           ? parseInt(form.enrollment_limit)
           : null,
+        display_order: form.display_order ? parseInt(form.display_order) : 0,
         tech_stack: techArr.length > 0 ? techArr : null,
+        tags: form.tags,
+        thumbnail: form.thumbnail || null,
+        is_featured: form.is_featured,
       }
       const url = editCourse
         ? `/api/courses/${editCourse.id}`
@@ -218,6 +273,86 @@ export default function CoursesPage() {
       loadCourses()
     } finally {
       setSaving(false)
+    }
+  }
+
+  // ── Tags ────────────────────────────────────────────────────────────
+  const addTag = (raw: string) => {
+    const tag = raw.trim().replace(/,$/, '').trim()
+    if (!tag) return
+    setForm((f) =>
+      f.tags.some((t) => t.toLowerCase() === tag.toLowerCase())
+        ? f
+        : { ...f, tags: [...f.tags, tag] }
+    )
+    setTagInput('')
+    setTagSuggestions([])
+    setShowTagSuggestions(false)
+  }
+
+  const removeTag = (tag: string) =>
+    setForm((f) => ({ ...f, tags: f.tags.filter((t) => t !== tag) }))
+
+  const onTagInputChange = (value: string) => {
+    // Adding via comma — split immediately.
+    if (value.includes(',')) {
+      value.split(',').forEach((part) => part.trim() && addTag(part))
+      return
+    }
+    setTagInput(value)
+    if (tagDebounce.current) clearTimeout(tagDebounce.current)
+    const q = value.trim()
+    if (!q) {
+      setTagSuggestions([])
+      setShowTagSuggestions(false)
+      return
+    }
+    tagDebounce.current = setTimeout(async () => {
+      try {
+        const res = await fetch(`/api/course-tags?q=${encodeURIComponent(q)}`)
+        const json = await res.json()
+        const suggestions: string[] = (json.data || []).filter(
+          (t: string) => !form.tags.some((ex) => ex.toLowerCase() === t.toLowerCase())
+        )
+        setTagSuggestions(suggestions)
+        setShowTagSuggestions(suggestions.length > 0)
+      } catch {
+        setTagSuggestions([])
+        setShowTagSuggestions(false)
+      }
+    }, 250)
+  }
+
+  const onTagKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' || e.key === ',') {
+      e.preventDefault()
+      if (tagInput.trim()) addTag(tagInput)
+    } else if (e.key === 'Backspace' && !tagInput && form.tags.length > 0) {
+      removeTag(form.tags[form.tags.length - 1])
+    }
+  }
+
+  // ── Image search (Unsplash) ─────────────────────────────────────────
+  const searchImages = async () => {
+    const q = imageQuery.trim()
+    if (!q) return
+    setImageSearching(true)
+    setImageError('')
+    try {
+      const res = await fetch(`/api/images/search?q=${encodeURIComponent(q)}`)
+      const json = await res.json()
+      if (json.error) {
+        setImageError(json.error)
+        setImageResults([])
+      } else {
+        setImageResults(json.data || [])
+        if ((json.data || []).length === 0) setImageError('No images found.')
+      }
+    } catch {
+      setImageError('Image search failed. Please try again.')
+      setImageResults([])
+    } finally {
+      setImageSearching(false)
     }
   }
 
@@ -400,7 +535,7 @@ export default function CoursesPage() {
       {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl w-full max-w-lg shadow-lg max-h-[90vh] overflow-y-auto">
+          <div className="bg-white rounded-2xl w-full max-w-5xl shadow-lg max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between p-6 border-b border-gray-200">
               <h2 className="text-lg font-bold text-primary">
                 {editCourse ? 'Edit Course' : 'New Course'}
@@ -412,7 +547,9 @@ export default function CoursesPage() {
                 <X size={20} className="text-foreground/40" />
               </button>
             </div>
-            <div className="p-6 space-y-4">
+            <div className="grid lg:grid-cols-2 gap-6 p-6">
+              {/* ── FORM COLUMN ── */}
+              <div className="space-y-4">
               {/* Title */}
               <div>
                 <label className="block text-xs font-semibold text-foreground/60 mb-1.5 uppercase tracking-wide">
@@ -654,6 +791,282 @@ export default function CoursesPage() {
                   className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#35C8E0]/30 focus:border-[#35C8E0] transition-all"
                   placeholder="React, Node.js, PostgreSQL (comma-separated)"
                 />
+              </div>
+
+              {/* Tags (chips + auto-suggest) */}
+              <div>
+                <label className="block text-xs font-semibold text-foreground/60 mb-1.5 uppercase tracking-wide">
+                  Tags
+                </label>
+                {form.tags.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5 mb-2">
+                    {form.tags.map((tag) => (
+                      <span
+                        key={tag}
+                        className="inline-flex items-center gap-1 text-xs font-semibold text-primary bg-[#35C8E0]/10 px-2.5 py-1 rounded-full"
+                      >
+                        {tag}
+                        <button
+                          type="button"
+                          onClick={() => removeTag(tag)}
+                          className="hover:text-red-500 transition-colors"
+                          aria-label={`Remove ${tag}`}
+                        >
+                          <X size={11} />
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={tagInput}
+                    onChange={(e) => onTagInputChange(e.target.value)}
+                    onKeyDown={onTagKeyDown}
+                    onFocus={() =>
+                      setShowTagSuggestions(tagSuggestions.length > 0)
+                    }
+                    onBlur={() =>
+                      setTimeout(() => setShowTagSuggestions(false), 150)
+                    }
+                    className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#35C8E0]/30 focus:border-[#35C8E0] transition-all"
+                    placeholder="Type a tag, press Enter or comma to add"
+                  />
+                  {showTagSuggestions && tagSuggestions.length > 0 && (
+                    <div className="absolute z-10 left-0 right-0 mt-1 bg-white border border-gray-200 rounded-xl shadow-lg max-h-44 overflow-y-auto">
+                      {tagSuggestions.map((s) => (
+                        <button
+                          key={s}
+                          type="button"
+                          onMouseDown={(e) => {
+                            e.preventDefault()
+                            addTag(s)
+                          }}
+                          className="w-full text-left px-3 py-2 text-sm hover:bg-[#35C8E0]/10 transition-colors flex items-center gap-2"
+                        >
+                          <Tag size={12} className="text-foreground/40" />
+                          {s}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Thumbnail: manual URL + image search picker */}
+              <div>
+                <label className="block text-xs font-semibold text-foreground/60 mb-1.5 uppercase tracking-wide">
+                  Thumbnail URL
+                </label>
+                <input
+                  type="text"
+                  value={form.thumbnail}
+                  onChange={(e) =>
+                    setForm((f) => ({ ...f, thumbnail: e.target.value }))
+                  }
+                  className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#35C8E0]/30 focus:border-[#35C8E0] transition-all"
+                  placeholder="https://… or use search below"
+                />
+                <div className="mt-2 flex gap-2">
+                  <div className="relative flex-1">
+                    <ImageIcon
+                      size={15}
+                      className="absolute left-3 top-1/2 -translate-y-1/2 text-foreground/40"
+                    />
+                    <input
+                      type="text"
+                      value={imageQuery}
+                      onChange={(e) => setImageQuery(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault()
+                          searchImages()
+                        }
+                      }}
+                      className="w-full pl-9 pr-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#35C8E0]/30 focus:border-[#35C8E0] transition-all"
+                      placeholder="Search free images (Unsplash)…"
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={searchImages}
+                    disabled={imageSearching || !imageQuery.trim()}
+                    className="px-4 py-2.5 rounded-xl text-sm font-semibold bg-primary text-white hover:bg-primary/90 transition-colors disabled:opacity-50 shrink-0 flex items-center gap-1.5"
+                  >
+                    {imageSearching ? (
+                      <Loader2 size={14} className="animate-spin" />
+                    ) : (
+                      <Search size={14} />
+                    )}
+                    Search
+                  </button>
+                </div>
+                {imageError && (
+                  <p className="text-xs text-red-500 mt-2">{imageError}</p>
+                )}
+                {imageResults.length > 0 && (
+                  <div className="grid grid-cols-3 gap-2 mt-2 max-h-48 overflow-y-auto p-0.5">
+                    {imageResults.map((img) => (
+                      <button
+                        key={img.id}
+                        type="button"
+                        onClick={() =>
+                          setForm((f) => ({ ...f, thumbnail: img.full }))
+                        }
+                        title={`${img.alt} — ${img.credit}`}
+                        className={`relative aspect-video rounded-lg overflow-hidden border-2 transition-all ${
+                          form.thumbnail === img.full
+                            ? 'border-[#35C8E0] ring-2 ring-[#35C8E0]/30'
+                            : 'border-transparent hover:border-gray-300'
+                        }`}
+                      >
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={img.thumb}
+                          alt={img.alt}
+                          className="w-full h-full object-cover"
+                        />
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Display Order + Featured */}
+              <div className="grid grid-cols-2 gap-3 items-end">
+                <div>
+                  <label className="block text-xs font-semibold text-foreground/60 mb-1.5 uppercase tracking-wide">
+                    Display Order
+                  </label>
+                  <input
+                    type="number"
+                    value={form.display_order}
+                    onChange={(e) =>
+                      setForm((f) => ({
+                        ...f,
+                        display_order: e.target.value,
+                      }))
+                    }
+                    className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#35C8E0]/30 focus:border-[#35C8E0] transition-all"
+                    placeholder="0"
+                  />
+                  <p className="text-[10px] text-foreground/40 mt-1">
+                    Lower = earlier on homepage / listing
+                  </p>
+                </div>
+                <label className="flex items-center gap-2.5 border border-gray-200 rounded-xl px-3 py-2.5 cursor-pointer hover:bg-gray-50 transition-colors">
+                  <input
+                    type="checkbox"
+                    checked={form.is_featured}
+                    onChange={(e) =>
+                      setForm((f) => ({
+                        ...f,
+                        is_featured: e.target.checked,
+                      }))
+                    }
+                    className="h-4 w-4 rounded accent-[#1A9AB5]"
+                  />
+                  <span className="text-sm font-semibold text-foreground/70 flex items-center gap-1.5">
+                    <Star size={14} className="text-amber-500" />
+                    Featured on homepage
+                  </span>
+                </label>
+              </div>
+              </div>
+
+              {/* ── LIVE PREVIEW COLUMN ── */}
+              <div className="lg:sticky lg:top-0 lg:self-start">
+                <p className="text-xs font-semibold text-foreground/60 mb-2 uppercase tracking-wide">
+                  Live Preview
+                </p>
+                <div className="rounded-2xl border-2 border-primary-dark/80 overflow-hidden bg-white shadow-[6px_6px_0px_rgba(0,0,0,0.12)]">
+                  {/* Thumbnail / banner */}
+                  <div className="relative aspect-video bg-gradient-to-br from-[#35C8E0]/30 to-[#1A9AB5]/40">
+                    {form.thumbnail ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={form.thumbnail}
+                        alt={form.title || 'Course thumbnail'}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-white/70">
+                        <ImageIcon size={40} />
+                      </div>
+                    )}
+                    {form.is_featured && (
+                      <span className="absolute top-3 left-3 inline-flex items-center gap-1 bg-amber-500 text-white text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full border-2 border-black shadow-[2px_2px_0px_rgba(0,0,0,1)]">
+                        <Star size={11} className="fill-white" /> Featured
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Body */}
+                  <div className="p-5">
+                    <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-primary bg-[#35C8E0]/10 px-2.5 py-1 rounded-full mb-3">
+                      <Layers size={11} />
+                      {categoryLabel(form.category)}
+                    </span>
+                    <h3 className="text-lg font-black text-primary-dark leading-tight mb-2">
+                      {form.title || 'Course title'}
+                    </h3>
+                    {form.description && (
+                      <p className="text-sm text-foreground/60 leading-relaxed mb-3 line-clamp-3">
+                        {form.description}
+                      </p>
+                    )}
+
+                    {/* Price */}
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="inline-flex items-center text-xl font-black text-primary-dark">
+                        <IndianRupee size={16} />
+                        {Number(
+                          (form.offer_price ? parseFloat(form.offer_price) : 0) ||
+                            parseFloat(form.price) ||
+                            0
+                        ).toLocaleString('en-IN')}
+                      </span>
+                      {form.original_price &&
+                        parseFloat(form.original_price) >
+                          (parseFloat(form.offer_price) ||
+                            parseFloat(form.price) ||
+                            0) && (
+                          <span className="text-sm text-foreground/40 line-through">
+                            ₹
+                            {Number(
+                              parseFloat(form.original_price)
+                            ).toLocaleString('en-IN')}
+                          </span>
+                        )}
+                    </div>
+
+                    {/* Duration */}
+                    {form.duration && (
+                      <span className="inline-flex items-center gap-1 text-xs text-foreground/60 bg-gray-100 px-2.5 py-1 rounded-full mb-3">
+                        <Clock size={11} />
+                        {form.duration}
+                      </span>
+                    )}
+
+                    {/* Tags */}
+                    {form.tags.length > 0 && (
+                      <div className="flex flex-wrap gap-1.5 mt-3">
+                        {form.tags.map((tag) => (
+                          <span
+                            key={tag}
+                            className="text-[11px] font-semibold text-foreground/70 bg-gray-100 px-2.5 py-1 rounded-full"
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <p className="text-[10px] text-foreground/40 mt-2 text-center">
+                  Approximate preview of the public course card.
+                </p>
               </div>
             </div>
 
