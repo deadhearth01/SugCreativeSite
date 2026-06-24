@@ -1,5 +1,8 @@
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { NextRequest, NextResponse } from 'next/server'
+import { sendBatchEmails } from '@/lib/email/client'
+import { announcementEmail } from '@/lib/email/templates'
 
 const ALL_ROLES = ['admin', 'student', 'client', 'mentor', 'employee', 'intern']
 
@@ -67,6 +70,28 @@ export async function POST(req: NextRequest) {
       .single()
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+
+    // Email the targeted recipients (best-effort; never fails the request).
+    try {
+      const admin = createAdminClient()
+      const { data: recipients } = await admin
+        .from('profiles')
+        .select('email, full_name')
+        .in('role', resolvedRoles)
+        .eq('status', 'active')
+
+      const valid = (recipients || []).filter((r) => r.email)
+      if (valid.length > 0) {
+        const emails = valid.map((r) => {
+          const tpl = announcementEmail({ title, content, recipientName: r.full_name })
+          return { to: r.email as string, subject: tpl.subject, html: tpl.html, text: tpl.text }
+        })
+        await sendBatchEmails(emails)
+      }
+    } catch (mailErr) {
+      console.error('POST /api/announcements email error (non-fatal):', mailErr)
+    }
+
     return NextResponse.json({ data }, { status: 201 })
   } catch (err) {
     console.error('POST /api/announcements error:', err)

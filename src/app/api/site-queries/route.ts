@@ -1,6 +1,8 @@
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { NextRequest, NextResponse } from 'next/server'
+import { sendEmail } from '@/lib/email/client'
+import { enquiryAckEmail, enquiryAdminEmail } from '@/lib/email/templates'
 
 // GET — List all site queries (admin only)
 export async function GET(_req: NextRequest) {
@@ -51,6 +53,22 @@ export async function POST(req: NextRequest) {
       .single()
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+
+    // Fire-and-forget notifications: acknowledge the submitter + alert admin.
+    // Never block or fail the request on email errors (helpers are no-op safe).
+    try {
+      const ack = enquiryAckEmail({ name, subject })
+      await sendEmail({ to: email, subject: ack.subject, html: ack.html, text: ack.text })
+
+      const adminEmail = process.env.ADMIN_NOTIFY_EMAIL
+      if (adminEmail) {
+        const note = enquiryAdminEmail({ name, email, phone, subject, message })
+        await sendEmail({ to: adminEmail, subject: note.subject, html: note.html, text: note.text, replyTo: email })
+      }
+    } catch (mailErr) {
+      console.error('POST /api/site-queries email error (non-fatal):', mailErr)
+    }
+
     return NextResponse.json({ data }, { status: 201 })
   } catch (err) {
     console.error('POST /api/site-queries error:', err)

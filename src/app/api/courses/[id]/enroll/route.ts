@@ -1,5 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
+import { sendEmail } from '@/lib/email/client'
+import { enrollmentEmail } from '@/lib/email/templates'
 
 // POST — Enroll in a course (students only)
 export async function POST(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -62,6 +64,24 @@ export async function POST(_req: NextRequest, { params }: { params: Promise<{ id
       .single()
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+
+    // Enrollment confirmation email (best-effort; never fails the request).
+    try {
+      if (user.email) {
+        const [{ data: courseRow }, { data: studentRow }] = await Promise.all([
+          supabase.from('courses').select('title').eq('id', courseId).single(),
+          supabase.from('profiles').select('full_name').eq('id', user.id).single(),
+        ])
+        const tpl = enrollmentEmail({
+          studentName: studentRow?.full_name,
+          courseTitle: courseRow?.title || 'your course',
+        })
+        await sendEmail({ to: user.email, subject: tpl.subject, html: tpl.html, text: tpl.text })
+      }
+    } catch (mailErr) {
+      console.error('POST /api/courses/[id]/enroll email error (non-fatal):', mailErr)
+    }
+
     return NextResponse.json({ data }, { status: 201 })
   } catch (err) {
     console.error('POST /api/courses/[id]/enroll error:', err)
