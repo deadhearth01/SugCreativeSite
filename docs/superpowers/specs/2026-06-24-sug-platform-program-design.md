@@ -49,10 +49,16 @@ Also update the **navbar** services dropdown (`Navbar.tsx` ~36–44 and `menuIte
 and put **Study Abroad at the top**. `/business-solutions` B2B page stays as-is.
 
 **A4. Video testimonials in Success Stories** — `page.tsx` ~469–520. Add a video testimonials block.
-**Resolved:** you'll provide **hosted links** (the local `public/video-testimonials/` files are too large to
-serve — 233 MB / 85 MB). Embed each via `<video preload="none" poster=…>` (or an `<iframe>` if the links are
-YouTube/Vimeo), lazy-loaded, with poster thumbnails. ⏳ Waiting on the list of hosted URLs (+ name/company/role
-per video) before this ships.
+**Resolved:** hosted on Wix CDN as **direct MP4s** — embed via `<video preload="none" poster=…>`,
+lazy-loaded with poster thumbnails. Provided URLs:
+```
+https://video.wixstatic.com/video/69c361_864274892b1f4455a9e2fb5bce5c07c0/1080p/mp4/file.mp4
+https://video.wixstatic.com/video/69c361_f88da60a4eb24075b72619535076f563/1080p/mp4/file.mp4
+https://video.wixstatic.com/video/69c361_d42d0ac132a746b1a3f34ce9b4dcfc75/480p/mp4/file.mp4
+https://video.wixstatic.com/video/69c361_6a2c8d7fc82b4e96ad29cd8bed2d85ca/1080p/mp4/file.mp4
+https://video.wixstatic.com/video/69c361_c762bf2369b94185a7e28cdbd1562b16/1080p/mp4/file.mp4
+```
+⏳ Still need **name / company / role** per video for the captions (can ship with generic captions and fill in later).
 
 **A5. Business Solutions animations** — `business-solutions/page.tsx`. Add an animated **client-logo marquee**
 (reuse existing `LogoLoop`) + animate the client photo testimonials (`clientTestimonials` ~202, rendered ~629)
@@ -207,7 +213,7 @@ Internal messaging migration (`20260504_messaging.sql`), stray root scratch file
 Abroad = **re-skin to SUG green theme**. Build order = **Phase 1 quick wins first**.
 
 **Still needed before their phase starts (non-blocking for Phase 1):**
-- **Q-A (Phase 7):** the hosted video URLs + name/company/role per testimonial.
+- **Q-A (Phase 7):** ✅ video URLs received (5 Wix MP4s). Still need name/company/role per video for captions.
 - **Q-B (Phase 4 / D4):** image provider — **Unsplash** (recommended) or Pexels? Can you obtain the free API key?
 - **Q-C (Phase 5 / F):** confirm the role-ID scheme in §F (EMP/INT/STU/MEN/CLI 6-digit, `SUG-ADM` for admin).
 - **Q-D (Phase 6 / E):** certificate branding — rebrand to **SUG Creative** or keep **"Young Compete"** as a
