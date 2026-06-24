@@ -14,6 +14,7 @@ import { createPortal } from 'react-dom'
 
 type Profile = {
   id: string
+  display_id: string | null
   full_name: string
   username: string | null
   email: string
@@ -368,6 +369,7 @@ export default function UsersPage() {
     const matchSearch = !q ||
       (u.full_name || '').toLowerCase().includes(q) ||
       u.email.toLowerCase().includes(q) ||
+      (u.display_id || '').toLowerCase().includes(q) ||
       (u.tags || []).some(t => t.toLowerCase().includes(q))
     const matchRole = filterRole === 'all' || u.role === filterRole
     const matchStatus = filterStatus === 'all' || u.status === filterStatus
@@ -501,12 +503,13 @@ export default function UsersPage() {
 
   // ─── Approve / Reject signup request ──────────────────────────────────────
   const handleApproveUser = async (id: string) => {
-    const supabase = createClient()
-    const { error } = await supabase.from('profiles').update({ status: 'active' }).eq('id', id)
-    if (error) {
-      setToast({ type: 'error', message: error.message })
+    // Use the approve route so the user gets an approval email (server-side).
+    const res = await fetch(`/api/admin/users/${id}/approve`, { method: 'POST' })
+    const result = await res.json()
+    if (!res.ok) {
+      setToast({ type: 'error', message: result.error || 'Failed to approve user' })
     } else {
-      setToast({ type: 'success', message: 'User approved successfully' })
+      setToast({ type: 'success', message: 'User approved — approval email sent' })
       await loadUsers()
     }
   }
@@ -751,8 +754,13 @@ export default function UsersPage() {
                           {((u.full_name || u.email).split(/\s+/).map(n => n[0]).join('').slice(0, 2) || '?').toUpperCase()}
                         </div>
                         <div className="min-w-0">
-                          <p className="font-medium text-primary truncate">
+                          <p className="font-medium text-primary truncate flex items-center gap-2">
                             {u.full_name || <span className="italic text-foreground/40">No name yet</span>}
+                            {u.display_id && (
+                              <span className="text-[10px] font-mono font-bold text-[#1A9AB5] bg-[#35C8E0]/10 border border-[#35C8E0]/30 rounded px-1.5 py-0.5 shrink-0">
+                                {u.display_id}
+                              </span>
+                            )}
                           </p>
                           {u.username ? (
                             <p className="text-[11px] font-mono font-semibold text-[#5B8E2A] truncate">

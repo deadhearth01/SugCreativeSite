@@ -60,19 +60,17 @@ function LoginContent() {
 
     try {
       if (isSignUp) {
-        // Sign up - role will be set to 'student' by default for new users
-        const { error: signUpError } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            data: {
-              full_name: fullName,
-              role: 'student', // Default role for new signups
-            },
-          },
+        // New flow: submit a signup REQUEST (no Supabase verification email).
+        // The server pre-confirms the email and marks the profile pending;
+        // the user can only log in after an admin approves the request.
+        const res = await fetch('/api/auth/signup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password, full_name: fullName }),
         })
-        if (signUpError) throw signUpError
-        setError('Check your email for the confirmation link!')
+        const result = await res.json()
+        if (!res.ok) throw new Error(result.error || 'Signup failed')
+        setError(result.message || 'Your signup request has been submitted for admin approval.')
       } else {
         // Sign in - auto-detect role from database
         const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
@@ -82,12 +80,24 @@ function LoginContent() {
         if (signInError) throw signInError
 
         if (signInData.user) {
-          // Fetch user's profile to get role and username
+          // Fetch user's profile to get role, status, and username
           const { data: profile } = await supabase
             .from('profiles')
-            .select('role, username')
+            .select('role, username, status')
             .eq('id', signInData.user.id)
             .single()
+
+          // Block sign-in until an admin approves a pending request.
+          if (profile?.status === 'pending') {
+            await supabase.auth.signOut()
+            setError('Your account is awaiting admin approval. You\'ll get an email once it\'s approved.')
+            return
+          }
+          if (profile?.status === 'banned' || profile?.status === 'inactive') {
+            await supabase.auth.signOut()
+            setError('Your account is not active. Please contact support.')
+            return
+          }
 
           if (!profile?.role) {
             // No profile found - shouldn't happen but handle gracefully
