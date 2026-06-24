@@ -1,6 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
-import { mapCoursePayload } from '@/lib/courses'
+import { mapCoursePayload, revalidateCoursePaths } from '@/lib/courses'
 
 // GET — Single course
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -45,6 +45,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       .single()
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    await revalidateCoursePaths()
     return NextResponse.json({ data })
   } catch (err) {
     console.error('PATCH /api/courses/[id] error:', err)
@@ -65,6 +66,7 @@ export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ 
 
     const { error } = await supabase.from('courses').delete().eq('id', id)
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    await revalidateCoursePaths()
     return NextResponse.json({ success: true })
   } catch (err) {
     console.error('DELETE /api/courses/[id] error:', err)

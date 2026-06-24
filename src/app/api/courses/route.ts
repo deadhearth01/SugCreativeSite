@@ -1,6 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
-import { mapCoursePayload as mapCoursePayloadLib, slugify as slugifyLib } from '@/lib/courses'
+import { mapCoursePayload as mapCoursePayloadLib, slugify as slugifyLib, revalidateCoursePaths } from '@/lib/courses'
 
 // GET — List all courses (public for active, auth required for all statuses)
 export async function GET(req: NextRequest) {
@@ -111,6 +111,7 @@ export async function POST(req: NextRequest) {
       .single()
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    await revalidateCoursePaths()
     return NextResponse.json({ data }, { status: 201 })
   } catch (err) {
     console.error('POST /api/courses error:', err)
