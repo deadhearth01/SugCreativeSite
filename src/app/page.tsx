@@ -172,10 +172,10 @@ export default function HomePage() {
       <Navbar />
 
       {/* ═══ HERO ═══ */}
-      <section className="min-h-screen flex bg-white overflow-hidden pb-24 md:pb-32">
+      <section className="min-h-screen flex bg-white overflow-hidden pb-12 md:pb-16">
 
         {/* ── Left: content column ── */}
-        <div className="relative z-10 w-full lg:w-[45%] flex flex-col justify-end px-6 sm:px-10 lg:pl-16 lg:pr-8 pt-24 pb-20 lg:pt-24 lg:pb-24 flex-shrink-0">
+        <div className="relative z-10 w-full lg:w-[45%] flex flex-col justify-end px-6 sm:px-10 lg:pl-16 lg:pr-8 pt-24 pb-10 lg:pt-24 lg:pb-12 flex-shrink-0">
 
           {/* Headline — static + rotating word + static */}
           <h1 className="font-heading font-black text-primary-dark tracking-tight mb-6">
