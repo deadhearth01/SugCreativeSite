@@ -36,7 +36,7 @@ const navLinks: NavLink[] = [
     href: '/services',
     label: 'Services',
     subItems: [
-      { href: '/services#study-abroad', label: 'Study Abroad', icon: Plane, desc: 'Global education & admissions' },
+      { href: '/services/study-abroad', label: 'Study Abroad', icon: Plane, desc: 'Global education & admissions' },
       { href: '/services#trainings', label: 'Trainings', icon: GraduationCap, desc: 'Job-ready, hands-on programs' },
       { href: '/services#career-services', label: 'Student Career Services', icon: Briefcase, desc: 'Resume, interviews & placement' },
       { href: '/services#edu-services', label: 'Edu Services', icon: BookOpen, desc: 'LMS, content & partnerships' },

@@ -152,7 +152,7 @@ const courses = [
 
 // Service pillars — Study Abroad leads. Links jump to the matching /services anchor.
 const servicePillars = [
-  { Icon: Plane, title: 'Study Abroad', desc: 'Global education & overseas admissions', href: '/services#study-abroad' },
+  { Icon: Plane, title: 'Study Abroad', desc: 'Global education & overseas admissions', href: '/services/study-abroad' },
   { Icon: GraduationCap, title: 'Trainings', desc: 'Industry-led professional training', href: '/services#trainings' },
   { Icon: Briefcase, title: 'Student Career Services', desc: 'Resume, interviews & placement support', href: '/services#career-services' },
   { Icon: BookOpen, title: 'Edu Services', desc: 'Curriculum & ed-tech solutions', href: '/services#edu-services' },
