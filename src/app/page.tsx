@@ -213,6 +213,7 @@ type CourseCard = {
   color: string
   tech: string[]
   Icon: typeof Server
+  duration?: string
 }
 
 // Minimal shape of a course row returned by /api/courses
@@ -228,6 +229,7 @@ type DbCourse = {
   color_theme?: string | null
   tech_stack?: string[] | null
   tags?: string[] | null
+  duration_text?: string | null
   display_order?: number | null
   is_featured?: boolean | null
 }
@@ -258,6 +260,7 @@ function mapDbCourse(c: DbCourse): CourseCard {
     color,
     tech: (c.tech_stack && c.tech_stack.length > 0 ? c.tech_stack : c.tags) || [],
     Icon: (c.category && categoryIcons[c.category]) || GraduationCap,
+    duration: c.duration_text || undefined,
   }
 }
 
@@ -483,7 +486,7 @@ export default function HomePage() {
                         <IconComponent size={28} />
                       </div>
                       <div className="bg-white text-primary-dark font-black text-[10px] uppercase tracking-widest px-3 py-1.5 border-2 border-black text-center">
-                        3 Months
+                        {course.duration || '3 Months'}
                       </div>
                     </div>
 
