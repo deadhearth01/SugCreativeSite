@@ -42,10 +42,25 @@ import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import AnimatedSection from '@/components/AnimatedSection'
 import { Button } from '@/components/ui/button'
+import { LogoLoop } from '@/components/LogoLoop'
 
 /* ──────────────────────────────────────────────
    DATA
    ────────────────────────────────────────────── */
+
+const clientLogos = [
+  { src: '/companyPlacementLogo/google.png', alt: 'Google' },
+  { src: '/companyPlacementLogo/bosch.png', alt: 'Bosch' },
+  { src: '/companyPlacementLogo/accenture.png', alt: 'Accenture' },
+  { src: '/companyPlacementLogo/tcs.png', alt: 'TCS' },
+  { src: '/companyPlacementLogo/capgemini.png', alt: 'Capgemini' },
+  { src: '/companyPlacementLogo/verizon.png', alt: 'Verizon' },
+  { src: '/companyPlacementLogo/watchGuard.png', alt: 'WatchGuard' },
+  { src: '/companyPlacementLogo/coforge.png', alt: 'Coforge' },
+  { src: '/companyPlacementLogo/icic.png', alt: 'ICICI' },
+  { src: '/companyPlacementLogo/muSigma.png', alt: 'Mu Sigma' },
+  { src: '/companyPlacementLogo/vi.png', alt: 'Vi' },
+]
 
 const services = [
   {
@@ -609,6 +624,16 @@ export default function BusinessSolutionsPage() {
         </div>
       </section>
 
+      {/* ═══ OUR CLIENTS MARQUEE ═══ */}
+      <section className="bg-white border-y-2 border-black/10 py-12">
+        <div className="container-wide">
+          <AnimatedSection>
+            <p className="text-center text-xs font-black uppercase tracking-widest text-primary-dark/40 mb-8">Our Clients</p>
+            <LogoLoop logos={clientLogos} />
+          </AnimatedSection>
+        </div>
+      </section>
+
       {/* ═══════════════════════════════════════
           8. CLIENT TESTIMONIALS
           ═══════════════════════════════════════ */}
@@ -628,7 +653,7 @@ export default function BusinessSolutionsPage() {
           <div className="grid md:grid-cols-3 gap-8">
             {clientTestimonials.map((t, i) => (
               <AnimatedSection key={t.name} delay={i * 0.1}>
-                <div className="bg-white border-2 border-black rounded-3xl shadow-[8px_8px_0px_rgba(0,0,0,1)] p-8 h-full flex flex-col hover:-translate-y-1 transition-all duration-300">
+                <div className="group bg-white border-2 border-black rounded-3xl shadow-[8px_8px_0px_rgba(0,0,0,1)] p-8 h-full flex flex-col hover:-translate-y-1 hover:shadow-[10px_10px_0px_rgba(0,0,0,1)] transition-all duration-300">
                   {/* Stars */}
                   <div className="flex items-center gap-1 mb-4">
                     {[1, 2, 3, 4, 5].map((s) => (
@@ -644,7 +669,7 @@ export default function BusinessSolutionsPage() {
 
                   <div className="flex items-center gap-4 pt-6 border-t-2 border-primary-dark/10">
                     <div className="w-12 h-12 rounded-full border-2 border-black overflow-hidden">
-                      <img src={t.image} alt={t.name} className="w-full h-full object-cover" />
+                      <img src={t.image} alt={t.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                     </div>
                     <div>
                       <p className="font-black text-primary-dark text-sm">{t.name}</p>
