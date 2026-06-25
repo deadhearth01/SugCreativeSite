@@ -72,7 +72,7 @@ const roleTabs: Record<string, { key: string; label: string; icon: React.ReactNo
     { key: 'overview', label: 'Overview', icon: <User size={18} /> },
     { key: 'sessions', label: 'Sessions', icon: <Users size={18} /> },
     { key: 'students', label: 'Assigned Students', icon: <GraduationCap size={18} /> },
-    { key: 'earnings', label: 'Earnings', icon: <DollarSign size={18} /> },
+    { key: 'payments', label: 'Payments', icon: <DollarSign size={18} /> },
     { key: 'resources', label: 'Resources', icon: <FileText size={18} /> },
   ],
   employee: [
@@ -739,13 +739,13 @@ export default function UserDetailPage() {
           )}
 
           {/* Payments — salary/stipend + payslip generation (employee/intern/student) */}
-          {activeTab === 'payments' && ['employee', 'intern', 'student'].includes(user.role) && (
+          {activeTab === 'payments' && ['employee', 'intern', 'student', 'mentor'].includes(user.role) && (
             <UserPaymentsTab user={user} onUserUpdate={(u) => setUser(u)} />
           )}
 
           {/* Default content for other tabs */}
           {!['overview', 'courses', 'tasks', 'attendance', 'projects', 'security', 'activity'].includes(activeTab) &&
-            !(activeTab === 'payments' && ['employee', 'intern', 'student'].includes(user.role)) && (
+            !(activeTab === 'payments' && ['employee', 'intern', 'student', 'mentor'].includes(user.role)) && (
             <div className="bg-white border border-border rounded-xl p-8 text-center">
               <div className="w-16 h-16 rounded-xl bg-off-white flex items-center justify-center mx-auto mb-4">
                 <FileText size={24} className="text-foreground/30" />

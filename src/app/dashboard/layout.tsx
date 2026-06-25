@@ -24,6 +24,7 @@ import {
   BarChart3,
   Menu,
   X,
+  Search,
   LogOut,
   ChevronLeft,
   ChevronRight,
@@ -262,6 +263,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const pathname = usePathname()
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
+  const [navSearch, setNavSearch] = useState('')
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
@@ -270,6 +272,18 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const navItems = roleNavItems[role] || roleNavItems.admin
   const bottomItems = roleBottomItems[role] || []
   const allItems = [...navItems, ...bottomItems]
+
+  // Sidebar quick-search: filter nav options by label.
+  const q = navSearch.trim().toLowerCase()
+  const searching = q.length > 0
+  const matches = (label: string) => label.toLowerCase().includes(q)
+  const filteredNavItems = searching ? navItems.filter(i => matches(i.label)) : navItems
+  const filteredBottomItems = searching ? bottomItems.filter(i => matches(i.label)) : bottomItems
+  const filteredAdminGroups = searching
+    ? adminNavGroups
+        .map(g => ({ ...g, items: g.items.filter(i => matches(i.label)) }))
+        .filter(g => g.items.length > 0)
+    : adminNavGroups
 
   // Admin-only: collapsible nav-group open state. Persisted in localStorage.
   // The group containing the current page is auto-expanded on first load.
@@ -368,12 +382,40 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         )}
       </div>
 
+      {/* Sidebar quick-search */}
+      {(!sidebarCollapsed || mobile) && (
+        <div className="px-3 pt-3">
+          <div className="relative">
+            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/35" />
+            <input
+              type="text"
+              value={navSearch}
+              onChange={(e) => setNavSearch(e.target.value)}
+              placeholder="Search menu…"
+              className="w-full bg-white/8 text-white placeholder:text-white/35 text-sm rounded-xl pl-9 pr-8 py-2 outline-none focus:bg-white/12 focus:ring-1 focus:ring-white/20 transition-colors"
+            />
+            {navSearch && (
+              <button
+                onClick={() => setNavSearch('')}
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-white/35 hover:text-white p-0.5"
+                title="Clear"
+              >
+                <X size={14} />
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Main Navigation */}
       <nav className="flex-1 overflow-y-auto py-3 px-2 space-y-0.5">
         {role === 'admin' && (!sidebarCollapsed || mobile) ? (
-          // Categorised collapsible sections
-          adminNavGroups.map(group => {
-            const isOpen = !!openGroups[group.id]
+          // Categorised collapsible sections (filtered groups when searching)
+          filteredAdminGroups.length === 0 ? (
+            <p className="text-white/30 text-xs px-3 py-4 text-center">No matching options</p>
+          ) : filteredAdminGroups.map(group => {
+            // Force groups open while searching so matches are visible.
+            const isOpen = searching || !!openGroups[group.id]
             const hasActive = group.items.some(i => i.href === pathname)
             return (
               <div key={group.id} className="mb-0.5">
@@ -410,8 +452,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             )
           })
         ) : (
-          // Flat nav for non-admin roles, OR admin in collapsed sidebar mode
-          navItems.map((item) => (
+          // Flat nav for non-admin roles, OR admin in collapsed sidebar mode.
+          // Don't filter while collapsed (no search box is shown there).
+          (sidebarCollapsed && !mobile ? navItems : filteredNavItems).map((item) => (
             <NavLink
               key={item.href}
               item={item}
@@ -425,7 +468,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
       {/* Bottom Items (Support + Settings) */}
       <div className="border-t border-white/5 px-2 py-3 space-y-0.5">
-        {bottomItems.map((item) => (
+        {(sidebarCollapsed && !mobile ? bottomItems : filteredBottomItems).map((item) => (
           <NavLink
             key={item.href}
             item={item}
@@ -458,7 +501,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           sidebarCollapsed ? 'w-16' : 'w-64'
         }`}
       >
-        <SidebarContent />
+        {SidebarContent({})}
       </aside>
 
       {/* Mobile Sidebar Overlay */}
@@ -475,7 +518,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           sidebarOpen ? 'translate-x-0' : '-translate-x-[calc(100%+12px)]'
         }`}
       >
-        <SidebarContent mobile />
+        {SidebarContent({ mobile: true })}
       </aside>
 
       {/* Main Content */}
