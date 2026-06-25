@@ -11,9 +11,42 @@
 // ║  (forwarded onto the root node) so PDF export can snapshot it.        ║
 // ╚══════════════════════════════════════════════════════════════════════╝
 
-import { forwardRef } from 'react'
+import { forwardRef, useRef, useState, useLayoutEffect, useCallback } from 'react'
 import Image from 'next/image'
 import { fillTemplate, type DocumentType } from '@/lib/documents'
+
+// Auto-fit: scale the inner content so it ALWAYS fits the fixed-ratio frame,
+// no matter how long the title / name / body / quote get. Measures natural
+// content height vs available height and applies a transform scale. Transforms
+// don't affect layout/scrollHeight, so there's no measurement feedback loop.
+function useFitScale(deps: unknown[]) {
+  const outerRef = useRef<HTMLDivElement>(null)
+  const innerRef = useRef<HTMLDivElement>(null)
+  const [scale, setScale] = useState(1)
+
+  const measure = useCallback(() => {
+    const outer = outerRef.current
+    const inner = innerRef.current
+    if (!outer || !inner) return
+    const avail = outer.clientHeight
+    const natural = inner.scrollHeight
+    if (!avail || !natural) return
+    // 0.97 keeps a hair of breathing room off the border.
+    setScale(natural > avail ? Math.max(0.4, (avail / natural) * 0.97) : 1)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, deps)
+
+  useLayoutEffect(() => {
+    measure()
+    const outer = outerRef.current
+    if (!outer || typeof ResizeObserver === 'undefined') return
+    const ro = new ResizeObserver(measure)
+    ro.observe(outer)
+    return () => ro.disconnect()
+  }, [measure])
+
+  return { outerRef, innerRef, scale }
+}
 
 export interface DocumentPreviewData {
   type: DocumentType
@@ -114,8 +147,12 @@ function fitSizes(name: string) {
 function CertificateLayout({ data }: { data: DocumentPreviewData }) {
   const body = fillTemplate(data.body, buildVars(data))
   const sz = fitSizes(data.recipientName)
+  // Re-measure whenever any content that affects height changes.
+  const { outerRef, innerRef, scale } = useFitScale([
+    data.title, data.recipientName, body, data.quote, data.signatureName, data.signatureTitle, data.documentId,
+  ])
   return (
-    <div className="relative aspect-[1.414/1] w-full bg-white overflow-hidden border-[3px] border-[#1A9AB5]">
+    <div ref={outerRef} className="relative aspect-[1.414/1] w-full bg-white overflow-hidden border-[3px] border-[#1A9AB5]">
       {/* Decorative background flourish */}
       <Image
         src="/illustrations/certificate-background-flourish.png"
@@ -134,7 +171,11 @@ function CertificateLayout({ data }: { data: DocumentPreviewData }) {
         </span>
       </div>
 
-      <div className="relative h-full flex flex-col items-center px-[7%] py-[4%] text-center">
+      <div
+        ref={innerRef}
+        className="absolute inset-0 flex flex-col items-center px-[7%] py-[4%] text-center"
+        style={{ transform: `scale(${scale})`, transformOrigin: 'center center' }}
+      >
         {/* Header */}
         <div className="w-full flex items-center justify-center">
           <BrandLockup size={34} />
@@ -202,9 +243,12 @@ function OfferLetterLayout({ data }: { data: DocumentPreviewData }) {
   const vars = buildVars(data)
   const body = fillTemplate(data.body, vars)
   const subject = data.fields.subject || `Offer of ${data.fields.role_title || data.fields.role || 'Engagement'}`
+  const { outerRef, innerRef, scale } = useFitScale([
+    data.title, subject, data.recipientName, body, data.signatureName, data.signatureTitle, data.documentId, data.issuedOn,
+  ])
 
   return (
-    <div className="relative aspect-[1/1.414] w-full bg-white overflow-hidden border border-foreground/10 shadow-sm">
+    <div ref={outerRef} className="relative aspect-[1/1.414] w-full bg-white overflow-hidden border border-foreground/10 shadow-sm">
       {/* Full-page watermark */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none">
         <span className="font-heading font-black text-[#1A9AB5]/[0.04] text-[30vw] leading-none -rotate-12 tracking-tighter">
@@ -214,7 +258,11 @@ function OfferLetterLayout({ data }: { data: DocumentPreviewData }) {
       {/* Top accent bar */}
       <div className="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-[#35C8E0] via-[#1A9AB5] to-[#82C93D]" />
 
-      <div className="relative h-full flex flex-col px-[8%] py-[6%]">
+      <div
+        ref={innerRef}
+        className="absolute inset-0 flex flex-col px-[8%] py-[6%]"
+        style={{ transform: `scale(${scale})`, transformOrigin: 'top center' }}
+      >
         {/* Header: logo left, date right */}
         <div className="flex items-start justify-between">
           <BrandLockup size={30} />
@@ -232,7 +280,7 @@ function OfferLetterLayout({ data }: { data: DocumentPreviewData }) {
         <p className="mt-[4%] text-[clamp(0.7rem,1.6vw,0.9rem)] font-semibold text-foreground">
           Dear {data.recipientName || 'Candidate'},
         </p>
-        <div className="mt-2 text-[clamp(0.68rem,1.5vw,0.85rem)] leading-relaxed text-foreground/80 whitespace-pre-line flex-1 overflow-hidden">
+        <div className="mt-2 text-[clamp(0.68rem,1.5vw,0.85rem)] leading-relaxed text-foreground/80 whitespace-pre-line">
           {body}
         </div>
 

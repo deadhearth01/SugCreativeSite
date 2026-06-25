@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Plus_Jakarta_Sans, Great_Vibes } from "next/font/google";
+import { Plus_Jakarta_Sans, Alex_Brush } from "next/font/google";
 import "./globals.css";
 import SmoothScroll from "@/components/SmoothScroll";
 import HapticsProvider from "@/components/HapticsProvider";
@@ -11,8 +11,8 @@ const jakarta = Plus_Jakarta_Sans({
   display: "swap",
 });
 
-// Real signature-style cursive for certificates / offer letters.
-const signature = Great_Vibes({
+// Realistic pen-style signature font for certificates / offer letters.
+const signature = Alex_Brush({
   variable: "--font-signature",
   weight: "400",
   subsets: ["latin"],

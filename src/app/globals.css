@@ -175,7 +175,7 @@
    If a licensed font is later added (e.g. Brittany Signature), prepend it to
    this stack. */
 .font-signature {
-  font-family: var(--font-signature), 'Great Vibes', 'Segoe Script', cursive;
+  font-family: var(--font-signature), 'Alex Brush', 'Segoe Script', cursive;
 }
 
 /* Base element resets moved into @layer base below
