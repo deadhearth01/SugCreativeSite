@@ -41,7 +41,7 @@ const serviceCategories = [
     title: 'Study Abroad',
     tagline: 'Your boarding pass to a global education',
     desc: 'End-to-end guidance for studying overseas — from choosing the right country and university to visas, funding, and your first day on campus.',
-    image: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=900&h=600&fit=crop',
+    image: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=900&h=600&fit=crop',
     cta: 'Book a Free Counselling Session',
     accentColor: '#82C93D',
     items: [

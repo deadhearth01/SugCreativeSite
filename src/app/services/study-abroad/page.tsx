@@ -483,7 +483,7 @@ export default function StudyAbroadPage() {
                 </p>
                 <div className="relative aspect-[4/3] rounded-3xl border-2 border-black shadow-[10px_10px_0px_rgba(130,201,61,1)] overflow-hidden group">
                   <Image
-                    src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=900&h=600&fit=crop"
+                    src="https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=900&h=600&fit=crop"
                     alt="Students walking across a university campus"
                     fill
                     sizes="(max-width: 1024px) 100vw, 40vw"
