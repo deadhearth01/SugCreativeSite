@@ -238,7 +238,7 @@ export default function AdminDocumentsPage() {
       const node = previewRef.current
       if (!node) { setBusy(null); return }
 
-      const html2canvas = (await import('html2canvas')).default
+      const html2canvas = (await import('html2canvas-pro')).default
       const { jsPDF } = await import('jspdf')
 
       const canvas = await html2canvas(node, { scale: 2, backgroundColor: '#ffffff', useCORS: true, logging: false })
