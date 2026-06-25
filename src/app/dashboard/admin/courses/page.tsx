@@ -5,10 +5,12 @@ import Link from 'next/link'
 import {
   Plus, Search, Edit, Trash2, Loader2, X,
   ExternalLink, Calendar, Tag, Layers, IndianRupee,
-  Star, ImageIcon, Clock,
+  Star, ImageIcon, Clock, Home, LayoutGrid, List,
 } from 'lucide-react'
 import { PageHeader, StatusBadge } from '@/components/dashboard/DashboardUI'
 import { createClient } from '@/lib/supabase/client'
+import OrderManagerModal from '@/components/admin/OrderManagerModal'
+import ImagePickerModal from '@/components/admin/ImagePickerModal'
 
 type Course = {
   id: string
@@ -34,15 +36,6 @@ type Course = {
   color_theme?: string
   tech_stack?: string[]
   enrollments?: { count: number }[]
-}
-
-type UnsplashImage = {
-  id: string
-  thumb: string
-  full: string
-  alt: string
-  credit: string
-  creditUrl: string
 }
 
 const CATEGORIES = [
@@ -90,6 +83,9 @@ export default function CoursesPage() {
   const [search, setSearch] = useState('')
   const [showModal, setShowModal] = useState(false)
   const [editCourse, setEditCourse] = useState<Course | null>(null)
+  const [view, setView] = useState<'management' | 'raw'>('management')
+  const [showOrderModal, setShowOrderModal] = useState(false)
+  const [showImagePicker, setShowImagePicker] = useState(false)
   const [toast, setToast] = useState<{
     message: string
     type: 'success' | 'error'
@@ -122,12 +118,6 @@ export default function CoursesPage() {
   const [showTagSuggestions, setShowTagSuggestions] = useState(false)
   const tagDebounce = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  // Image search picker (Unsplash via /api/images/search)
-  const [imageQuery, setImageQuery] = useState('')
-  const [imageResults, setImageResults] = useState<UnsplashImage[]>([])
-  const [imageSearching, setImageSearching] = useState(false)
-  const [imageError, setImageError] = useState('')
-
   const showToast = (message: string, type: 'success' | 'error') =>
     setToast({ message, type })
 
@@ -155,9 +145,6 @@ export default function CoursesPage() {
     setTagInput('')
     setTagSuggestions([])
     setShowTagSuggestions(false)
-    setImageQuery('')
-    setImageResults([])
-    setImageError('')
   }
 
   const openCreate = () => {
@@ -332,30 +319,6 @@ export default function CoursesPage() {
     }
   }
 
-  // ── Image search (Unsplash) ─────────────────────────────────────────
-  const searchImages = async () => {
-    const q = imageQuery.trim()
-    if (!q) return
-    setImageSearching(true)
-    setImageError('')
-    try {
-      const res = await fetch(`/api/images/search?q=${encodeURIComponent(q)}`)
-      const json = await res.json()
-      if (json.error) {
-        setImageError(json.error)
-        setImageResults([])
-      } else {
-        setImageResults(json.data || [])
-        if ((json.data || []).length === 0) setImageError('No images found.')
-      }
-    } catch {
-      setImageError('Image search failed. Please try again.')
-      setImageResults([])
-    } finally {
-      setImageSearching(false)
-    }
-  }
-
   const handleDelete = async (id: string) => {
     if (!confirm('Delete this course? This cannot be undone.')) return
     const res = await fetch(`/api/courses/${id}`, { method: 'DELETE' })
@@ -391,18 +354,26 @@ export default function CoursesPage() {
         title="Course Management"
         description="Create, edit, and manage all training courses"
         action={
-          <button
-            onClick={openCreate}
-            className="bg-primary text-white px-5 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-2 hover:bg-primary/90 transition-colors shadow-md"
-          >
-            <Plus size={16} /> New Course
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setShowOrderModal(true)}
+              className="bg-white border border-gray-200 text-primary px-4 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-2 hover:bg-gray-50 transition-colors shadow-sm"
+            >
+              <Home size={16} /> Order Management
+            </button>
+            <button
+              onClick={openCreate}
+              className="bg-primary text-white px-5 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-2 hover:bg-primary/90 transition-colors shadow-md"
+            >
+              <Plus size={16} /> New Course
+            </button>
+          </div>
         }
       />
 
-      {/* Search bar */}
-      <div className="bg-white border border-gray-200 rounded-2xl p-4 mb-6 shadow-md">
-        <div className="relative">
+      {/* Search bar + view toggle */}
+      <div className="bg-white border border-gray-200 rounded-2xl p-4 mb-6 shadow-md flex flex-col sm:flex-row gap-3 sm:items-center">
+        <div className="relative flex-1">
           <Search
             size={16}
             className="absolute left-3 top-1/2 -translate-y-1/2 text-foreground/40"
@@ -414,6 +385,31 @@ export default function CoursesPage() {
             onChange={(e) => setSearch(e.target.value)}
             className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#35C8E0]/30 focus:border-[#35C8E0] transition-all"
           />
+        </div>
+        {/* Segmented view control */}
+        <div className="flex items-center gap-1 bg-gray-100 rounded-xl p-1 shrink-0">
+          <button
+            onClick={() => setView('management')}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+              view === 'management'
+                ? 'bg-white text-primary shadow-sm'
+                : 'text-foreground/50 hover:text-foreground/70'
+            }`}
+            aria-pressed={view === 'management'}
+          >
+            <LayoutGrid size={14} /> Management
+          </button>
+          <button
+            onClick={() => setView('raw')}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+              view === 'raw'
+                ? 'bg-white text-primary shadow-sm'
+                : 'text-foreground/50 hover:text-foreground/70'
+            }`}
+            aria-pressed={view === 'raw'}
+          >
+            <List size={14} /> Raw
+          </button>
         </div>
       </div>
 
@@ -868,69 +864,21 @@ export default function CoursesPage() {
                   className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#35C8E0]/30 focus:border-[#35C8E0] transition-all"
                   placeholder="https://… or use search below"
                 />
-                <div className="mt-2 flex gap-2">
-                  <div className="relative flex-1">
-                    <ImageIcon
-                      size={15}
-                      className="absolute left-3 top-1/2 -translate-y-1/2 text-foreground/40"
-                    />
-                    <input
-                      type="text"
-                      value={imageQuery}
-                      onChange={(e) => setImageQuery(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
-                          e.preventDefault()
-                          searchImages()
-                        }
-                      }}
-                      className="w-full pl-9 pr-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#35C8E0]/30 focus:border-[#35C8E0] transition-all"
-                      placeholder="Search free images (Unsplash)…"
-                    />
-                  </div>
+                <div className="mt-2 flex items-center gap-3">
                   <button
                     type="button"
-                    onClick={searchImages}
-                    disabled={imageSearching || !imageQuery.trim()}
-                    className="px-4 py-2.5 rounded-xl text-sm font-semibold bg-primary text-white hover:bg-primary/90 transition-colors disabled:opacity-50 shrink-0 flex items-center gap-1.5"
+                    onClick={() => setShowImagePicker(true)}
+                    className="px-4 py-2.5 rounded-xl text-sm font-semibold bg-primary text-white hover:bg-primary/90 transition-colors flex items-center gap-1.5"
                   >
-                    {imageSearching ? (
-                      <Loader2 size={14} className="animate-spin" />
-                    ) : (
-                      <Search size={14} />
-                    )}
-                    Search
+                    <Search size={14} /> Search images
                   </button>
+                  {form.thumbnail && (
+                    <span className="relative w-16 h-10 rounded-lg overflow-hidden border border-gray-200 shrink-0">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={form.thumbnail} alt="Selected thumbnail" className="w-full h-full object-cover" />
+                    </span>
+                  )}
                 </div>
-                {imageError && (
-                  <p className="text-xs text-red-500 mt-2">{imageError}</p>
-                )}
-                {imageResults.length > 0 && (
-                  <div className="grid grid-cols-3 gap-2 mt-2 max-h-48 overflow-y-auto p-0.5">
-                    {imageResults.map((img) => (
-                      <button
-                        key={img.id}
-                        type="button"
-                        onClick={() =>
-                          setForm((f) => ({ ...f, thumbnail: img.full }))
-                        }
-                        title={`${img.alt} — ${img.credit}`}
-                        className={`relative aspect-video rounded-lg overflow-hidden border-2 transition-all ${
-                          form.thumbnail === img.full
-                            ? 'border-[#35C8E0] ring-2 ring-[#35C8E0]/30'
-                            : 'border-transparent hover:border-gray-300'
-                        }`}
-                      >
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                          src={img.thumb}
-                          alt={img.alt}
-                          className="w-full h-full object-cover"
-                        />
-                      </button>
-                    ))}
-                  </div>
-                )}
               </div>
 
               {/* Display Order + Featured */}
@@ -1093,6 +1041,21 @@ export default function CoursesPage() {
           </div>
         </div>
       )}
+
+      <OrderManagerModal
+        open={showOrderModal}
+        courses={courses}
+        onClose={() => setShowOrderModal(false)}
+        onSaved={loadCourses}
+        onToast={showToast}
+      />
+
+      <ImagePickerModal
+        open={showImagePicker}
+        currentUrl={form.thumbnail}
+        onSelect={(url) => setForm((f) => ({ ...f, thumbnail: url }))}
+        onClose={() => setShowImagePicker(false)}
+      />
 
       {toast && (
         <Toast
