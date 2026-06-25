@@ -30,7 +30,7 @@ export async function PATCH(
 
   const { id } = await params
   const body = await req.json()
-  const { full_name, email, role, phone, tags, password, status } = body
+  const { full_name, email, role, phone, tags, password, status, monthly_pay, pay_type } = body
 
   const adminClient = createAdminClient()
 
@@ -60,6 +60,8 @@ export async function PATCH(
   if (phone !== undefined) profileUpdates.phone = phone || null
   if (tags !== undefined) profileUpdates.tags = tags
   if (status !== undefined) profileUpdates.status = status
+  if (monthly_pay !== undefined) profileUpdates.monthly_pay = monthly_pay === '' || monthly_pay === null ? null : Number(monthly_pay)
+  if (pay_type !== undefined) profileUpdates.pay_type = pay_type || null
 
   if (Object.keys(profileUpdates).length > 0) {
     const { error: profileError } = await adminClient

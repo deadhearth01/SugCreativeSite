@@ -22,6 +22,8 @@ type Profile = {
   status: 'active' | 'pending' | 'banned' | 'inactive'
   phone: string | null
   tags: string[]
+  monthly_pay: number | null
+  pay_type: 'salary' | 'stipend' | null
   created_at: string
   updated_at: string
 }
@@ -334,7 +336,8 @@ export default function UsersPage() {
   const [activeTab, setActiveTab] = useState<'all' | 'requests' | 'roles'>('all')
 
   const [formData, setFormData] = useState({
-    name: '', email: '', role: 'student', phone: '', password: '', tags: [] as string[]
+    name: '', email: '', role: 'student', phone: '', password: '', tags: [] as string[],
+    monthly_pay: '' as string, pay_type: 'salary' as 'salary' | 'stipend'
   })
 
   // Auto-dismiss toast
@@ -406,13 +409,15 @@ export default function UsersPage() {
         role: formData.role,
         phone: '',
         tags: formData.tags,
+        monthly_pay: formData.monthly_pay === '' ? null : Number(formData.monthly_pay),
+        pay_type: formData.monthly_pay === '' ? null : formData.pay_type,
       }),
     })
     const result = await res.json()
     if (res.ok) {
       setToast({ type: 'success', message: `User "${formData.email}" created successfully` })
       setShowCreateModal(false)
-      setFormData({ name: '', email: '', role: 'student', phone: '', password: '', tags: [] })
+      setFormData({ name: '', email: '', role: 'student', phone: '', password: '', tags: [], monthly_pay: '', pay_type: 'salary' })
       await loadUsers()
     } else {
       setToast({ type: 'error', message: result.error || 'Failed to create user' })
@@ -460,6 +465,8 @@ export default function UsersPage() {
       role: formData.role,
       phone: formData.phone,
       tags: formData.tags,
+      monthly_pay: formData.monthly_pay === '' ? null : Number(formData.monthly_pay),
+      pay_type: formData.monthly_pay === '' ? null : formData.pay_type,
     }
     if (formData.password) body.password = formData.password
 
@@ -576,6 +583,8 @@ export default function UsersPage() {
       phone: user.phone || '',
       password: '',
       tags: user.tags || [],
+      monthly_pay: user.monthly_pay != null ? String(user.monthly_pay) : '',
+      pay_type: user.pay_type || 'salary',
     })
     setShowPassword(false)
   }
@@ -620,7 +629,7 @@ export default function UsersPage() {
             <button
               onClick={() => {
                 setShowCreateModal(true)
-                setFormData({ name: '', email: '', role: 'student', phone: '', password: generatePassword(), tags: [] })
+                setFormData({ name: '', email: '', role: 'student', phone: '', password: generatePassword(), tags: [], monthly_pay: '', pay_type: 'salary' })
                 setShowPassword(true)
               }}
               className="bg-primary text-white px-5 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 hover:bg-primary/90 transition-colors"
@@ -993,6 +1002,29 @@ export default function UsersPage() {
                   ))}
                 </select>
               </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-foreground/70 mb-1">Monthly Salary / Stipend</label>
+                  <div className="relative">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-foreground/40">₹</span>
+                    <input
+                      type="number"
+                      min="0"
+                      value={formData.monthly_pay}
+                      onChange={(e) => setFormData({ ...formData, monthly_pay: e.target.value })}
+                      className="w-full border border-border rounded-lg pl-7 pr-4 py-2.5 text-sm focus:outline-none focus:border-[#35C8E0]"
+                      placeholder="0"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-foreground/70 mb-1">Pay Type</label>
+                  <select value={formData.pay_type} onChange={(e) => setFormData({ ...formData, pay_type: e.target.value as 'salary' | 'stipend' })} className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-[#35C8E0] bg-white">
+                    <option value="salary">Salary</option>
+                    <option value="stipend">Stipend</option>
+                  </select>
+                </div>
+              </div>
               <div>
                 <label className="block text-sm font-medium text-foreground/70 mb-1">Password *</label>
                 <div className="flex gap-2">
@@ -1231,6 +1263,29 @@ export default function UsersPage() {
                 <div>
                   <label className="block text-sm font-medium text-foreground/70 mb-1">Phone</label>
                   <input type="tel" value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-[#35C8E0]" />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-foreground/70 mb-1">Monthly Salary / Stipend</label>
+                  <div className="relative">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-foreground/40">₹</span>
+                    <input
+                      type="number"
+                      min="0"
+                      value={formData.monthly_pay}
+                      onChange={(e) => setFormData({ ...formData, monthly_pay: e.target.value })}
+                      className="w-full border border-border rounded-lg pl-7 pr-4 py-2.5 text-sm focus:outline-none focus:border-[#35C8E0]"
+                      placeholder="Not set"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-foreground/70 mb-1">Pay Type</label>
+                  <select value={formData.pay_type} onChange={(e) => setFormData({ ...formData, pay_type: e.target.value as 'salary' | 'stipend' })} className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-[#35C8E0] bg-white">
+                    <option value="salary">Salary</option>
+                    <option value="stipend">Stipend</option>
+                  </select>
                 </div>
               </div>
               <div>

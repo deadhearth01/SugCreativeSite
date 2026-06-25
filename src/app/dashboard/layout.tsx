@@ -33,6 +33,7 @@ import {
   MessageSquareMore,
   Briefcase,
   Award,
+  ReceiptText,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import WelcomeScreen from '@/components/dashboard/WelcomeScreen'
@@ -211,6 +212,7 @@ const adminNavGroups: NavGroup[] = [
     items: [
       { label: 'Budget & Finances', href: '/dashboard/admin/budget', icon: Wallet },
       { label: 'Payments', href: '/dashboard/admin/payments', icon: CreditCard },
+      { label: 'Payslips', href: '/dashboard/admin/payslips', icon: ReceiptText },
     ],
   },
   {

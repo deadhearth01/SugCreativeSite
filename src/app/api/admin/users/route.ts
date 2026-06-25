@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
     if (!admin) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
     const body = await req.json()
-    const { email, password, full_name, role, phone, tags } = body
+    const { email, password, full_name, role, phone, tags, monthly_pay, pay_type } = body
 
     if (!email || !password || !role) {
       return NextResponse.json({ error: 'Email, password and role are required' }, { status: 400 })
@@ -147,6 +147,8 @@ export async function POST(req: NextRequest) {
           role,
           phone: phone || null,
           tags: tags || [],
+          monthly_pay: monthly_pay === '' || monthly_pay === undefined ? null : Number(monthly_pay),
+          pay_type: pay_type || null,
         }, { onConflict: 'id' })
 
       if (profileError) {
