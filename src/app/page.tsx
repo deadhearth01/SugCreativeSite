@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { ArrowUpRight, CheckCircle2, TrendingUp, GraduationCap, Award, Users, Clock, Play, Briefcase, Calendar, Star, Quote, Building2, Shield, Cpu, Globe, Server, Zap, Target, Rocket, BadgeCheck, ArrowRight, Plane, BookOpen } from 'lucide-react'
+import { ArrowUpRight, CheckCircle2, TrendingUp, GraduationCap, Award, Users, Clock, Play, Briefcase, Calendar, Star, Shield, Cpu, Globe, Server, Zap, Target, Rocket, ArrowRight, Plane, BookOpen } from 'lucide-react'
 import RotatingText from '@/components/RotatingText'
 import dynamic from 'next/dynamic'
 import Navbar from '@/components/Navbar'
@@ -599,54 +599,18 @@ export default function HomePage() {
             </p>
           </div>
 
-          {/* Video Testimonials Sub-block */}
-          <div className="mb-16">
-            <p className="text-white/50 text-xs font-black uppercase tracking-widest text-center mb-6">Watch Their Stories</p>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
-              {videoTestimonials.map((url, i) => (
-                <video
-                  key={i}
-                  controls
-                  preload="metadata"
-                  playsInline
-                  className="w-full h-auto rounded-3xl border-2 border-black shadow-[6px_6px_0px_rgba(130,201,61,1)] bg-black"
-                >
-                  <source src={`${url}#t=0.1`} type="video/mp4" />
-                </video>
-              ))}
-            </div>
-          </div>
-
-          {/* Testimonials Grid */}
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {testimonials.slice(0, 6).map((t, i) => (
-              <AnimatedSection key={t.name} delay={i * 0.1}>
-                <div className="bg-white rounded-3xl border-2 border-black shadow-[6px_6px_0px_rgba(130,201,61,1)] p-6 h-full flex flex-col">
-                  <div className="flex items-center gap-4 mb-4">
-                    <div className="w-14 h-14 bg-primary/20 rounded-3xl border-2 border-black flex items-center justify-center text-2xl font-black text-primary-dark">
-                      {t.name.charAt(0)}
-                    </div>
-                    <div>
-                      <div className="font-black text-primary-dark">{t.name}</div>
-                      <div className="text-sm font-bold text-primary">
-                        <Building2 size={12} className="inline mr-1" />
-                        {t.company}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex-1">
-                    <Quote size={24} className="text-primary/30 mb-2" />
-                    <p className="text-primary-dark/80 font-medium text-sm leading-relaxed">
-                      "{t.quote}"
-                    </p>
-                  </div>
-                  <div className="mt-4 pt-4 border-t border-black/10">
-                    <span className="text-xs font-bold uppercase tracking-widest text-primary bg-primary/10 px-3 py-1.5 rounded-full">
-                      {t.domain}
-                    </span>
-                  </div>
-                </div>
-              </AnimatedSection>
+          {/* Video Testimonials — larger, native aspect ratio */}
+          <div className="grid sm:grid-cols-2 gap-8 items-start max-w-5xl mx-auto">
+            {videoTestimonials.map((url, i) => (
+              <video
+                key={i}
+                controls
+                preload="metadata"
+                playsInline
+                className="w-full h-auto rounded-3xl border-2 border-black shadow-[8px_8px_0px_rgba(130,201,61,1)] bg-black"
+              >
+                <source src={`${url}#t=0.1`} type="video/mp4" />
+              </video>
             ))}
           </div>
         </div>
@@ -676,8 +640,8 @@ export default function HomePage() {
               { icon: <Calendar size={32} />, title: 'Flexible Batches', desc: 'Weekend and weekday batches available.' },
             ].map((item, i) => (
               <AnimatedSection key={item.title} delay={i * 0.05}>
-                <div className="bg-white border-2 border-black p-6 shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-[8px_8px_0px_rgba(0,0,0,1)] hover:-translate-y-1 transition-all h-full">
-                  <div className="w-14 h-14 bg-primary/10 flex items-center justify-center mb-4 text-primary border-2 border-primary/20">
+                <div className="bg-white border-2 border-black rounded-2xl p-6 shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-[8px_8px_0px_rgba(0,0,0,1)] hover:-translate-y-1 transition-all h-full">
+                  <div className="w-14 h-14 bg-primary/10 rounded-2xl flex items-center justify-center mb-4 text-primary border-2 border-primary/20">
                     {item.icon}
                   </div>
                   <h3 className="text-lg font-black text-primary-dark mb-2">{item.title}</h3>
@@ -699,7 +663,7 @@ export default function HomePage() {
               { value: 200, suffix: '+', label: 'Business Clients' },
               { value: 15, suffix: '+', label: 'Collaborations' },
             ].map((stat) => (
-              <div key={stat.label} className="bg-white/10 backdrop-blur-sm border-2 border-white/30 p-6">
+              <div key={stat.label} className="bg-white/10 backdrop-blur-sm border-2 border-white/30 rounded-2xl p-6">
                 <div className="text-4xl md:text-5xl font-black text-white mb-2">
                   <NumberTicker value={stat.value} />{stat.suffix}
                 </div>
