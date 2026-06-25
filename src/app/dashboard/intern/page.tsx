@@ -95,7 +95,7 @@ export default function InternDashboard() {
           { label: 'Learning', href: '/dashboard/intern/learning', icon: BookOpen },
         ].map((a) => (
           <Link key={a.label} href={a.href} className="bg-white border border-border rounded-xl shadow-sm p-4 flex items-center gap-3 hover:shadow-md transition-all group">
-            <div className="w-8 h-8 bg-[#1A9AB5] border border-black flex items-center justify-center flex-shrink-0"><a.icon size={15} className="text-white" /></div>
+            <div className="w-8 h-8 bg-[#1A9AB5] border border-black rounded-lg flex items-center justify-center flex-shrink-0"><a.icon size={15} className="text-white" /></div>
             <span className="text-xs font-black uppercase tracking-wide text-[#1A9AB5]">{a.label}</span>
             <ArrowUpRight size={13} className="ml-auto text-foreground/30 group-hover:text-[#35C8E0] transition-colors" />
           </Link>
@@ -168,7 +168,7 @@ export default function InternDashboard() {
                       {m.material_type && <span className="text-[10px] text-foreground/40 font-bold uppercase tracking-wide">{m.material_type}</span>}
                     </div>
                     <div className="flex items-center gap-2">
-                      <div className="flex-1 h-2 bg-[#F4F6FA] border border-black/10">
+                      <div className="flex-1 h-2 bg-[#F4F6FA] border border-black/10 rounded-full">
                         <div className={`h-full ${isCompleted ? 'bg-emerald-500' : 'bg-[#35C8E0]'} transition-all`} style={{ width: isCompleted ? '100%' : '0%' }} />
                       </div>
                       <span className={`text-xs font-black ${isCompleted ? 'text-emerald-600' : 'text-foreground/40'}`}>{isCompleted ? '100%' : '0%'}</span>

@@ -78,7 +78,7 @@ export default function WelcomeScreen({ name, role }: Props) {
       className={`fixed inset-0 z-[100] flex items-center justify-center p-4 transition-all duration-500 ${visible ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
       style={{ background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(6px)' }}
     >
-      <div className="bg-white w-full max-w-lg border-2 border-[#1A9AB5] shadow-[8px_8px_0px_rgba(26,154,181,0.3)] relative overflow-hidden">
+      <div className="bg-white w-full max-w-lg border-2 border-[#1A9AB5] rounded-3xl shadow-[8px_8px_0px_rgba(26,154,181,0.3)] relative overflow-hidden">
         {/* Top gradient band */}
         <div className="h-2 bg-gradient-to-r from-[#82C93D] via-[#35C8E0] to-[#1A9AB5]" />
 
@@ -106,14 +106,14 @@ export default function WelcomeScreen({ name, role }: Props) {
           </p>
 
           {/* Quote */}
-          <div className="bg-[#F3F4F6] border border-black/8 px-4 py-3 mb-8 italic text-xs text-foreground/50 font-medium">
+          <div className="bg-[#F3F4F6] border border-black/8 rounded-2xl px-4 py-3 mb-8 italic text-xs text-foreground/50 font-medium">
             &ldquo;{quote}&rdquo;
           </div>
 
           {/* CTA */}
           <button
             onClick={dismiss}
-            className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-[#1A9AB5] text-white font-black text-sm uppercase tracking-widest border-2 border-[#1A9AB5] hover:bg-white hover:text-[#1A9AB5] hover:shadow-[4px_4px_0px_rgba(26,154,181,0.4)] transition-all group active:translate-y-0.5 active:shadow-none"
+            className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-[#1A9AB5] text-white font-black text-sm uppercase tracking-widest border-2 border-[#1A9AB5] rounded-2xl hover:bg-white hover:text-[#1A9AB5] hover:shadow-[4px_4px_0px_rgba(26,154,181,0.4)] transition-all group active:translate-y-0.5 active:shadow-none"
           >
             {msg.cta}
             <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
