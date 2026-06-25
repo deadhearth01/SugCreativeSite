@@ -98,18 +98,26 @@ function BrandLockup({ size = 36 }: { size?: number }) {
   )
 }
 
+// Auto-fit: pick name/body/quote sizes from the recipient-name length so long
+// names (which wrap to multiple lines) never overflow into the signature area.
+// Deterministic tiers — same result in the live preview and the PDF snapshot.
+function fitSizes(name: string) {
+  const n = (name || '').trim().length
+  if (n <= 16) return { name: 'clamp(1.7rem,5vw,3rem)', body: 'clamp(0.72rem,1.6vw,0.95rem)', quote: 'clamp(0.72rem,1.5vw,0.9rem)', gap: '2.5%' }
+  if (n <= 24) return { name: 'clamp(1.5rem,4.3vw,2.5rem)', body: 'clamp(0.7rem,1.55vw,0.9rem)', quote: 'clamp(0.7rem,1.45vw,0.85rem)', gap: '2.2%' }
+  if (n <= 32) return { name: 'clamp(1.25rem,3.7vw,2.05rem)', body: 'clamp(0.66rem,1.45vw,0.85rem)', quote: 'clamp(0.66rem,1.35vw,0.8rem)', gap: '1.8%' }
+  if (n <= 42) return { name: 'clamp(1.05rem,3vw,1.7rem)', body: 'clamp(0.62rem,1.35vw,0.8rem)', quote: 'clamp(0.62rem,1.25vw,0.76rem)', gap: '1.5%' }
+  return { name: 'clamp(0.9rem,2.5vw,1.4rem)', body: 'clamp(0.58rem,1.25vw,0.74rem)', quote: 'clamp(0.58rem,1.15vw,0.72rem)', gap: '1.2%' }
+}
+
 // ─── Certificate (landscape) ─────────────────────────────────────────────────
 function CertificateLayout({ data }: { data: DocumentPreviewData }) {
   const body = fillTemplate(data.body, buildVars(data))
+  const sz = fitSizes(data.recipientName)
   return (
     <div className="relative aspect-[1.414/1] w-full bg-white overflow-hidden border-[3px] border-[#1A9AB5]">
       {/* Inner hairline frame */}
       <div className="absolute inset-2 border border-[#82C93D]/50 pointer-events-none" />
-
-      {/* Geometric accent shapes (left edge) */}
-      <div className="absolute -left-16 -top-16 w-44 h-44 rotate-45 bg-[#35C8E0]/15 pointer-events-none" />
-      <div className="absolute -left-10 top-1/3 w-24 h-24 rounded-full bg-[#82C93D]/15 pointer-events-none" />
-      <div className="absolute -right-14 -bottom-14 w-40 h-40 rotate-12 bg-[#1A9AB5]/10 pointer-events-none" />
 
       {/* Faint watermark */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none">
@@ -118,7 +126,7 @@ function CertificateLayout({ data }: { data: DocumentPreviewData }) {
         </span>
       </div>
 
-      <div className="relative h-full flex flex-col items-center px-[6%] py-[4%] text-center">
+      <div className="relative h-full flex flex-col items-center px-[7%] py-[4%] text-center">
         {/* Header */}
         <div className="w-full flex items-center justify-center">
           <BrandLockup size={34} />
@@ -134,20 +142,29 @@ function CertificateLayout({ data }: { data: DocumentPreviewData }) {
           This certificate is awarded in recognition of
         </p>
 
-        {/* Recipient */}
-        <p className="mt-[1.5%] font-heading font-black text-[clamp(1.6rem,5vw,3rem)] leading-none text-foreground">
+        {/* Recipient — auto-fit to name length */}
+        <p
+          className="mt-[1.5%] font-heading font-black leading-[1.05] text-foreground px-[4%]"
+          style={{ fontSize: sz.name }}
+        >
           {data.recipientName || 'Recipient Name'}
         </p>
         <div className="mt-2 h-px w-2/5 bg-foreground/15" />
 
         {/* Body */}
-        <p className="mt-[2.5%] max-w-[80%] text-[clamp(0.7rem,1.6vw,0.95rem)] leading-relaxed text-foreground/75">
+        <p
+          className="max-w-[82%] leading-relaxed text-foreground/75"
+          style={{ marginTop: sz.gap, fontSize: sz.body }}
+        >
           {body}
         </p>
 
         {/* Quote */}
         {data.quote && (
-          <p className="mt-[2%] max-w-[75%] italic text-[clamp(0.7rem,1.5vw,0.9rem)] text-[#1A9AB5]">
+          <p
+            className="max-w-[78%] italic text-[#1A9AB5]"
+            style={{ marginTop: sz.gap, fontSize: sz.quote }}
+          >
             {data.quote}
           </p>
         )}

@@ -169,23 +169,13 @@
   --radius-2xl: calc(var(--radius) + 8px);
 }
 
-/* ═══ SIGNATURE FONT (placeholder) ═══
-   "Brittany Signature" is a paid font and is NOT bundled in this repo.
-   Typed signatures use the `.font-signature` stack below, which falls back to
-   the browser's cursive face. If a licensed web-font is later added at
-   /fonts/brittany-signature.woff2, uncomment the @font-face below and it will
-   be picked up automatically — no other code changes required.
-
-   @font-face {
-     font-family: 'Brittany Signature';
-     src: url('/fonts/brittany-signature.woff2') format('woff2');
-     font-weight: 400;
-     font-style: normal;
-     font-display: swap;
-   }
-*/
+/* ═══ SIGNATURE FONT ═══
+   Real signature-style cursive loaded via next/font (Great Vibes) and exposed
+   as --font-signature in layout.tsx. Falls back to the browser cursive face.
+   If a licensed font is later added (e.g. Brittany Signature), prepend it to
+   this stack. */
 .font-signature {
-  font-family: 'Brittany Signature', 'Great Vibes', 'Segoe Script', cursive;
+  font-family: var(--font-signature), 'Great Vibes', 'Segoe Script', cursive;
 }
 
 /* Base element resets moved into @layer base below

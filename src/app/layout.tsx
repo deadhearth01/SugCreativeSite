@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Plus_Jakarta_Sans } from "next/font/google";
+import { Plus_Jakarta_Sans, Great_Vibes } from "next/font/google";
 import "./globals.css";
 import SmoothScroll from "@/components/SmoothScroll";
 import HapticsProvider from "@/components/HapticsProvider";
@@ -7,6 +7,14 @@ import SiteLoader from "@/components/SiteLoader";
 
 const jakarta = Plus_Jakarta_Sans({
   variable: "--font-inter", // keeping variable name for css compatibility
+  subsets: ["latin"],
+  display: "swap",
+});
+
+// Real signature-style cursive for certificates / offer letters.
+const signature = Great_Vibes({
+  variable: "--font-signature",
+  weight: "400",
   subsets: ["latin"],
   display: "swap",
 });
@@ -42,7 +50,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${jakarta.variable}`}>
+    <html lang="en" className={`${jakarta.variable} ${signature.variable}`}>
       <body className="font-body antialiased" suppressHydrationWarning>
         <SiteLoader />
         <HapticsProvider />

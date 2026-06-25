@@ -44,14 +44,14 @@ export default function SignaturePad({
   })
   const dragOffset = useRef<{ x: number; y: number } | null>(null)
 
-  // ── Canvas setup (white background so the PNG isn't transparent) ──
+  // ── Canvas setup — TRANSPARENT background so the exported PNG has no white
+  // box on the document. The drawing surface looks white via CSS only. ──
   useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas) return
     const ctx = canvas.getContext('2d')
     if (!ctx) return
-    ctx.fillStyle = '#ffffff'
-    ctx.fillRect(0, 0, canvas.width, canvas.height)
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
     ctx.strokeStyle = '#0d3b4f'
     ctx.lineWidth = 2.4
     ctx.lineCap = 'round'
@@ -100,8 +100,7 @@ export default function SignaturePad({
     const canvas = canvasRef.current
     const ctx = canvas?.getContext('2d')
     if (!canvas || !ctx) return
-    ctx.fillStyle = '#ffffff'
-    ctx.fillRect(0, 0, canvas.width, canvas.height)
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
     hasContent.current = false
     setEmpty(true)
   }

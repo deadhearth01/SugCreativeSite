@@ -419,7 +419,7 @@ export default function AdminDocumentsPage() {
                   />
                 </div>
                 {userListOpen && filteredUsers.length > 0 && (
-                  <div className="absolute z-20 mt-1 w-full max-h-64 overflow-y-auto bg-white border border-black/10 rounded-xl shadow-lg">
+                  <div data-lenis-prevent className="absolute z-20 mt-1 w-full max-h-64 overflow-y-auto overscroll-contain bg-white border border-black/10 rounded-xl shadow-lg">
                     {filteredUsers.map(u => (
                       <button
                         key={u.id}

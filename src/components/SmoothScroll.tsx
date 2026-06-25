@@ -1,12 +1,19 @@
 'use client'
 
 import { ReactNode, useEffect, useRef } from 'react'
+import { usePathname } from 'next/navigation'
 import Lenis from 'lenis'
 
 export default function SmoothScroll({ children }: { children: ReactNode }) {
   const lenisRef = useRef<Lenis | null>(null)
+  const pathname = usePathname()
+  // Smooth scroll is a marketing-site nicety. Inside the dashboard it hijacks
+  // the wheel and breaks native scrolling in modals, dropdowns, and overflow
+  // containers — so disable Lenis entirely on /dashboard routes.
+  const isDashboard = pathname?.startsWith('/dashboard')
 
   useEffect(() => {
+    if (isDashboard) return
     const lenis = new Lenis({
       duration: 1.2,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
@@ -41,7 +48,7 @@ export default function SmoothScroll({ children }: { children: ReactNode }) {
     return () => {
       lenis.destroy()
     }
-  }, [])
+  }, [isDashboard])
 
   return <>{children}</>
 }
