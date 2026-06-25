@@ -14,9 +14,10 @@
 // ╚══════════════════════════════════════════════════════════════════════╝
 
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react'
+import Link from 'next/link'
 import {
   Award, FileText, PenLine, Download, Send, Save, ShieldCheck, Search,
-  Loader2, CheckCircle2, XCircle, Users, UserPlus, X, Copy, Check,
+  Loader2, CheckCircle2, XCircle, Users, UserPlus, X, Copy, Check, FolderOpen,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import {
@@ -304,12 +305,20 @@ export default function AdminDocumentsPage() {
             Generate certificates &amp; offer letters, sign, export to PDF, and email.
           </p>
         </div>
-        <button
-          onClick={() => setVerifyOpen(true)}
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white border-2 border-[#1A9AB5] text-[#1A9AB5] text-sm font-black hover:bg-[#1A9AB5] hover:text-white transition-colors self-start"
-        >
-          <ShieldCheck size={16} /> Verify Document
-        </button>
+        <div className="flex flex-wrap items-center gap-3 self-start">
+          <Link
+            href="/dashboard/admin/documents/all"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#82C93D] text-white text-sm font-black hover:brightness-95 transition-all"
+          >
+            <FolderOpen size={16} /> View All Documents
+          </Link>
+          <button
+            onClick={() => setVerifyOpen(true)}
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white border-2 border-[#1A9AB5] text-[#1A9AB5] text-sm font-black hover:bg-[#1A9AB5] hover:text-white transition-colors"
+          >
+            <ShieldCheck size={16} /> Verify Document
+          </button>
+        </div>
       </div>
 
       {/* Generator segmented control */}
