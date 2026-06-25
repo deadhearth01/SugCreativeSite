@@ -99,38 +99,14 @@ const testimonials = [
   },
 ]
 
-// Video testimonials — click-to-load (no bytes fetched until click)
+// Video testimonials — play in their NATIVE aspect ratio with each video's own
+// first frame as the thumbnail (no fake posters, no names).
 const videoTestimonials = [
-  {
-    url: 'https://video.wixstatic.com/video/69c361_864274892b1f4455a9e2fb5bce5c07c0/1080p/mp4/file.mp4',
-    name: 'Tanvi Bansal',
-    company: 'WatchGuard',
-    poster: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=600&h=800&fit=crop',
-  },
-  {
-    url: 'https://video.wixstatic.com/video/69c361_f88da60a4eb24075b72619535076f563/1080p/mp4/file.mp4',
-    name: 'Shyam',
-    company: 'Bosch',
-    poster: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=600&h=800&fit=crop',
-  },
-  {
-    url: 'https://video.wixstatic.com/video/69c361_d42d0ac132a746b1a3f34ce9b4dcfc75/480p/mp4/file.mp4',
-    name: 'Anusha',
-    company: 'Google',
-    poster: 'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=600&h=800&fit=crop',
-  },
-  {
-    url: 'https://video.wixstatic.com/video/69c361_6a2c8d7fc82b4e96ad29cd8bed2d85ca/1080p/mp4/file.mp4',
-    name: 'Pradeep',
-    company: 'Accenture',
-    poster: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&h=800&fit=crop',
-  },
-  {
-    url: 'https://video.wixstatic.com/video/69c361_c762bf2369b94185a7e28cdbd1562b16/1080p/mp4/file.mp4',
-    name: 'Chandrasekhar',
-    company: 'TCS',
-    poster: 'https://images.unsplash.com/photo-1519345182560-3f2917c472ef?w=600&h=800&fit=crop',
-  },
+  'https://video.wixstatic.com/video/69c361_864274892b1f4455a9e2fb5bce5c07c0/1080p/mp4/file.mp4',
+  'https://video.wixstatic.com/video/69c361_f88da60a4eb24075b72619535076f563/1080p/mp4/file.mp4',
+  'https://video.wixstatic.com/video/69c361_d42d0ac132a746b1a3f34ce9b4dcfc75/480p/mp4/file.mp4',
+  'https://video.wixstatic.com/video/69c361_6a2c8d7fc82b4e96ad29cd8bed2d85ca/1080p/mp4/file.mp4',
+  'https://video.wixstatic.com/video/69c361_c762bf2369b94185a7e28cdbd1562b16/1080p/mp4/file.mp4',
 ]
 
 // Courses data - matching poster exactly with professional icons.
@@ -265,7 +241,6 @@ function mapDbCourse(c: DbCourse): CourseCard {
 }
 
 export default function HomePage() {
-  const [activeVideo, setActiveVideo] = useState<number | null>(null)
 
   // Featured courses from the DB, ordered by display_order. Falls back to the
   // hardcoded list when the fetch fails or returns nothing, so the section is
@@ -627,44 +602,17 @@ export default function HomePage() {
           {/* Video Testimonials Sub-block */}
           <div className="mb-16">
             <p className="text-white/50 text-xs font-black uppercase tracking-widest text-center mb-6">Watch Their Stories</p>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
-              {videoTestimonials.map((v, i) => (
-                <div key={v.name}>
-                  {activeVideo === i ? (
-                    <div className="relative rounded-3xl border-2 border-black shadow-[6px_6px_0px_rgba(130,201,61,1)] overflow-hidden aspect-[9/16]">
-                      <video
-                        autoPlay
-                        controls
-                        playsInline
-                        className="w-full h-full object-cover"
-                      >
-                        <source src={v.url} type="video/mp4" />
-                      </video>
-                    </div>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={() => setActiveVideo(i)}
-                      aria-label={`Play ${v.name}'s video testimonial`}
-                      className="relative block w-full rounded-3xl border-2 border-black shadow-[6px_6px_0px_rgba(130,201,61,1)] overflow-hidden aspect-[9/16] cursor-pointer"
-                    >
-                      <img
-                        src={v.poster}
-                        alt={v.name}
-                        className="w-full h-full object-cover"
-                      />
-                      <div className="absolute inset-0 flex items-center justify-center bg-black/20">
-                        <div className="w-16 h-16 rounded-full bg-[#82C93D] border-2 border-black flex items-center justify-center shadow-[4px_4px_0px_rgba(0,0,0,1)]">
-                          <Play size={28} className="text-white ml-1" />
-                        </div>
-                      </div>
-                    </button>
-                  )}
-                  <div className="mt-3 text-center">
-                    <p className="text-white font-black text-sm">{v.name}</p>
-                    <p className="text-white/60 text-xs font-bold">{v.company}</p>
-                  </div>
-                </div>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
+              {videoTestimonials.map((url, i) => (
+                <video
+                  key={i}
+                  controls
+                  preload="metadata"
+                  playsInline
+                  className="w-full h-auto rounded-3xl border-2 border-black shadow-[6px_6px_0px_rgba(130,201,61,1)] bg-black"
+                >
+                  <source src={`${url}#t=0.1`} type="video/mp4" />
+                </video>
               ))}
             </div>
           </div>
