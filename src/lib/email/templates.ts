@@ -166,6 +166,34 @@ export function signupApprovedEmail(opts: {
   }
 }
 
+// ─── Payslip delivery ───────────────────────────────────────────────────────
+export function payslipEmail(opts: {
+  recipientName: string
+  payType: 'salary' | 'stipend'
+  periodLabel: string // e.g. "June 2026"
+  net: string         // formatted, e.g. "₹25,000"
+  payslipNo: string
+  downloadUrl?: string
+}): RenderedEmail {
+  const word = opts.payType === 'stipend' ? 'stipend' : 'salary'
+  const bodyHtml = `
+    <p style="margin:0 0 12px;color:#334155;font-size:15px;line-height:1.6;">Hi ${esc(opts.recipientName)},</p>
+    <p style="margin:0 0 16px;color:#334155;font-size:15px;line-height:1.6;">
+      Your ${word} payslip for <strong style="color:${BRAND.ink};">${esc(opts.periodLabel)}</strong> is ready.
+    </p>
+    <div style="background:#f8fafc;border-left:4px solid ${BRAND.green};border-radius:8px;padding:14px 18px;margin:0 0 18px;">
+      <div style="color:#475569;font-size:13px;">Net ${word}</div>
+      <div style="color:${BRAND.ink};font-size:22px;font-weight:800;">${esc(opts.net)}</div>
+      <div style="color:#94a3b8;font-size:12px;margin-top:4px;">Payslip ${esc(opts.payslipNo)}</div>
+    </div>
+    ${opts.downloadUrl ? `<p style="margin:0;">${button('View / Download Payslip', opts.downloadUrl, BRAND.green)}</p>` : ''}`
+  return {
+    subject: `Payslip — ${opts.periodLabel}`,
+    html: layout({ heading: `Your ${opts.periodLabel} payslip`, accent: BRAND.green, bodyHtml }),
+    text: `Hi ${opts.recipientName},\n\nYour ${word} payslip for ${opts.periodLabel} is ready. Net: ${opts.net}. Payslip ${opts.payslipNo}.`,
+  }
+}
+
 // ─── Document delivery (certificate / offer letter) ─────────────────────────
 export function documentEmail(opts: {
   recipientName: string
