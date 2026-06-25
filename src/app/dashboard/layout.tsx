@@ -32,6 +32,7 @@ import {
   ChevronDown,
   MessageSquareMore,
   Briefcase,
+  Award,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import WelcomeScreen from '@/components/dashboard/WelcomeScreen'
@@ -182,6 +183,14 @@ const adminNavGroups: NavGroup[] = [
     icon: BookOpen,
     items: [
       { label: 'Course Management', href: '/dashboard/admin/courses', icon: BookOpen },
+    ],
+  },
+  {
+    id: 'documents',
+    label: 'Documents',
+    icon: Award,
+    items: [
+      { label: 'Certificate & Offer Letters', href: '/dashboard/admin/documents', icon: Award },
     ],
   },
   {
