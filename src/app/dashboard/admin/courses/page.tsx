@@ -423,109 +423,94 @@ export default function CoursesPage() {
           </p>
         </div>
       ) : (
-        <div className="grid gap-4">
-          {filtered.map((c) => (
-            <div
-              key={c.id}
-              className="bg-white border border-gray-200 rounded-2xl shadow-md hover:shadow-lg transition-shadow overflow-hidden"
-            >
-              <div className="p-5">
-                {/* Top row: title + actions */}
-                <div className="flex items-start justify-between gap-4 mb-3">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <h3 className="text-base font-bold text-primary truncate">
-                        {c.title}
-                      </h3>
-                      {c.slug && (
-                        <Link
-                          href={`/courses/${c.slug}`}
-                          target="_blank"
-                          className="inline-flex items-center gap-1 text-xs text-[#1A9AB5] hover:text-[#35C8E0] font-medium transition-colors shrink-0"
-                        >
-                          <ExternalLink size={12} />
-                          View Public Page
-                        </Link>
-                      )}
+        view === 'raw' ? (
+          /* ─── Raw view: compact data-dense table ─── */
+          <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="bg-gray-50 border-b border-gray-200 text-left">
+                    {['Course', 'Category', 'Status', 'Price', 'Students', 'Home Order', ''].map((h) => (
+                      <th key={h} className="py-3 px-4 text-[10px] font-black text-foreground/50 uppercase tracking-widest">{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {filtered.map((c) => (
+                    <tr key={c.id} className="border-b border-gray-100 hover:bg-gray-50/60">
+                      <td className="py-2.5 px-4 font-semibold text-primary">{c.title}</td>
+                      <td className="py-2.5 px-4 text-foreground/60">{categoryLabel(c.category)}</td>
+                      <td className="py-2.5 px-4"><StatusBadge status={c.status} /></td>
+                      <td className="py-2.5 px-4 text-foreground/70">₹{Number(displayPrice(c)).toLocaleString('en-IN')}</td>
+                      <td className="py-2.5 px-4 text-foreground/50">{enrollmentCount(c)}</td>
+                      <td className="py-2.5 px-4">
+                        {c.is_featured && c.display_order && c.display_order >= 1 && c.display_order <= 4
+                          ? <span className="text-xs font-bold text-[#82C93D]">Home #{c.display_order}</span>
+                          : <span className="text-xs text-foreground/30">—</span>}
+                      </td>
+                      <td className="py-2.5 px-4">
+                        <div className="flex items-center gap-1.5 justify-end">
+                          <button onClick={() => openEdit(c)} className="p-1.5 rounded-lg text-foreground/40 hover:text-primary hover:bg-primary/5" title="Edit"><Edit size={14} /></button>
+                          <button onClick={() => handleDelete(c.id)} className="p-1.5 rounded-lg text-foreground/40 hover:text-red-500 hover:bg-red-50" title="Delete"><Trash2 size={14} /></button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        ) : (
+          /* ─── Management view: image cards with order badge ─── */
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+            {filtered.map((c) => (
+              <div
+                key={c.id}
+                className="bg-white border border-gray-200 rounded-2xl shadow-md hover:shadow-lg transition-shadow overflow-hidden flex flex-col"
+              >
+                {/* Course image */}
+                <div className="relative aspect-video bg-gray-100">
+                  {c.thumbnail_url ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={c.thumbnail_url} alt={c.title} className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-gray-300">
+                      <ImageIcon size={32} />
                     </div>
-                    {c.description && (
-                      <p className="text-xs text-foreground/50 mt-1 line-clamp-1">
-                        {c.description}
-                      </p>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-1.5 shrink-0">
-                    <button
-                      onClick={() => openEdit(c)}
-                      className="p-2 rounded-xl text-foreground/40 hover:text-primary hover:bg-primary/5 transition-colors"
-                      title="Edit course"
-                    >
-                      <Edit size={15} />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(c.id)}
-                      className="p-2 rounded-xl text-foreground/40 hover:text-red-500 hover:bg-red-50 transition-colors"
-                      title="Delete course"
-                    >
-                      <Trash2 size={15} />
-                    </button>
-                  </div>
-                </div>
-
-                {/* Info chips row */}
-                <div className="flex items-center gap-2 flex-wrap">
-                  {/* Category */}
-                  <span className="inline-flex items-center gap-1 text-xs bg-gray-100 text-foreground/70 px-2.5 py-1 rounded-full font-medium">
-                    <Layers size={11} />
-                    {categoryLabel(c.category)}
-                  </span>
-
-                  {/* Status */}
-                  <StatusBadge status={c.status} />
-
-                  {/* Price */}
-                  <span className="inline-flex items-center gap-1 text-xs font-semibold text-primary bg-[#35C8E0]/10 px-2.5 py-1 rounded-full">
-                    <IndianRupee size={11} />
-                    {Number(displayPrice(c)).toLocaleString('en-IN')}
-                    {c.original_price != null &&
-                      c.original_price > (c.offer_price ?? c.price) && (
-                        <span className="text-foreground/30 line-through ml-1 font-normal">
-                          {Number(c.original_price).toLocaleString('en-IN')}
-                        </span>
-                      )}
-                  </span>
-
-                  {/* Students */}
-                  <span className="inline-flex items-center gap-1 text-xs text-foreground/50 px-2.5 py-1 rounded-full bg-gray-50">
-                    {enrollmentCount(c)} student{enrollmentCount(c) !== 1 ? 's' : ''}
-                  </span>
-
-                  {/* Batch start date */}
-                  {c.batch_start_date && (
-                    <span className="inline-flex items-center gap-1 text-xs text-foreground/50 px-2.5 py-1 rounded-full bg-gray-50">
-                      <Calendar size={11} />
-                      Batch:{' '}
-                      {new Date(c.batch_start_date).toLocaleDateString(
-                        'en-IN',
-                        { month: 'short', day: 'numeric', year: 'numeric' }
-                      )}
+                  )}
+                  {/* Home order badge */}
+                  {c.is_featured && c.display_order && c.display_order >= 1 && c.display_order <= 4 && (
+                    <span className="absolute top-2 left-2 inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-wider text-white bg-[#82C93D] border-2 border-black rounded-lg px-2 py-1 shadow-[2px_2px_0px_rgba(0,0,0,1)]">
+                      <Home size={11} /> Home #{c.display_order}
                     </span>
                   )}
+                  <span className="absolute top-2 right-2"><StatusBadge status={c.status} /></span>
+                </div>
 
-                  {/* Tech stack */}
-                  {c.tech_stack && c.tech_stack.length > 0 && (
-                    <span className="inline-flex items-center gap-1 text-xs text-foreground/50 px-2.5 py-1 rounded-full bg-gray-50">
-                      <Tag size={11} />
-                      {c.tech_stack.slice(0, 3).join(', ')}
-                      {c.tech_stack.length > 3 &&
-                        ` +${c.tech_stack.length - 3}`}
-                    </span>
+                <div className="p-4 flex flex-col flex-1">
+                  <div className="flex items-start justify-between gap-2">
+                    <h3 className="text-base font-bold text-primary truncate flex-1">{c.title}</h3>
+                    <div className="flex items-center gap-1 shrink-0">
+                      <button onClick={() => openEdit(c)} className="p-1.5 rounded-lg text-foreground/40 hover:text-primary hover:bg-primary/5" title="Edit course"><Edit size={14} /></button>
+                      <button onClick={() => handleDelete(c.id)} className="p-1.5 rounded-lg text-foreground/40 hover:text-red-500 hover:bg-red-50" title="Delete course"><Trash2 size={14} /></button>
+                    </div>
+                  </div>
+                  {c.description && <p className="text-xs text-foreground/50 mt-1 line-clamp-2">{c.description}</p>}
+                  <div className="flex items-center gap-2 flex-wrap mt-3">
+                    <span className="inline-flex items-center gap-1 text-xs bg-gray-100 text-foreground/70 px-2.5 py-1 rounded-full font-medium"><Layers size={11} />{categoryLabel(c.category)}</span>
+                    <span className="inline-flex items-center gap-1 text-xs font-semibold text-primary bg-[#35C8E0]/10 px-2.5 py-1 rounded-full"><IndianRupee size={11} />{Number(displayPrice(c)).toLocaleString('en-IN')}</span>
+                    <span className="inline-flex items-center gap-1 text-xs text-foreground/50 px-2.5 py-1 rounded-full bg-gray-50">{enrollmentCount(c)} student{enrollmentCount(c) !== 1 ? 's' : ''}</span>
+                  </div>
+                  {c.slug && (
+                    <Link href={`/courses/${c.slug}`} target="_blank" className="inline-flex items-center gap-1 text-xs text-[#1A9AB5] hover:text-[#35C8E0] font-medium mt-3">
+                      <ExternalLink size={12} /> View Public Page
+                    </Link>
                   )}
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )
       )}
 
       {/* Modal */}
