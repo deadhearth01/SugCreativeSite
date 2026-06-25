@@ -116,6 +116,14 @@ function CertificateLayout({ data }: { data: DocumentPreviewData }) {
   const sz = fitSizes(data.recipientName)
   return (
     <div className="relative aspect-[1.414/1] w-full bg-white overflow-hidden border-[3px] border-[#1A9AB5]">
+      {/* Decorative background flourish */}
+      <Image
+        src="/illustrations/certificate-background-flourish.png"
+        alt=""
+        fill
+        aria-hidden
+        className="object-cover opacity-[0.07] pointer-events-none select-none"
+      />
       {/* Inner hairline frame */}
       <div className="absolute inset-2 border border-[#82C93D]/50 pointer-events-none" />
 
