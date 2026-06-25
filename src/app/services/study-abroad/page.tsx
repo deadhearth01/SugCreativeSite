@@ -3,6 +3,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { useState } from 'react'
+import { motion, AnimatePresence, type Variants } from 'motion/react'
 import {
   ArrowUpRight,
   Plane,
@@ -35,6 +36,54 @@ import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import AnimatedSection from '@/components/AnimatedSection'
 import { Button } from '@/components/ui/button'
+import { NumberTicker } from '@/components/ui/number-ticker'
+
+/* ──────────────────────────────────────────────
+   MOTION HELPERS
+   ────────────────────────────────────────────── */
+
+// Shared stagger container for grouped reveals
+const staggerContainer: Variants = {
+  hidden: {},
+  show: {
+    transition: { staggerChildren: 0.08, delayChildren: 0.05 },
+  },
+}
+
+// Generic "rise up + fade" child used inside staggered groups
+const riseItem: Variants = {
+  hidden: { opacity: 0, y: 28 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: { type: 'spring', stiffness: 90, damping: 16 },
+  },
+}
+
+// Parse a display stat like "2022", "100%", "7+", "₹0", "1:1" into a count-up
+// config. Returns null when the value isn't a clean number to animate.
+function parseStat(value: string): { number: number; prefix: string; suffix: string } | null {
+  const match = value.match(/^(\D*?)(\d[\d,]*)(\D*)$/)
+  if (!match) return null
+  const number = Number(match[2].replace(/,/g, ''))
+  if (!Number.isFinite(number)) return null
+  // Skip ratios / non-count-up shapes (e.g. "1:1") to avoid odd animations
+  if (match[3].includes(':') || match[1].includes(':')) return null
+  return { number, prefix: match[1], suffix: match[3] }
+}
+
+function StatValue({ value, className }: { value: string; className?: string }) {
+  const parsed = parseStat(value)
+  if (!parsed) return <span className={className}>{value}</span>
+  return (
+    <NumberTicker
+      value={parsed.number}
+      prefix={parsed.prefix}
+      suffix={parsed.suffix}
+      className={className}
+    />
+  )
+}
 
 /* ──────────────────────────────────────────────
    DATA
@@ -231,13 +280,23 @@ export default function StudyAbroadPage() {
         />
 
         <div className="container-wide relative z-10">
-          <AnimatedSection>
-            {/* Boarding pass card */}
-            <div className="bg-white border-2 border-primary-dark rounded-3xl shadow-[10px_10px_0px_rgba(0,0,0,1)] overflow-hidden grid lg:grid-cols-[1fr_300px]">
+          {/* Boarding pass card */}
+          <motion.div
+            initial={{ opacity: 0, y: 50, rotateX: 6 }}
+            animate={{ opacity: 1, y: 0, rotateX: 0 }}
+            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+            style={{ transformPerspective: 1200 }}
+            className="bg-white border-2 border-primary-dark rounded-3xl shadow-[10px_10px_0px_rgba(0,0,0,1)] overflow-hidden grid lg:grid-cols-[1fr_300px]"
+          >
               {/* Main */}
-              <div className="p-8 sm:p-12 lg:p-14">
+              <motion.div
+                variants={staggerContainer}
+                initial="hidden"
+                animate="show"
+                className="p-8 sm:p-12 lg:p-14"
+              >
                 {/* Route */}
-                <div className="flex items-center gap-4 sm:gap-6 mb-8">
+                <motion.div variants={riseItem} className="flex items-center gap-4 sm:gap-6 mb-8">
                   <div>
                     <div className="font-heading font-black text-2xl sm:text-3xl text-primary-dark tracking-tight">RJY</div>
                     <div className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-primary-dark/50 mt-1">
@@ -246,9 +305,14 @@ export default function StudyAbroadPage() {
                   </div>
                   <div className="flex-1 relative flex items-center" aria-hidden="true">
                     <div className="w-full border-t-2 border-dashed border-primary-dark/30" />
-                    <div className="absolute left-1/2 -translate-x-1/2 bg-[#82C93D] text-primary-dark rounded-full p-2 border-2 border-primary-dark shadow-[2px_2px_0px_rgba(0,0,0,1)]">
+                    <motion.div
+                      className="absolute left-1/2 bg-[#82C93D] text-primary-dark rounded-full p-2 border-2 border-primary-dark shadow-[2px_2px_0px_rgba(0,0,0,1)]"
+                      initial={{ x: '-50%' }}
+                      animate={{ x: '-50%', y: [0, -5, 0], rotate: [0, 4, 0] }}
+                      transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut' }}
+                    >
                       <Plane size={18} className="rotate-90" />
-                    </div>
+                    </motion.div>
                   </div>
                   <div className="text-right">
                     <div className="font-heading font-black text-2xl sm:text-3xl text-primary tracking-tight">???</div>
@@ -256,24 +320,24 @@ export default function StudyAbroadPage() {
                       Your dream university
                     </div>
                   </div>
-                </div>
+                </motion.div>
 
-                <div className="inline-flex items-center gap-2 bg-white text-primary font-black text-[10px] uppercase tracking-widest px-4 py-2 mb-6 rounded-full shadow-[3px_3px_0px_rgba(0,0,0,1)] border-2 border-primary-dark">
+                <motion.div variants={riseItem} className="inline-flex items-center gap-2 bg-white text-primary font-black text-[10px] uppercase tracking-widest px-4 py-2 mb-6 rounded-full shadow-[3px_3px_0px_rgba(0,0,0,1)] border-2 border-primary-dark">
                   <span className="w-2 h-2 bg-[#82C93D] rounded-full animate-pulse" />
                   New Division · Now Boarding
-                </div>
+                </motion.div>
 
-                <h1 className="font-heading font-black text-primary-dark tracking-tight text-4xl sm:text-5xl lg:text-6xl leading-[1.05] mb-6">
+                <motion.h1 variants={riseItem} className="font-heading font-black text-primary-dark tracking-tight text-4xl sm:text-5xl lg:text-6xl leading-[1.05] mb-6">
                   Your boarding pass to a <span className="text-[#82C93D]">global</span> education.
-                </h1>
+                </motion.h1>
 
-                <p className="text-primary-dark/70 text-lg font-bold leading-relaxed max-w-xl mb-8 border-l-4 border-primary pl-5">
+                <motion.p variants={riseItem} className="text-primary-dark/70 text-lg font-bold leading-relaxed max-w-xl mb-8 border-l-4 border-primary pl-5">
                   SUG Creative is opening a dedicated Study Abroad practice — built on the same career-guidance and
                   skills foundation that has helped students land roles at Google, Bosch, WatchGuard and Accenture.
                   Now, we take that expertise overseas.
-                </p>
+                </motion.p>
 
-                <div className="flex flex-col sm:flex-row gap-4 mb-10">
+                <motion.div variants={riseItem} className="flex flex-col sm:flex-row gap-4 mb-10">
                   <Button
                     asChild
                     size="lg"
@@ -291,10 +355,10 @@ export default function StudyAbroadPage() {
                   >
                     <Link href="#destinations">Explore Destinations</Link>
                   </Button>
-                </div>
+                </motion.div>
 
                 {/* Pass footer details */}
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-5 border-t-2 border-dashed border-primary-dark/20 pt-6">
+                <motion.div variants={riseItem} className="grid grid-cols-2 sm:grid-cols-4 gap-5 border-t-2 border-dashed border-primary-dark/20 pt-6">
                   {[
                     { k: 'Passenger', v: 'You, the Applicant' },
                     { k: 'Class', v: 'Free Counselling' },
@@ -308,8 +372,8 @@ export default function StudyAbroadPage() {
                       </div>
                     </div>
                   ))}
-                </div>
-              </div>
+                </motion.div>
+              </motion.div>
 
               {/* Stub */}
               <div className="relative bg-primary-dark text-white p-8 sm:p-10 flex flex-row lg:flex-col items-center lg:items-start justify-between gap-6">
@@ -323,7 +387,11 @@ export default function StudyAbroadPage() {
                   <div className="text-[10px] font-black uppercase tracking-widest text-[#82C93D]">Seat</div>
                   <div className="font-black text-base">Reserved · Free</div>
                 </div>
-                <div className="w-24 h-24 rounded-full border-2 border-dashed border-[#82C93D] flex items-center justify-center text-center -rotate-12 shrink-0">
+                <motion.div
+                  className="w-24 h-24 rounded-full border-2 border-dashed border-[#82C93D] flex items-center justify-center text-center shrink-0"
+                  animate={{ rotate: [-12, -4, -12], y: [0, -4, 0] }}
+                  transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+                >
                   <span className="text-[10px] font-black uppercase tracking-wider text-[#82C93D] leading-tight">
                     SUG
                     <br />
@@ -331,25 +399,32 @@ export default function StudyAbroadPage() {
                     <br />
                     Est. 2022
                   </span>
-                </div>
+                </motion.div>
               </div>
-            </div>
-          </AnimatedSection>
+          </motion.div>
 
           {/* Trust strip */}
-          <AnimatedSection delay={0.15}>
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-5 mt-8">
-              {trustStrip.map((t) => (
-                <div
-                  key={t.label}
-                  className="bg-white border-2 border-black rounded-3xl p-6 shadow-[4px_4px_0px_rgba(0,0,0,1)]"
-                >
-                  <div className="text-3xl md:text-4xl font-heading font-black text-primary mb-2">{t.value}</div>
-                  <div className="text-xs font-bold text-primary-dark/60 leading-relaxed">{t.label}</div>
+          <motion.div
+            variants={staggerContainer}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, amount: 0.3 }}
+            className="grid grid-cols-2 lg:grid-cols-4 gap-5 mt-8"
+          >
+            {trustStrip.map((t) => (
+              <motion.div
+                key={t.label}
+                variants={riseItem}
+                whileHover={{ y: -4 }}
+                className="bg-white border-2 border-black rounded-3xl p-6 shadow-[4px_4px_0px_rgba(0,0,0,1)]"
+              >
+                <div className="text-3xl md:text-4xl font-heading font-black text-primary mb-2">
+                  <StatValue value={t.value} />
                 </div>
-              ))}
-            </div>
-          </AnimatedSection>
+                <div className="text-xs font-bold text-primary-dark/60 leading-relaxed">{t.label}</div>
+              </motion.div>
+            ))}
+          </motion.div>
         </div>
       </section>
 
@@ -373,20 +448,30 @@ export default function StudyAbroadPage() {
             </div>
           </AnimatedSection>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {whyAbroad.map((card, i) => (
-              <AnimatedSection key={card.title} delay={i * 0.08}>
-                <div className="bg-white border-2 border-primary-dark/80 p-8 rounded-3xl shadow-[5px_5px_0px_rgba(0,0,0,0.8)] hover:-translate-y-1.5 hover:shadow-[8px_8px_0px_rgba(0,0,0,0.8)] transition-all duration-300 h-full relative overflow-hidden group">
-                  <div className="absolute top-0 left-0 right-0 h-1 bg-[#82C93D]" />
-                  <div className="w-14 h-14 flex items-center justify-center rounded-2xl border-2 border-primary-dark mb-6 bg-primary text-white shadow-[3px_3px_0px_rgba(0,0,0,0.15)] group-hover:scale-110 transition-transform">
-                    <card.icon size={24} />
-                  </div>
-                  <h3 className="text-lg font-heading font-black text-primary-dark mb-3">{card.title}</h3>
-                  <p className="text-primary-dark/70 text-sm font-bold leading-relaxed">{card.desc}</p>
+          <motion.div
+            variants={staggerContainer}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, amount: 0.2 }}
+            className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6"
+          >
+            {whyAbroad.map((card) => (
+              <motion.div
+                key={card.title}
+                variants={riseItem}
+                whileHover={{ y: -6 }}
+                transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                className="bg-white border-2 border-primary-dark/80 p-8 rounded-3xl shadow-[5px_5px_0px_rgba(0,0,0,0.8)] hover:shadow-[8px_8px_0px_rgba(0,0,0,0.8)] transition-shadow duration-300 h-full relative overflow-hidden group"
+              >
+                <div className="absolute top-0 left-0 right-0 h-1 bg-[#82C93D]" />
+                <div className="w-14 h-14 flex items-center justify-center rounded-2xl border-2 border-primary-dark mb-6 bg-primary text-white shadow-[3px_3px_0px_rgba(0,0,0,0.15)] group-hover:scale-110 transition-transform">
+                  <card.icon size={24} />
                 </div>
-              </AnimatedSection>
+                <h3 className="text-lg font-heading font-black text-primary-dark mb-3">{card.title}</h3>
+                <p className="text-primary-dark/70 text-sm font-bold leading-relaxed">{card.desc}</p>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
       </section>
 
@@ -409,10 +494,42 @@ export default function StudyAbroadPage() {
             </div>
           </AnimatedSection>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {destinations.map((d, i) => (
-              <AnimatedSection key={d.country} delay={i * 0.06}>
-                <div className="relative bg-white border-2 border-black rounded-3xl shadow-[6px_6px_0px_rgba(0,0,0,1)] hover:-translate-y-1.5 hover:shadow-[9px_9px_0px_rgba(0,0,0,1)] transition-all duration-300 h-full overflow-hidden">
+          <motion.div
+            variants={staggerContainer}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, amount: 0.1 }}
+            className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+          >
+            {destinations.map((d) => (
+              <motion.div
+                key={d.country}
+                variants={riseItem}
+                initial="rest"
+                whileHover="hover"
+                animate="rest"
+                className="h-full"
+              >
+                <motion.div
+                  variants={{
+                    rest: { y: 0, rotate: 0, scale: 1, boxShadow: '6px 6px 0px rgba(0,0,0,1)' },
+                    hover: { y: -8, rotate: -1, scale: 1.02, boxShadow: '11px 11px 0px rgba(0,0,0,1)' },
+                  }}
+                  transition={{ type: 'spring', stiffness: 280, damping: 18 }}
+                  className="relative bg-white border-2 border-black rounded-3xl h-full overflow-hidden"
+                >
+                  {/* Boarding stamp — appears on hover */}
+                  <motion.div
+                    aria-hidden="true"
+                    variants={{
+                      rest: { opacity: 0, scale: 1.6, rotate: -8 },
+                      hover: { opacity: 1, scale: 1, rotate: -14 },
+                    }}
+                    transition={{ type: 'spring', stiffness: 240, damping: 14 }}
+                    className="pointer-events-none absolute top-4 right-4 z-10 px-2.5 py-1 rounded-md border-2 border-[#82C93D] text-[#82C93D] font-heading font-black text-[10px] uppercase tracking-widest"
+                  >
+                    Boarding
+                  </motion.div>
                   {/* Ticket top */}
                   <div className="relative p-6 border-b-2 border-dashed border-black/20">
                     <div className="h-1.5 w-12 rounded-full mb-4" style={{ backgroundColor: d.accent }} />
@@ -420,7 +537,19 @@ export default function StudyAbroadPage() {
                       <MapPin size={14} />
                       <span className="font-heading font-black text-sm tracking-widest text-primary-dark">{d.code}</span>
                     </div>
-                    <div className="font-heading font-black text-xl text-primary-dark tracking-tight">{d.country}</div>
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="font-heading font-black text-xl text-primary-dark tracking-tight">{d.country}</div>
+                      <motion.span
+                        variants={{
+                          rest: { opacity: 0, x: -6 },
+                          hover: { opacity: 1, x: 0 },
+                        }}
+                        transition={{ duration: 0.25 }}
+                        className="text-primary shrink-0"
+                      >
+                        <PlaneTakeoff size={18} />
+                      </motion.span>
+                    </div>
                     {/* notches */}
                     <div className="absolute -left-3 -bottom-3 w-6 h-6 rounded-full bg-[#F0F2E8] border-2 border-black" aria-hidden="true" />
                     <div className="absolute -right-3 -bottom-3 w-6 h-6 rounded-full bg-[#F0F2E8] border-2 border-black" aria-hidden="true" />
@@ -438,15 +567,15 @@ export default function StudyAbroadPage() {
                       </div>
                     ))}
                   </div>
-                </div>
-              </AnimatedSection>
+                </motion.div>
+              </motion.div>
             ))}
 
             {/* "Not sure" CTA ticket */}
-            <AnimatedSection delay={destinations.length * 0.06}>
+            <motion.div variants={riseItem} whileHover={{ y: -8 }} transition={{ type: 'spring', stiffness: 280, damping: 18 }} className="h-full">
               <Link
                 href="/contact"
-                className="relative bg-primary-dark border-2 border-black rounded-3xl shadow-[6px_6px_0px_rgba(130,201,61,1)] hover:-translate-y-1.5 hover:shadow-[9px_9px_0px_rgba(130,201,61,1)] transition-all duration-300 h-full flex flex-col justify-center items-start p-6 text-white group"
+                className="relative bg-primary-dark border-2 border-black rounded-3xl shadow-[6px_6px_0px_rgba(130,201,61,1)] hover:shadow-[9px_9px_0px_rgba(130,201,61,1)] transition-shadow duration-300 h-full flex flex-col justify-center items-start p-6 text-white group"
               >
                 <Compass size={32} className="text-[#82C93D] mb-4" />
                 <div className="font-heading font-black text-xl tracking-tight mb-2">Not sure where to go?</div>
@@ -458,8 +587,8 @@ export default function StudyAbroadPage() {
                   <ArrowUpRight size={16} className="transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
                 </span>
               </Link>
-            </AnimatedSection>
-          </div>
+            </motion.div>
+          </motion.div>
         </div>
       </section>
 
@@ -496,26 +625,36 @@ export default function StudyAbroadPage() {
             </AnimatedSection>
 
             {/* Right: itinerary legs */}
-            <div className="grid sm:grid-cols-2 gap-5">
-              {itinerary.map((leg, i) => (
-                <AnimatedSection key={leg.num} delay={i * 0.06}>
-                  <div className="flex gap-4 bg-white border-2 border-primary-dark/80 rounded-3xl p-6 shadow-[4px_4px_0px_rgba(0,0,0,0.8)] hover:-translate-y-1 hover:shadow-[6px_6px_0px_rgba(0,0,0,0.8)] transition-all duration-300 h-full">
-                    <div className="shrink-0">
-                      <div className="w-12 h-12 rounded-2xl bg-primary-dark text-[#82C93D] border-2 border-black flex items-center justify-center font-heading font-black text-sm shadow-[2px_2px_0px_rgba(0,0,0,0.2)]">
-                        {leg.num}
-                      </div>
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-2 mb-1.5">
-                        <leg.icon size={16} className="text-primary" />
-                        <h3 className="font-heading font-black text-primary-dark text-base leading-tight">{leg.title}</h3>
-                      </div>
-                      <p className="text-primary-dark/65 text-sm font-bold leading-relaxed">{leg.desc}</p>
+            <motion.div
+              variants={staggerContainer}
+              initial="hidden"
+              whileInView="show"
+              viewport={{ once: true, amount: 0.15 }}
+              className="grid sm:grid-cols-2 gap-5"
+            >
+              {itinerary.map((leg) => (
+                <motion.div
+                  key={leg.num}
+                  variants={riseItem}
+                  whileHover={{ y: -5 }}
+                  transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                  className="flex gap-4 bg-white border-2 border-primary-dark/80 rounded-3xl p-6 shadow-[4px_4px_0px_rgba(0,0,0,0.8)] hover:shadow-[6px_6px_0px_rgba(0,0,0,0.8)] transition-shadow duration-300 h-full group"
+                >
+                  <div className="shrink-0">
+                    <div className="w-12 h-12 rounded-2xl bg-primary-dark text-[#82C93D] border-2 border-black flex items-center justify-center font-heading font-black text-sm shadow-[2px_2px_0px_rgba(0,0,0,0.2)]">
+                      {leg.num}
                     </div>
                   </div>
-                </AnimatedSection>
+                  <div>
+                    <div className="flex items-center gap-2 mb-1.5">
+                      <leg.icon size={16} className="text-primary group-hover:scale-110 transition-transform" />
+                      <h3 className="font-heading font-black text-primary-dark text-base leading-tight">{leg.title}</h3>
+                    </div>
+                    <p className="text-primary-dark/65 text-sm font-bold leading-relaxed">{leg.desc}</p>
+                  </div>
+                </motion.div>
               ))}
-            </div>
+            </motion.div>
           </div>
         </div>
       </section>
@@ -547,21 +686,58 @@ export default function StudyAbroadPage() {
             </div>
           </AnimatedSection>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
-            {flightPath.map((step, i) => (
-              <AnimatedSection key={step.num} delay={i * 0.08}>
-                <div className="relative bg-white/5 backdrop-blur-sm border-2 border-white/10 rounded-3xl p-6 h-full hover:bg-white/10 transition-colors duration-300 group">
+          <div className="relative">
+            {/* Drawn flight path connecting the steps (lg+) */}
+            <svg
+              aria-hidden="true"
+              className="hidden lg:block absolute left-0 right-0 top-[26px] w-full h-12 z-0 pointer-events-none"
+              viewBox="0 0 1200 40"
+              preserveAspectRatio="none"
+              fill="none"
+            >
+              <motion.path
+                d="M40 30 C 240 -10, 360 50, 560 20 S 880 -10, 1160 28"
+                stroke="#82C93D"
+                strokeWidth="2.5"
+                strokeDasharray="8 8"
+                strokeLinecap="round"
+                initial={{ pathLength: 0, opacity: 0 }}
+                whileInView={{ pathLength: 1, opacity: 0.55 }}
+                viewport={{ once: true, amount: 0.4 }}
+                transition={{ duration: 2, ease: 'easeInOut' }}
+              />
+            </svg>
+
+            <motion.div
+              variants={staggerContainer}
+              initial="hidden"
+              whileInView="show"
+              viewport={{ once: true, amount: 0.15 }}
+              className="relative z-10 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6"
+            >
+              {flightPath.map((step) => (
+                <motion.div
+                  key={step.num}
+                  variants={riseItem}
+                  whileHover={{ y: -6 }}
+                  transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                  className="relative bg-white/5 backdrop-blur-sm border-2 border-white/10 rounded-3xl p-6 h-full hover:bg-white/10 transition-colors duration-300 group"
+                >
                   <div className="text-5xl font-heading font-black text-white/[0.06] absolute top-3 right-4 leading-none select-none group-hover:text-[#82C93D]/20 transition-colors">
                     {step.num}
                   </div>
-                  <div className="w-12 h-12 bg-[#82C93D] text-primary-dark rounded-2xl flex items-center justify-center border-2 border-black mb-5">
+                  <motion.div
+                    whileHover={{ rotate: -8, scale: 1.08 }}
+                    transition={{ type: 'spring', stiffness: 300, damping: 12 }}
+                    className="w-12 h-12 bg-[#82C93D] text-primary-dark rounded-2xl flex items-center justify-center border-2 border-black mb-5"
+                  >
                     <step.icon size={22} />
-                  </div>
+                  </motion.div>
                   <h3 className="font-heading font-black text-white text-lg mb-2">{step.title}</h3>
                   <p className="text-white/60 text-sm font-bold leading-relaxed">{step.desc}</p>
-                </div>
-              </AnimatedSection>
-            ))}
+                </motion.div>
+              ))}
+            </motion.div>
           </div>
         </div>
       </section>
@@ -600,8 +776,12 @@ export default function StudyAbroadPage() {
               </div>
               {/* Rows */}
               {compareRows.map((row, i) => (
-                <div
+                <motion.div
                   key={row.label}
+                  initial={{ opacity: 0, x: -24 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true, amount: 0.5 }}
+                  transition={{ duration: 0.45, delay: i * 0.07, ease: [0.22, 1, 0.36, 1] }}
                   className={`grid grid-cols-1 md:grid-cols-[1.2fr_1fr_1.2fr] ${
                     i % 2 === 0 ? 'bg-white' : 'bg-[#F0F2E8]'
                   } border-t-2 border-black/10`}
@@ -621,7 +801,7 @@ export default function StudyAbroadPage() {
                     </span>
                     {row.sug}
                   </div>
-                </div>
+                </motion.div>
               ))}
             </div>
           </AnimatedSection>
@@ -670,14 +850,27 @@ export default function StudyAbroadPage() {
                   <p className="text-white/60 text-sm font-bold mb-8 max-w-[260px]">
                     Career guidance · Domain training · Startup incubation · Study Abroad
                   </p>
-                  <div className="grid grid-cols-2 gap-5">
+                  <motion.div
+                    variants={staggerContainer}
+                    initial="hidden"
+                    whileInView="show"
+                    viewport={{ once: true, amount: 0.4 }}
+                    className="grid grid-cols-2 gap-5"
+                  >
                     {glanceStats.map((s) => (
-                      <div key={s.label} className="bg-white/5 border-2 border-white/10 rounded-2xl p-5">
-                        <div className="font-heading font-black text-3xl text-[#82C93D] mb-1">{s.value}</div>
+                      <motion.div
+                        key={s.label}
+                        variants={riseItem}
+                        whileHover={{ scale: 1.03 }}
+                        className="bg-white/5 border-2 border-white/10 rounded-2xl p-5"
+                      >
+                        <div className="font-heading font-black text-3xl text-[#82C93D] mb-1">
+                          <StatValue value={s.value} />
+                        </div>
                         <div className="text-xs font-bold text-white/60 leading-snug">{s.label}</div>
-                      </div>
+                      </motion.div>
                     ))}
-                  </div>
+                  </motion.div>
                 </div>
               </div>
             </AnimatedSection>
@@ -722,19 +915,33 @@ export default function StudyAbroadPage() {
                         className="w-full flex items-center justify-between gap-4 text-left p-6 cursor-pointer"
                       >
                         <span className="font-heading font-black text-primary-dark text-base md:text-lg">{faq.q}</span>
-                        <span
-                          className={`shrink-0 w-9 h-9 rounded-full border-2 border-black flex items-center justify-center transition-colors ${
-                            isOpen ? 'bg-[#82C93D] text-primary-dark' : 'bg-white text-primary-dark'
-                          }`}
+                        <motion.span
+                          animate={{
+                            backgroundColor: isOpen ? '#82C93D' : '#ffffff',
+                            rotate: isOpen ? 180 : 0,
+                          }}
+                          transition={{ duration: 0.3 }}
+                          className="shrink-0 w-9 h-9 rounded-full border-2 border-black flex items-center justify-center text-primary-dark"
                         >
                           {isOpen ? <Minus size={18} /> : <Plus size={18} />}
-                        </span>
+                        </motion.span>
                       </button>
-                      {isOpen && (
-                        <div className="px-6 pb-6 -mt-1">
-                          <p className="text-primary-dark/70 text-sm md:text-base font-bold leading-relaxed">{faq.a}</p>
-                        </div>
-                      )}
+                      <AnimatePresence initial={false}>
+                        {isOpen && (
+                          <motion.div
+                            key="panel"
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: 'auto', opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
+                            className="overflow-hidden"
+                          >
+                            <div className="px-6 pb-6 -mt-1">
+                              <p className="text-primary-dark/70 text-sm md:text-base font-bold leading-relaxed">{faq.a}</p>
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
                     </div>
                   )
                 })}
@@ -790,9 +997,20 @@ export default function StudyAbroadPage() {
                 </div>
 
                 {/* Boarding pass request card */}
-                <div className="bg-white border-2 border-black rounded-3xl shadow-[10px_10px_0px_rgba(130,201,61,1)] p-8 md:p-10">
+                <motion.div
+                  initial={{ opacity: 0, y: 36, scale: 0.97 }}
+                  whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                  viewport={{ once: true, amount: 0.3 }}
+                  transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                  className="bg-white border-2 border-black rounded-3xl shadow-[10px_10px_0px_rgba(130,201,61,1)] p-8 md:p-10"
+                >
                   <div className="flex items-center gap-2 text-primary font-black text-[10px] uppercase tracking-widest mb-5">
-                    <Plane size={14} className="rotate-90" />
+                    <motion.span
+                      animate={{ y: [0, -3, 0] }}
+                      transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
+                    >
+                      <Plane size={14} className="rotate-90" />
+                    </motion.span>
                     Boarding Pass Request
                   </div>
                   <h3 className="font-heading font-black text-2xl text-primary-dark mb-3">
@@ -826,7 +1044,7 @@ export default function StudyAbroadPage() {
                   <p className="text-primary-dark/50 text-xs font-bold text-center mt-4">
                     No spam, no obligation — just a real conversation with a counsellor.
                   </p>
-                </div>
+                </motion.div>
               </div>
             </div>
           </AnimatedSection>
