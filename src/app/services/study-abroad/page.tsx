@@ -612,13 +612,13 @@ export default function StudyAbroadPage() {
                 </p>
                 <div className="relative aspect-[4/3] rounded-3xl border-2 border-black shadow-[10px_10px_0px_rgba(130,201,61,1)] overflow-hidden group">
                   <Image
-                    src="https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=900&h=600&fit=crop"
-                    alt="Students walking across a university campus"
+                    src="/illustrations/study-abroad-hero.png"
+                    alt="Student beginning their study-abroad journey"
                     fill
                     sizes="(max-width: 1024px) 100vw, 40vw"
-                    className="object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105"
+                    className="object-cover transition-transform duration-700 group-hover:scale-105"
                   />
-                  <div className="absolute inset-0 bg-primary-dark/20 group-hover:opacity-0 transition-opacity" />
+                  <div className="absolute inset-0 bg-primary-dark/10 group-hover:opacity-0 transition-opacity" />
                   <div className="absolute bottom-0 left-0 right-0 h-1.5 bg-[#82C93D]" />
                 </div>
               </div>
