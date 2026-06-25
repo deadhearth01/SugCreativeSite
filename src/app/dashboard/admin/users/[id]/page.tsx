@@ -1,18 +1,19 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import {
   ArrowLeft, User, Mail, Phone, Calendar, Tag, Shield, Activity,
   FileText, GraduationCap, Briefcase, DollarSign, Clock, CheckCircle,
   AlertCircle, Edit, Ban, Trash2, KeyRound, MoreVertical, Building,
-  BookOpen, Award, Users, MessageSquare, Target, TrendingUp, Loader2
+  BookOpen, Award, Users, MessageSquare, Target, TrendingUp, Loader2, Plus
 } from 'lucide-react'
 import { PageHeader, StatusBadge } from '@/components/dashboard/DashboardUI'
 import { createClient } from '@/lib/supabase/client'
 
 type Profile = {
   id: string
+  display_id: string | null
   full_name: string
   email: string
   role: 'admin' | 'student' | 'client' | 'mentor' | 'employee' | 'intern'
@@ -21,6 +22,8 @@ type Profile = {
   avatar_url: string | null
   bio: string | null
   tags: string[]
+  monthly_pay: number | null
+  pay_type: 'salary' | 'stipend' | null
   metadata: Record<string, unknown>
   created_at: string
   updated_at: string
@@ -76,6 +79,7 @@ const roleTabs: Record<string, { key: string; label: string; icon: React.ReactNo
     { key: 'overview', label: 'Overview', icon: <User size={18} /> },
     { key: 'tasks', label: 'Tasks', icon: <Target size={18} /> },
     { key: 'attendance', label: 'Attendance', icon: <Clock size={18} /> },
+    { key: 'payments', label: 'Payments', icon: <DollarSign size={18} /> },
     { key: 'performance', label: 'Performance', icon: <TrendingUp size={18} /> },
     { key: 'meetings', label: 'Meetings', icon: <Calendar size={18} /> },
   ],
@@ -84,6 +88,7 @@ const roleTabs: Record<string, { key: string; label: string; icon: React.ReactNo
     { key: 'tasks', label: 'Tasks', icon: <Target size={18} /> },
     { key: 'learning', label: 'Learning Progress', icon: <BookOpen size={18} /> },
     { key: 'attendance', label: 'Attendance', icon: <Clock size={18} /> },
+    { key: 'payments', label: 'Payments', icon: <DollarSign size={18} /> },
     { key: 'reports', label: 'Reports', icon: <FileText size={18} /> },
   ],
 }
@@ -307,6 +312,11 @@ export default function UserDetailPage() {
                   {roleLabels[user.role]}
                 </span>
                 <StatusBadge status={user.status} />
+                {user.display_id && (
+                  <span className="text-xs font-mono font-bold text-[#1A9AB5] bg-[#35C8E0]/10 border border-[#35C8E0]/30 rounded-md px-2.5 py-1">
+                    {user.display_id}
+                  </span>
+                )}
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
@@ -728,8 +738,14 @@ export default function UserDetailPage() {
             </div>
           )}
 
+          {/* Payments — salary/stipend + payslip generation (employee/intern/student) */}
+          {activeTab === 'payments' && ['employee', 'intern', 'student'].includes(user.role) && (
+            <UserPaymentsTab user={user} onUserUpdate={(u) => setUser(u)} />
+          )}
+
           {/* Default content for other tabs */}
-          {!['overview', 'courses', 'tasks', 'attendance', 'projects', 'security', 'activity'].includes(activeTab) && (
+          {!['overview', 'courses', 'tasks', 'attendance', 'projects', 'security', 'activity'].includes(activeTab) &&
+            !(activeTab === 'payments' && ['employee', 'intern', 'student'].includes(user.role)) && (
             <div className="bg-white border border-border rounded-xl p-8 text-center">
               <div className="w-16 h-16 rounded-xl bg-off-white flex items-center justify-center mx-auto mb-4">
                 <FileText size={24} className="text-foreground/30" />
@@ -770,6 +786,193 @@ function ActivityItem({ icon, text, time }: { icon: React.ReactNode; text: strin
       <div className="flex-1">
         <p className="text-sm text-foreground/70">{text}</p>
         <p className="text-xs text-foreground/40">{time}</p>
+      </div>
+    </div>
+  )
+}
+
+const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+
+type PayslipRow = {
+  id: string
+  payslip_no: string
+  period_month: number
+  period_year: number
+  gross: number
+  total_deductions: number
+  net: number
+  pay_type: 'salary' | 'stipend'
+  status: string
+}
+
+// Payments tab: set the person's salary/stipend (the "salary algorithm" that
+// auto-applies to their payslips) and generate individual payslips.
+function UserPaymentsTab({ user, onUserUpdate }: { user: Profile; onUserUpdate: (u: Profile) => void }) {
+  const isIntern = user.role === 'intern'
+  const defaultType: 'salary' | 'stipend' = isIntern ? 'stipend' : 'salary'
+
+  const [pay, setPay] = useState<string>(user.monthly_pay != null ? String(user.monthly_pay) : '')
+  const [payType, setPayType] = useState<'salary' | 'stipend'>(user.pay_type || defaultType)
+  const [savingPay, setSavingPay] = useState(false)
+
+  const [slips, setSlips] = useState<PayslipRow[]>([])
+  const [loadingSlips, setLoadingSlips] = useState(true)
+  const [msg, setMsg] = useState<{ kind: 'ok' | 'err'; text: string } | null>(null)
+
+  const now = new Date()
+  const [genMonth, setGenMonth] = useState(now.getMonth() + 1)
+  const [genYear, setGenYear] = useState(now.getFullYear())
+  const [generating, setGenerating] = useState(false)
+  const [showGen, setShowGen] = useState(false)
+
+  const flash = (kind: 'ok' | 'err', text: string) => { setMsg({ kind, text }); setTimeout(() => setMsg(null), 5000) }
+
+  const loadSlips = useCallback(async () => {
+    setLoadingSlips(true)
+    try {
+      const res = await fetch(`/api/payslips?recipient_id=${user.id}`)
+      const json = await res.json()
+      setSlips(res.ok ? (json.data || []) : [])
+    } catch { setSlips([]) } finally { setLoadingSlips(false) }
+  }, [user.id])
+
+  useEffect(() => { loadSlips() }, [loadSlips])
+
+  const savePay = async () => {
+    setSavingPay(true)
+    try {
+      const res = await fetch(`/api/admin/users/${user.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ monthly_pay: pay === '' ? null : Number(pay), pay_type: pay === '' ? null : payType }),
+      })
+      const json = await res.json()
+      if (!res.ok) { flash('err', json.error || 'Failed to save'); return }
+      onUserUpdate({ ...user, monthly_pay: pay === '' ? null : Number(pay), pay_type: pay === '' ? null : payType })
+      flash('ok', 'Salary saved — it will apply to new payslips.')
+    } catch { flash('err', 'Failed to save salary.') } finally { setSavingPay(false) }
+  }
+
+  const generate = async (sendEmail: boolean) => {
+    if (pay === '' && user.monthly_pay == null) { flash('err', 'Set a salary/stipend first.'); return }
+    setGenerating(true)
+    try {
+      const res = await fetch('/api/payslips', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ recipient_id: user.id, period_month: genMonth, period_year: genYear, send_email: sendEmail }),
+      })
+      const json = await res.json()
+      if (!res.ok) { flash('err', json.error || 'Failed to generate'); return }
+      flash('ok', `Payslip generated for ${MONTHS[genMonth - 1]} ${genYear}${sendEmail ? ' and emailed' : ''}.`)
+      setShowGen(false)
+      await loadSlips()
+    } catch { flash('err', 'Failed to generate payslip.') } finally { setGenerating(false) }
+  }
+
+  const fmt = (n: number) => `₹${(n || 0).toLocaleString('en-IN')}`
+
+  return (
+    <div className="space-y-6">
+      {msg && (
+        <div className={`rounded-xl px-4 py-3 text-sm font-medium ${msg.kind === 'ok' ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-red-50 text-red-700 border border-red-200'}`}>
+          {msg.text}
+        </div>
+      )}
+
+      {/* Salary / stipend editor */}
+      <div className="bg-white border border-border rounded-xl p-5">
+        <h3 className="text-sm font-semibold text-primary mb-1">{isIntern ? 'Stipend' : 'Salary'} Setup</h3>
+        <p className="text-xs text-foreground/50 mb-4">Set the monthly {isIntern ? 'stipend' : 'salary'}. This auto-applies to generated payslips (gross = this amount; PF/tax from payroll settings).</p>
+        <div className="grid sm:grid-cols-[1fr_auto_auto] gap-3 items-end">
+          <div>
+            <label className="block text-xs font-semibold text-foreground/60 mb-1.5 uppercase tracking-wide">Monthly Amount (₹)</label>
+            <input
+              type="number"
+              value={pay}
+              onChange={(e) => setPay(e.target.value)}
+              placeholder="e.g. 25000"
+              className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#35C8E0]/30 focus:border-[#35C8E0]"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-foreground/60 mb-1.5 uppercase tracking-wide">Type</label>
+            <select
+              value={payType}
+              onChange={(e) => setPayType(e.target.value as 'salary' | 'stipend')}
+              className="border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#35C8E0]/30 focus:border-[#35C8E0]"
+            >
+              <option value="salary">Salary</option>
+              <option value="stipend">Stipend</option>
+            </select>
+          </div>
+          <button
+            onClick={savePay}
+            disabled={savingPay}
+            className="px-5 py-2.5 rounded-xl text-sm font-semibold bg-primary text-white hover:bg-primary/90 disabled:opacity-50"
+          >
+            {savingPay ? 'Saving…' : 'Save'}
+          </button>
+        </div>
+      </div>
+
+      {/* Payslips */}
+      <div className="bg-white border border-border rounded-xl">
+        <div className="p-5 border-b border-border flex items-center justify-between">
+          <h3 className="text-sm font-semibold text-primary">Payslips</h3>
+          <button
+            onClick={() => setShowGen((s) => !s)}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold bg-[#82C93D] text-white hover:brightness-95 transition-all"
+          >
+            <Plus size={15} /> Generate Payslip
+          </button>
+        </div>
+
+        {showGen && (
+          <div className="p-5 border-b border-border bg-off-white/50 flex flex-wrap items-end gap-3">
+            <div>
+              <label className="block text-xs font-semibold text-foreground/60 mb-1.5 uppercase tracking-wide">Month</label>
+              <select value={genMonth} onChange={(e) => setGenMonth(Number(e.target.value))} className="border border-gray-200 rounded-xl px-3 py-2.5 text-sm bg-white">
+                {MONTHS.map((m, i) => <option key={m} value={i + 1}>{m}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-foreground/60 mb-1.5 uppercase tracking-wide">Year</label>
+              <input type="number" value={genYear} onChange={(e) => setGenYear(Number(e.target.value))} className="w-28 border border-gray-200 rounded-xl px-3 py-2.5 text-sm bg-white" />
+            </div>
+            <button onClick={() => generate(false)} disabled={generating} className="px-4 py-2.5 rounded-xl text-sm font-semibold bg-primary text-white hover:bg-primary/90 disabled:opacity-50">
+              {generating ? 'Generating…' : 'Generate'}
+            </button>
+            <button onClick={() => generate(true)} disabled={generating} className="px-4 py-2.5 rounded-xl text-sm font-semibold border border-primary text-primary hover:bg-primary/5 disabled:opacity-50">
+              Generate & Email
+            </button>
+          </div>
+        )}
+
+        {loadingSlips ? (
+          <div className="p-8 text-center text-foreground/40 text-sm">Loading…</div>
+        ) : slips.length === 0 ? (
+          <div className="p-8 text-center text-foreground/50">
+            <DollarSign size={32} className="mx-auto mb-3 opacity-30" />
+            <p>No payslips yet. Use “Generate Payslip” to create one.</p>
+          </div>
+        ) : (
+          <div className="divide-y divide-border">
+            {slips.map((s) => (
+              <div key={s.id} className="p-4 flex items-center justify-between">
+                <div>
+                  <p className="font-medium text-primary">{MONTHS[s.period_month - 1]} {s.period_year}</p>
+                  <p className="text-xs text-foreground/50 font-mono">{s.payslip_no}</p>
+                </div>
+                <div className="flex items-center gap-5 text-sm">
+                  <span className="text-foreground/50">Gross {fmt(s.gross)}</span>
+                  <span className="text-foreground/50">− {fmt(s.total_deductions)}</span>
+                  <span className="font-bold text-primary">Net {fmt(s.net)}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   )
