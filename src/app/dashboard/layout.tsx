@@ -92,6 +92,7 @@ const roleNavItems: Record<string, NavItem[]> = {
     { label: 'Calendar', href: '/dashboard/employee/calendar', icon: Calendar },
     { label: 'Meetings', href: '/dashboard/employee/meetings', icon: Video },
     { label: 'Announcements', href: '/dashboard/employee/announcements', icon: Megaphone },
+    { label: 'My Documents', href: '/dashboard/employee/documents', icon: Award },
     { label: 'Attendance', href: '/dashboard/employee/attendance', icon: Clock },
   ],
   intern: [
@@ -102,6 +103,7 @@ const roleNavItems: Record<string, NavItem[]> = {
     { label: 'Meetings', href: '/dashboard/intern/meetings', icon: Video },
     { label: 'Mentor Notes', href: '/dashboard/intern/mentor-notes', icon: MessageSquareMore },
     { label: 'Learning', href: '/dashboard/intern/learning', icon: BookOpen },
+    { label: 'My Documents', href: '/dashboard/intern/documents', icon: Award },
     { label: 'Attendance', href: '/dashboard/intern/attendance', icon: Clock },
   ],
 }

@@ -40,6 +40,35 @@ export async function POST(req: NextRequest) {
     if (!admin) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
     const body = await req.json()
+
+    // Resend path: email an already-issued document without creating a new row.
+    if (body.resend && body.document_id) {
+      const client = createAdminClient()
+      const { data: doc, error: fetchErr } = await client
+        .from('documents')
+        .select('document_id, type, title, recipient_name, recipient_email')
+        .eq('document_id', body.document_id)
+        .single()
+      if (fetchErr || !doc) return NextResponse.json({ error: 'Document not found' }, { status: 404 })
+      if (!doc.recipient_email) {
+        return NextResponse.json({ error: 'This document has no recipient email on file.' }, { status: 400 })
+      }
+      try {
+        const tpl = documentEmail({
+          recipientName: doc.recipient_name,
+          docType: doc.type as 'certificate' | 'offer_letter',
+          docTitle: doc.title,
+          documentId: doc.document_id,
+          verifyUrl: SITE_URL ? `${SITE_URL}/verify?id=${doc.document_id}` : undefined,
+        })
+        await sendEmail({ to: doc.recipient_email, subject: tpl.subject, html: tpl.html, text: tpl.text })
+      } catch (mailErr) {
+        console.error('documents resend: email error:', mailErr)
+        return NextResponse.json({ error: 'Failed to send email' }, { status: 502 })
+      }
+      return NextResponse.json({ data: { document_id: doc.document_id }, resent: true })
+    }
+
     const {
       type,
       sub_type,

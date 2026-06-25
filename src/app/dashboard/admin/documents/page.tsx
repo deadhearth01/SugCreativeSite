@@ -183,8 +183,9 @@ export default function AdminDocumentsPage() {
       showToast({ kind: 'error', msg: 'Recipient name is required.' })
       return null
     }
-    // Reuse: if already saved and unchanged and we're not (re)sending email.
-    if (savedId && snapshot === lastSavedSnapshot.current && !sendEmail) {
+    // Reuse the existing row when nothing changed — never create duplicates.
+    // (Emailing an already-saved doc goes through the resend path, not a re-POST.)
+    if (savedId && snapshot === lastSavedSnapshot.current) {
       return { id: savedId }
     }
     const res = await fetch('/api/documents', {
@@ -260,8 +261,21 @@ export default function AdminDocumentsPage() {
       return
     }
     setBusy('email')
-    const r = await saveDocument(true)
-    if (r) showToast({ kind: 'success', msg: `Emailed to ${recipientEmail}. Document ID: ${r.id}` })
+    // Save once (reused if unchanged), then email that exact row — no duplicates.
+    const r = await saveDocument(false)
+    if (!r) { setBusy(null); return }
+    try {
+      const res = await fetch('/api/documents', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ resend: true, document_id: r.id }),
+      })
+      const json = await res.json()
+      if (!res.ok) showToast({ kind: 'error', msg: json.error || 'Failed to send email.' })
+      else showToast({ kind: 'success', msg: `Emailed to ${recipientEmail}. Document ID: ${r.id}` })
+    } catch {
+      showToast({ kind: 'error', msg: 'Failed to send email.' })
+    }
     setBusy(null)
   }
 
@@ -605,6 +619,7 @@ function VerifyModal({ onClose }: { onClose: () => void }) {
   const verify = async () => {
     if (!id.trim()) return
     setState('loading')
+    setData(null) // clear any prior result so stale data can't flash
     try {
       const res = await fetch(`/api/documents/verify?id=${encodeURIComponent(id.trim())}`)
       const json = await res.json()

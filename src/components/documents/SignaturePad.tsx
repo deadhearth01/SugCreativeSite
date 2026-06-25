@@ -107,6 +107,7 @@ export default function SignaturePad({
   }
 
   const insert = () => {
+    if (empty) return // nothing drawn — don't insert a blank signature
     const canvas = canvasRef.current
     if (!canvas) return
     onInsert(canvas.toDataURL('image/png'))
