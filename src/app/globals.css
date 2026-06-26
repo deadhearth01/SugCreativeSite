@@ -178,6 +178,26 @@
   font-family: var(--font-signature), 'Alex Brush', 'Segoe Script', cursive;
 }
 
+/* Rendered offer-letter rich text (from the Quill editor) inside documents. */
+.doc-richtext p { margin: 0 0 0.6em; }
+.doc-richtext p:last-child { margin-bottom: 0; }
+.doc-richtext strong, .doc-richtext b { font-weight: 700; }
+.doc-richtext em, .doc-richtext i { font-style: italic; }
+.doc-richtext u { text-decoration: underline; }
+.doc-richtext ul, .doc-richtext ol { margin: 0 0 0.6em; padding-left: 1.4em; }
+.doc-richtext ul { list-style: disc; }
+.doc-richtext ol { list-style: decimal; }
+.doc-richtext h1, .doc-richtext h2, .doc-richtext h3 { font-weight: 800; margin: 0 0 0.4em; }
+.doc-richtext a { color: #1A9AB5; text-decoration: underline; }
+.doc-richtext .ql-align-center { text-align: center; }
+.doc-richtext .ql-align-right { text-align: right; }
+.doc-richtext .ql-align-justify { text-align: justify; }
+
+/* Quill editor host — keep it inside the form column. */
+.rte-host .ql-container { min-height: 140px; font-size: 0.875rem; border-bottom-left-radius: 0.6rem; border-bottom-right-radius: 0.6rem; }
+.rte-host .ql-toolbar { border-top-left-radius: 0.6rem; border-top-right-radius: 0.6rem; }
+.rte-host .ql-editor { min-height: 140px; }
+
 /* Base element resets moved into @layer base below
    so Tailwind v4 utilities can properly override them. */
 

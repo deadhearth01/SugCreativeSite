@@ -52,17 +52,16 @@ export const CERTIFICATE_DEFAULTS: Record<CertificateSubType, DocumentDefault> =
 }
 
 // ─── Offer letter default ───────────────────────────────────────────────────
+// Offer-letter body is rich HTML (edited in the Quill editor, rendered as HTML
+// in the preview). Certificate bodies remain plain text.
 export const OFFER_LETTER_DEFAULT: DocumentDefault = {
   title: 'Letter of Offer',
   body:
-    'Dear {{name}},\n\n' +
-    'We are delighted to offer you the position of {{role}} at SUG Creative, commencing on {{joining_date}}. ' +
-    'During your tenure you will work on live projects, gain hands-on experience with relevant technologies, and contribute to the organization\'s goals and initiatives.\n\n' +
-    'Tenure:\n' +
-    'Your engagement will begin on {{joining_date}}. Based on business requirements and performance, the tenure may be extended at the discretion of the company.\n\n' +
-    'Work Schedule and Leave Policy:\n' +
-    'You will be eligible for leaves and holidays in accordance with SUG Creative\'s company policies. Any planned leave must be communicated in advance and approved by your reporting manager.\n\n' +
-    'We look forward to your valuable contributions and a successful journey with us.',
+    '<p>Dear {{name}},</p>' +
+    '<p>We are delighted to offer you the position of <strong>{{role}}</strong> at SUG Creative, commencing on {{joining_date}}. During your tenure you will work on live projects, gain hands-on experience with relevant technologies, and contribute to the organization\'s goals and initiatives.</p>' +
+    '<p><strong>Tenure:</strong><br>Your engagement will begin on {{joining_date}}. Based on business requirements and performance, the tenure may be extended at the discretion of the company.</p>' +
+    '<p><strong>Work Schedule and Leave Policy:</strong><br>You will be eligible for leaves and holidays in accordance with SUG Creative\'s company policies. Any planned leave must be communicated in advance and approved by your reporting manager.</p>' +
+    '<p>We look forward to your valuable contributions and a successful journey with us.</p>',
 }
 
 /** Default content for any (type, subType) combination. */

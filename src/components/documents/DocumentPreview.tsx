@@ -13,7 +13,22 @@
 
 import { forwardRef, useRef, useState, useLayoutEffect, useCallback } from 'react'
 import Image from 'next/image'
+import DOMPurify from 'dompurify'
 import { fillTemplate, type DocumentType } from '@/lib/documents'
+
+// The offer-letter body may be rich HTML (Quill). Sanitize before rendering
+// since the public /verify page displays it. Falls back to plain text (with
+// line breaks preserved) for legacy plain-text bodies.
+function isHtml(s: string): boolean {
+  return /<\/?[a-z][\s\S]*>/i.test(s)
+}
+function sanitize(html: string): string {
+  if (typeof window === 'undefined') return html // SSR: client re-renders sanitized
+  return DOMPurify.sanitize(html, {
+    ALLOWED_TAGS: ['p', 'br', 'strong', 'b', 'em', 'i', 'u', 's', 'ul', 'ol', 'li', 'h1', 'h2', 'h3', 'a', 'span'],
+    ALLOWED_ATTR: ['href', 'target', 'rel', 'class', 'style'],
+  })
+}
 
 // Auto-fit: scale the inner content so it ALWAYS fits the fixed-ratio frame,
 // no matter how long the title / name / body / quote get. Measures natural
@@ -280,9 +295,16 @@ function OfferLetterLayout({ data }: { data: DocumentPreviewData }) {
         <p className="mt-[4%] text-[clamp(0.7rem,1.6vw,0.9rem)] font-semibold text-foreground">
           Dear {data.recipientName || 'Candidate'},
         </p>
-        <div className="mt-2 text-[clamp(0.68rem,1.5vw,0.85rem)] leading-relaxed text-foreground/80 whitespace-pre-line">
-          {body}
-        </div>
+        {isHtml(body) ? (
+          <div
+            className="mt-2 text-[clamp(0.68rem,1.5vw,0.85rem)] leading-relaxed text-foreground/80 doc-richtext"
+            dangerouslySetInnerHTML={{ __html: sanitize(body) }}
+          />
+        ) : (
+          <div className="mt-2 text-[clamp(0.68rem,1.5vw,0.85rem)] leading-relaxed text-foreground/80 whitespace-pre-line">
+            {body}
+          </div>
+        )}
 
         {/* Signature */}
         <div className="mt-[4%] flex justify-end">

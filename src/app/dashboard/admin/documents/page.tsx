@@ -15,6 +15,7 @@
 
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react'
 import Link from 'next/link'
+import dynamic from 'next/dynamic'
 import {
   Award, FileText, PenLine, Download, Send, Save, ShieldCheck, Search,
   Loader2, CheckCircle2, XCircle, Users, UserPlus, X, Copy, Check, FolderOpen,
@@ -25,6 +26,12 @@ import {
 } from '@/lib/documents'
 import DocumentPreview, { type DocumentPreviewData } from '@/components/documents/DocumentPreview'
 import SignaturePad from '@/components/documents/SignaturePad'
+
+// Quill is browser-only — load it client-side with no SSR.
+const RichTextEditor = dynamic(() => import('@/components/documents/RichTextEditor'), {
+  ssr: false,
+  loading: () => <div className="input min-h-[120px] flex items-center justify-center text-foreground/30 text-sm">Loading editor…</div>,
+})
 
 type ProfileLite = {
   id: string
@@ -363,11 +370,19 @@ export default function AdminDocumentsPage() {
             </Field>
 
             <Field label="Body">
-              <textarea
-                className="input min-h-[120px] resize-y whitespace-pre-line"
-                value={body}
-                onChange={e => { setBody(e.target.value); setSavedId(null) }}
-              />
+              {type === 'offer_letter' ? (
+                <RichTextEditor
+                  value={body}
+                  onChange={(html) => { setBody(html); setSavedId(null) }}
+                  placeholder="Write the offer letter…"
+                />
+              ) : (
+                <textarea
+                  className="input min-h-[120px] resize-y whitespace-pre-line"
+                  value={body}
+                  onChange={e => { setBody(e.target.value); setSavedId(null) }}
+                />
+              )}
               <p className="hint">Supports placeholders: <code>{'{{name}}'}</code>, <code>{'{{role}}'}</code>, <code>{'{{joining_date}}'}</code>.</p>
             </Field>
 
