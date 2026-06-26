@@ -950,18 +950,23 @@ export default function UsersPage() {
                 {roleUsers.length > 0 ? (
                   <div className="space-y-2">
                     {roleUsers.slice(0, 3).map((u) => (
-                      <div key={u.id} className="flex items-center gap-2 p-2 rounded-lg bg-off-white/60">
+                      <button
+                        key={u.id}
+                        type="button"
+                        onClick={() => router.push(`/dashboard/admin/users/${u.id}`)}
+                        className="w-full flex items-center gap-2 p-2 rounded-lg bg-off-white/60 hover:bg-[#35C8E0]/10 text-left transition-colors"
+                      >
                         <div className="w-7 h-7 rounded-lg bg-[#35C8E0]/20 flex items-center justify-center text-primary text-[10px] font-bold flex-shrink-0">
                           {((u.full_name || u.email).split(/\s+/).map(n => n[0]).join('').slice(0, 2) || '?').toUpperCase()}
                         </div>
                         <div className="min-w-0 flex-1">
-                          <p className="text-xs font-medium text-primary truncate">
+                          <p className="text-xs font-medium text-primary truncate hover:underline">
                             {u.full_name || <span className="italic text-foreground/40">No name</span>}
                           </p>
                           <p className="text-[10px] text-foreground/40 truncate">{u.email}</p>
                         </div>
                         <StatusBadge status={u.status} />
-                      </div>
+                      </button>
                     ))}
                     {roleUsers.length > 3 && (
                       <p className="text-[10px] text-foreground/40 text-center pt-1">+{roleUsers.length - 3} more</p>
