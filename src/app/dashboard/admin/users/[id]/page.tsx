@@ -94,6 +94,18 @@ const roleTabs: Record<string, { key: string; label: string; icon: React.ReactNo
   ],
 }
 
+// Only allow safe URL schemes in href (blocks stored javascript:/data: XSS).
+function safeHref(u: string | null | undefined): string | undefined {
+  if (!u) return undefined
+  try {
+    const base = typeof window !== 'undefined' ? window.location.origin : 'https://sugcreative.com'
+    const url = new URL(u, base)
+    return ['https:', 'http:', 'mailto:'].includes(url.protocol) ? url.toString() : undefined
+  } catch {
+    return undefined
+  }
+}
+
 function formatDate(date: string) {
   return new Date(date).toLocaleDateString('en-US', {
     year: 'numeric',
@@ -846,7 +858,7 @@ export default function UserDetailPage() {
                             {m.status}
                           </span>
                           {m.meeting_link && (
-                            <a href={m.meeting_link} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="text-xs font-semibold text-[#1A9AB5] hover:underline">
+                            <a href={safeHref(m.meeting_link)} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="text-xs font-semibold text-[#1A9AB5] hover:underline">
                               Join
                             </a>
                           )}
@@ -887,7 +899,7 @@ export default function UserDetailPage() {
                         </div>
                       </div>
                       {r.file_url && (
-                        <a href={r.file_url} target="_blank" rel="noopener noreferrer" className="text-xs font-semibold text-[#1A9AB5] hover:underline flex-shrink-0">
+                        <a href={safeHref(r.file_url)} target="_blank" rel="noopener noreferrer" className="text-xs font-semibold text-[#1A9AB5] hover:underline flex-shrink-0">
                           Open
                         </a>
                       )}
@@ -932,7 +944,7 @@ export default function UserDetailPage() {
                             {mp.meetings.status}
                           </span>
                           {mp.meetings.meeting_link && (
-                            <a href={mp.meetings.meeting_link} target="_blank" rel="noopener noreferrer" className="text-xs font-semibold text-[#1A9AB5] hover:underline">
+                            <a href={safeHref(mp.meetings.meeting_link)} target="_blank" rel="noopener noreferrer" className="text-xs font-semibold text-[#1A9AB5] hover:underline">
                               Join
                             </a>
                           )}
@@ -1149,7 +1161,7 @@ function StudentCertificatesTab({
                 </div>
                 <div className="flex items-center gap-3 flex-shrink-0">
                   {d.pdf_url && (
-                    <a href={d.pdf_url} target="_blank" rel="noopener noreferrer" className="text-xs font-semibold text-foreground/60 hover:text-primary hover:underline flex items-center gap-1">
+                    <a href={safeHref(d.pdf_url)} target="_blank" rel="noopener noreferrer" className="text-xs font-semibold text-foreground/60 hover:text-primary hover:underline flex items-center gap-1">
                       <ExternalLink size={12} /> File
                     </a>
                   )}
@@ -1167,7 +1179,7 @@ function StudentCertificatesTab({
                   <p className="text-xs text-foreground/40">Issued {c.issued_at ? formatDate(c.issued_at) : '—'}</p>
                 </div>
                 {c.file_url && (
-                  <a href={c.file_url} target="_blank" rel="noopener noreferrer" className="text-xs font-semibold text-[#1A9AB5] hover:underline flex items-center gap-1 flex-shrink-0">
+                  <a href={safeHref(c.file_url)} target="_blank" rel="noopener noreferrer" className="text-xs font-semibold text-[#1A9AB5] hover:underline flex items-center gap-1 flex-shrink-0">
                     <ExternalLink size={12} /> Open
                   </a>
                 )}
