@@ -113,25 +113,28 @@ function BrandLockup({ size = 36 }: { size?: number }) {
   )
 }
 
-// Auto-fit: pick name/body/quote sizes from the recipient-name length so long
-// names (which wrap to multiple lines) never overflow into the signature area.
-// Deterministic tiers — same result in the live preview and the PDF snapshot.
-function fitSizes(name: string) {
+// Recipient-name font size (in cqw — % of certificate width) by name length,
+// so long names shrink instead of overflowing.
+function nameCqw(name: string): string {
   const n = (name || '').trim().length
-  if (n <= 16) return { name: 'clamp(1.7rem,5vw,3rem)', body: 'clamp(0.72rem,1.6vw,0.95rem)', quote: 'clamp(0.72rem,1.5vw,0.9rem)', gap: '2.5%' }
-  if (n <= 24) return { name: 'clamp(1.5rem,4.3vw,2.5rem)', body: 'clamp(0.7rem,1.55vw,0.9rem)', quote: 'clamp(0.7rem,1.45vw,0.85rem)', gap: '2.2%' }
-  if (n <= 32) return { name: 'clamp(1.25rem,3.7vw,2.05rem)', body: 'clamp(0.66rem,1.45vw,0.85rem)', quote: 'clamp(0.66rem,1.35vw,0.8rem)', gap: '1.8%' }
-  if (n <= 42) return { name: 'clamp(1.05rem,3vw,1.7rem)', body: 'clamp(0.62rem,1.35vw,0.8rem)', quote: 'clamp(0.62rem,1.25vw,0.76rem)', gap: '1.5%' }
-  return { name: 'clamp(0.9rem,2.5vw,1.4rem)', body: 'clamp(0.58rem,1.25vw,0.74rem)', quote: 'clamp(0.58rem,1.15vw,0.72rem)', gap: '1.2%' }
+  if (n <= 16) return '6.5cqw'
+  if (n <= 26) return '5.5cqw'
+  if (n <= 36) return '4.5cqw'
+  if (n <= 48) return '3.6cqw'
+  return '3cqw'
 }
 
 // ─── Certificate (landscape) ─────────────────────────────────────────────────
+// Sized entirely in container-query units (cqw = 1% of the certificate's own
+// width), so it scales proportionally at ANY size — the small live preview and
+// the full-resolution PDF look identical. Three zones: title block pinned at
+// the top (with the logo, so the title can never overlap it), recipient block
+// centered, signature/ID pinned at the bottom.
 function CertificateLayout({ data }: { data: DocumentPreviewData }) {
   const body = fillTemplate(data.body, buildVars(data))
-  const sz = fitSizes(data.recipientName)
   return (
-    <div className="relative aspect-[1.414/1] w-full bg-white overflow-hidden border-[3px] border-[#1A9AB5]">
-      {/* Decorative background flourish (behind everything, full bleed) */}
+    <div className="@container relative aspect-[1.414/1] w-full bg-white overflow-hidden border-[3px] border-[#1A9AB5]">
+      {/* Decorative background flourish */}
       <Image
         src="/illustrations/certificate-background-flourish.png"
         alt=""
@@ -140,73 +143,77 @@ function CertificateLayout({ data }: { data: DocumentPreviewData }) {
         className="object-cover opacity-[0.07] pointer-events-none select-none"
       />
 
-      {/* Green inner frame — a real clipping container. The watermark AND all
-          content live inside it, so nothing ever crosses the green border. */}
-      <div className="absolute inset-2 border border-[#82C93D]/50 overflow-hidden">
-        {/* Faint watermark — clipped to the green frame */}
+      {/* Green inner frame — clips everything (watermark + content) so nothing
+          ever crosses the green border. */}
+      <div className="absolute inset-[1.4cqw] border border-[#82C93D]/50 overflow-hidden">
+        {/* Faint watermark, contained */}
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none">
-          <span className="font-heading font-black text-[#1A9AB5]/[0.05] text-[40%] leading-none tracking-tighter" style={{ fontSize: '12rem' }}>
+          <span className="font-heading font-black text-[#1A9AB5]/[0.05] text-[24cqw] leading-none tracking-tighter">
             SUG
           </span>
         </div>
 
-        {/* 3-zone layout: header (top) / content (clipping middle) / footer (bottom).
-            Footer is pinned, so the signature can never be pushed off; long
-            content is constrained to the middle zone and clipped inside the frame. */}
-        <div className="absolute inset-0 flex flex-col px-[6%] py-[4.5%] text-center">
-        {/* Header zone */}
-        <div className="shrink-0 flex items-center justify-center">
-          <BrandLockup size={30} />
-        </div>
+        <div className="absolute inset-0 flex flex-col px-[7cqw] py-[5cqw] text-center">
+          {/* TOP: logo + title (never overlap — same flow column) */}
+          <div className="shrink-0 flex flex-col items-center gap-[2cqw]">
+            <div className="flex items-center gap-[1.5cqw]">
+              <Image src="/sug-new-log.svg" alt="SUG Creative" width={48} height={48} aria-hidden className="w-[6cqw] h-[6cqw]" />
+              <div className="leading-none text-left">
+                <p className="font-heading font-black text-[#1A9AB5] tracking-tight text-[2.4cqw]">SUG CREATIVE</p>
+                <p className="font-bold uppercase tracking-[0.2em] text-[#82C93D] text-[1.1cqw]">Innovate · Create · Grow</p>
+              </div>
+            </div>
+            <h1 className="font-heading font-black text-primary-dark uppercase tracking-tight text-[5cqw] leading-[1.05]">
+              {data.title}
+            </h1>
+            <div className="h-[0.5cqw] w-[14cqw] bg-[#82C93D]" />
+          </div>
 
-        {/* Middle zone — flexes to fill, vertically centered, clips overflow */}
-        <div className="flex-1 min-h-0 flex flex-col items-center justify-center overflow-hidden">
-          <h1 className="font-heading font-black text-primary-dark uppercase tracking-tight text-[clamp(1.3rem,4vw,2.4rem)] leading-[1.05]">
-            {data.title}
-          </h1>
-          <div className="mt-2 h-1 w-20 bg-[#82C93D]" />
-
-          <p className="mt-[2.5%] text-[10px] sm:text-xs font-bold uppercase tracking-[0.22em] text-foreground/50">
-            This certificate is awarded in recognition of
-          </p>
-
-          {/* Recipient — size scales down with name length */}
-          <p
-            className="mt-[1%] font-heading font-black leading-[1.05] text-foreground px-[2%]"
-            style={{ fontSize: sz.name }}
-          >
-            {data.recipientName || 'Recipient Name'}
-          </p>
-          <div className="mt-2 h-px w-2/5 bg-foreground/15" />
-
-          {/* Body */}
-          <p className="max-w-[84%] leading-relaxed text-foreground/75" style={{ marginTop: sz.gap, fontSize: sz.body }}>
-            {body}
-          </p>
-
-          {/* Quote */}
-          {data.quote && (
-            <p className="max-w-[80%] italic text-[#1A9AB5]" style={{ marginTop: sz.gap, fontSize: sz.quote }}>
-              {data.quote}
+          {/* MIDDLE: recipient is the centered hero */}
+          <div className="flex-1 min-h-0 flex flex-col items-center justify-center overflow-hidden gap-[1.5cqw]">
+            <p className="font-bold uppercase tracking-[0.22em] text-foreground/50 text-[1.7cqw]">
+              This certificate is awarded in recognition of
             </p>
-          )}
-        </div>
-
-        {/* Footer zone — always pinned at the bottom */}
-        <div className="shrink-0 w-full flex items-end justify-between pt-[2%]">
-          <div className="text-left">
-            <p className="text-[9px] font-bold uppercase tracking-widest text-foreground/40">
-              Certification ID
+            <p className="font-heading font-black leading-[1.05] text-foreground px-[2cqw]" style={{ fontSize: nameCqw(data.recipientName) }}>
+              {data.recipientName || 'Recipient Name'}
             </p>
-            <p className="text-[10px] sm:text-xs font-mono font-bold text-primary-dark break-all max-w-[160px]">
-              {data.documentId || ID_PLACEHOLDER}
+            <div className="h-px w-[35cqw] bg-foreground/15" />
+            <p className="max-w-[80cqw] leading-relaxed text-foreground/75 text-[2.3cqw]">
+              {body}
             </p>
-            {data.issuedOn && (
-              <p className="text-[9px] text-foreground/40 mt-0.5">Issued {formatDate(data.issuedOn)}</p>
+            {data.quote && (
+              <p className="max-w-[76cqw] italic text-[#1A9AB5] text-[2.1cqw]">
+                {data.quote}
+              </p>
             )}
           </div>
-          <SignatureBlock data={data} dark />
-        </div>
+
+          {/* FOOTER: id (left) + signature (right), pinned to the bottom */}
+          <div className="shrink-0 w-full flex items-end justify-between gap-[4cqw]">
+            <div className="text-left">
+              <p className="font-bold uppercase tracking-widest text-foreground/40 text-[1.3cqw]">Certification ID</p>
+              <p className="font-mono font-bold text-primary-dark break-all text-[1.6cqw] max-w-[40cqw]">
+                {data.documentId || ID_PLACEHOLDER}
+              </p>
+              {data.issuedOn && (
+                <p className="text-foreground/40 text-[1.3cqw] mt-[0.5cqw]">Issued {formatDate(data.issuedOn)}</p>
+              )}
+            </div>
+            <div className="text-center">
+              <div className="h-[7cqw] flex items-end justify-center">
+                {data.signatureData ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={data.signatureData} alt="Signature" className="max-h-[7cqw] max-w-[24cqw] object-contain" />
+                ) : (
+                  <span className="font-signature text-[#1A9AB5] text-[5.5cqw] leading-none">{data.signatureName || ' '}</span>
+                )}
+              </div>
+              <div className="border-t-2 border-foreground/30 pt-[0.8cqw] min-w-[24cqw]">
+                <p className="font-black text-foreground leading-tight text-[1.8cqw]">{data.signatureName}</p>
+                <p className="font-semibold text-foreground/60 uppercase tracking-wide text-[1.3cqw]">{data.signatureTitle}</p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
