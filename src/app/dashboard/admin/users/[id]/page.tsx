@@ -1093,8 +1093,25 @@ function StudentCertificatesTab({
   const legacy = (roleData.certificates as LegacyCert[]) || []
 
   const [uploading, setUploading] = useState(false)
+  const [deletingId, setDeletingId] = useState<string | null>(null)
   const [msg, setMsg] = useState<{ kind: 'ok' | 'err'; text: string } | null>(null)
   const flash = (kind: 'ok' | 'err', text: string) => { setMsg({ kind, text }); setTimeout(() => setMsg(null), 6000) }
+
+  const handleDeleteDoc = async (id: string, title: string) => {
+    if (!confirm(`Delete certificate "${title}"? This cannot be undone.`)) return
+    setDeletingId(id)
+    try {
+      const res = await fetch(`/api/documents/${id}`, { method: 'DELETE' })
+      const json = await res.json().catch(() => ({}))
+      if (!res.ok) { flash('err', json.error || 'Delete failed'); return }
+      flash('ok', 'Certificate deleted.')
+      await onReload()
+    } catch {
+      flash('err', 'Delete failed.')
+    } finally {
+      setDeletingId(null)
+    }
+  }
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -1168,6 +1185,14 @@ function StudentCertificatesTab({
                   <a href={`/verify?id=${d.document_id}`} target="_blank" rel="noopener noreferrer" className="text-xs font-semibold text-[#1A9AB5] hover:underline">
                     Verify
                   </a>
+                  <button
+                    onClick={() => handleDeleteDoc(d.id, d.title)}
+                    disabled={deletingId === d.id}
+                    title="Delete certificate"
+                    className="p-1.5 rounded-lg text-foreground/40 hover:text-red-500 hover:bg-red-50 transition-colors disabled:opacity-50"
+                  >
+                    {deletingId === d.id ? <Loader2 size={14} className="animate-spin" /> : <Trash2 size={14} />}
+                  </button>
                 </div>
               </div>
             ))}
