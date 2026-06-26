@@ -11,7 +11,7 @@
 // ║  (forwarded onto the root node) so PDF export can snapshot it.        ║
 // ╚══════════════════════════════════════════════════════════════════════╝
 
-import { forwardRef, useRef, useState, useLayoutEffect, useCallback } from 'react'
+import { forwardRef } from 'react'
 import Image from 'next/image'
 import DOMPurify from 'dompurify'
 import { fillTemplate, type DocumentType } from '@/lib/documents'
@@ -28,39 +28,6 @@ function sanitize(html: string): string {
     ALLOWED_TAGS: ['p', 'br', 'strong', 'b', 'em', 'i', 'u', 's', 'ul', 'ol', 'li', 'h1', 'h2', 'h3', 'a', 'span'],
     ALLOWED_ATTR: ['href', 'target', 'rel', 'class', 'style'],
   })
-}
-
-// Auto-fit: scale the inner content so it ALWAYS fits the fixed-ratio frame,
-// no matter how long the title / name / body / quote get. Measures natural
-// content height vs available height and applies a transform scale. Transforms
-// don't affect layout/scrollHeight, so there's no measurement feedback loop.
-function useFitScale(deps: unknown[]) {
-  const outerRef = useRef<HTMLDivElement>(null)
-  const innerRef = useRef<HTMLDivElement>(null)
-  const [scale, setScale] = useState(1)
-
-  const measure = useCallback(() => {
-    const outer = outerRef.current
-    const inner = innerRef.current
-    if (!outer || !inner) return
-    const avail = outer.clientHeight
-    const natural = inner.scrollHeight
-    if (!avail || !natural) return
-    // 0.97 keeps a hair of breathing room off the border.
-    setScale(natural > avail ? Math.max(0.4, (avail / natural) * 0.97) : 1)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, deps)
-
-  useLayoutEffect(() => {
-    measure()
-    const outer = outerRef.current
-    if (!outer || typeof ResizeObserver === 'undefined') return
-    const ro = new ResizeObserver(measure)
-    ro.observe(outer)
-    return () => ro.disconnect()
-  }, [measure])
-
-  return { outerRef, innerRef, scale }
 }
 
 export interface DocumentPreviewData {
@@ -162,13 +129,9 @@ function fitSizes(name: string) {
 function CertificateLayout({ data }: { data: DocumentPreviewData }) {
   const body = fillTemplate(data.body, buildVars(data))
   const sz = fitSizes(data.recipientName)
-  // Re-measure whenever any content that affects height changes.
-  const { outerRef, innerRef, scale } = useFitScale([
-    data.title, data.recipientName, body, data.quote, data.signatureName, data.signatureTitle, data.documentId,
-  ])
   return (
-    <div ref={outerRef} className="relative aspect-[1.414/1] w-full bg-white overflow-hidden border-[3px] border-[#1A9AB5]">
-      {/* Decorative background flourish */}
+    <div className="relative aspect-[1.414/1] w-full bg-white overflow-hidden border-[3px] border-[#1A9AB5]">
+      {/* Decorative background flourish (behind everything, full bleed) */}
       <Image
         src="/illustrations/certificate-background-flourish.png"
         alt=""
@@ -176,65 +139,61 @@ function CertificateLayout({ data }: { data: DocumentPreviewData }) {
         aria-hidden
         className="object-cover opacity-[0.07] pointer-events-none select-none"
       />
-      {/* Inner hairline frame */}
-      <div className="absolute inset-2 border border-[#82C93D]/50 pointer-events-none" />
 
-      {/* Faint watermark */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none">
-        <span className="font-heading font-black text-[#1A9AB5]/[0.05] text-[22vw] leading-none tracking-tighter">
-          SUG
-        </span>
-      </div>
-
-      <div
-        ref={innerRef}
-        className="absolute inset-0 flex flex-col items-center px-[7%] py-[4%] text-center"
-        style={{ transform: `scale(${scale})`, transformOrigin: 'center center' }}
-      >
-        {/* Header */}
-        <div className="w-full flex items-center justify-center">
-          <BrandLockup size={34} />
+      {/* Green inner frame — a real clipping container. The watermark AND all
+          content live inside it, so nothing ever crosses the green border. */}
+      <div className="absolute inset-2 border border-[#82C93D]/50 overflow-hidden">
+        {/* Faint watermark — clipped to the green frame */}
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none">
+          <span className="font-heading font-black text-[#1A9AB5]/[0.05] text-[40%] leading-none tracking-tighter" style={{ fontSize: '12rem' }}>
+            SUG
+          </span>
         </div>
 
-        {/* Title banner */}
-        <h1 className="mt-[3%] font-heading font-black text-primary-dark uppercase tracking-tight text-[clamp(1.4rem,4.2vw,2.6rem)] leading-none">
-          {data.title}
-        </h1>
-        <div className="mt-2 h-1 w-24 bg-[#82C93D]" />
+        {/* 3-zone layout: header (top) / content (clipping middle) / footer (bottom).
+            Footer is pinned, so the signature can never be pushed off; long
+            content is constrained to the middle zone and clipped inside the frame. */}
+        <div className="absolute inset-0 flex flex-col px-[6%] py-[4.5%] text-center">
+        {/* Header zone */}
+        <div className="shrink-0 flex items-center justify-center">
+          <BrandLockup size={30} />
+        </div>
 
-        <p className="mt-[3%] text-[11px] sm:text-xs font-bold uppercase tracking-[0.25em] text-foreground/50">
-          This certificate is awarded in recognition of
-        </p>
+        {/* Middle zone — flexes to fill, vertically centered, clips overflow */}
+        <div className="flex-1 min-h-0 flex flex-col items-center justify-center overflow-hidden">
+          <h1 className="font-heading font-black text-primary-dark uppercase tracking-tight text-[clamp(1.3rem,4vw,2.4rem)] leading-[1.05]">
+            {data.title}
+          </h1>
+          <div className="mt-2 h-1 w-20 bg-[#82C93D]" />
 
-        {/* Recipient — auto-fit to name length */}
-        <p
-          className="mt-[1.5%] font-heading font-black leading-[1.05] text-foreground px-[4%]"
-          style={{ fontSize: sz.name }}
-        >
-          {data.recipientName || 'Recipient Name'}
-        </p>
-        <div className="mt-2 h-px w-2/5 bg-foreground/15" />
-
-        {/* Body */}
-        <p
-          className="max-w-[82%] leading-relaxed text-foreground/75"
-          style={{ marginTop: sz.gap, fontSize: sz.body }}
-        >
-          {body}
-        </p>
-
-        {/* Quote */}
-        {data.quote && (
-          <p
-            className="max-w-[78%] italic text-[#1A9AB5]"
-            style={{ marginTop: sz.gap, fontSize: sz.quote }}
-          >
-            {data.quote}
+          <p className="mt-[2.5%] text-[10px] sm:text-xs font-bold uppercase tracking-[0.22em] text-foreground/50">
+            This certificate is awarded in recognition of
           </p>
-        )}
 
-        {/* Footer: id left, signature right */}
-        <div className="mt-auto w-full flex items-end justify-between pt-[2%]">
+          {/* Recipient — size scales down with name length */}
+          <p
+            className="mt-[1%] font-heading font-black leading-[1.05] text-foreground px-[2%]"
+            style={{ fontSize: sz.name }}
+          >
+            {data.recipientName || 'Recipient Name'}
+          </p>
+          <div className="mt-2 h-px w-2/5 bg-foreground/15" />
+
+          {/* Body */}
+          <p className="max-w-[84%] leading-relaxed text-foreground/75" style={{ marginTop: sz.gap, fontSize: sz.body }}>
+            {body}
+          </p>
+
+          {/* Quote */}
+          {data.quote && (
+            <p className="max-w-[80%] italic text-[#1A9AB5]" style={{ marginTop: sz.gap, fontSize: sz.quote }}>
+              {data.quote}
+            </p>
+          )}
+        </div>
+
+        {/* Footer zone — always pinned at the bottom */}
+        <div className="shrink-0 w-full flex items-end justify-between pt-[2%]">
           <div className="text-left">
             <p className="text-[9px] font-bold uppercase tracking-widest text-foreground/40">
               Certification ID
@@ -248,6 +207,7 @@ function CertificateLayout({ data }: { data: DocumentPreviewData }) {
           </div>
           <SignatureBlock data={data} dark />
         </div>
+        </div>
       </div>
     </div>
   )
@@ -258,12 +218,9 @@ function OfferLetterLayout({ data }: { data: DocumentPreviewData }) {
   const vars = buildVars(data)
   const body = fillTemplate(data.body, vars)
   const subject = data.fields.subject || `Offer of ${data.fields.role_title || data.fields.role || 'Engagement'}`
-  const { outerRef, innerRef, scale } = useFitScale([
-    data.title, subject, data.recipientName, body, data.signatureName, data.signatureTitle, data.documentId, data.issuedOn,
-  ])
 
   return (
-    <div ref={outerRef} className="relative aspect-[1/1.414] w-full bg-white overflow-hidden border border-foreground/10 shadow-sm">
+    <div className="relative aspect-[1/1.414] w-full bg-white overflow-hidden border border-foreground/10 shadow-sm">
       {/* Full-page watermark */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none">
         <span className="font-heading font-black text-[#1A9AB5]/[0.04] text-[30vw] leading-none -rotate-12 tracking-tighter">
@@ -273,50 +230,50 @@ function OfferLetterLayout({ data }: { data: DocumentPreviewData }) {
       {/* Top accent bar */}
       <div className="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-[#35C8E0] via-[#1A9AB5] to-[#82C93D]" />
 
-      <div
-        ref={innerRef}
-        className="absolute inset-0 flex flex-col px-[8%] py-[6%]"
-        style={{ transform: `scale(${scale})`, transformOrigin: 'top center' }}
-      >
+      {/* 3-zone: header (top) / body (flexible, clips) / signature+footer (bottom). */}
+      <div className="absolute inset-0 flex flex-col px-[8%] py-[6%]">
         {/* Header: logo left, date right */}
-        <div className="flex items-start justify-between">
-          <BrandLockup size={30} />
+        <div className="shrink-0 flex items-start justify-between">
+          <BrandLockup size={28} />
           <p className="text-[10px] sm:text-xs font-semibold text-foreground/60">
             {data.issuedOn ? formatDate(data.issuedOn) : formatDate(new Date().toISOString().slice(0, 10))}
           </p>
         </div>
 
-        {/* Subject */}
-        <p className="mt-[6%] text-[clamp(0.75rem,1.8vw,1rem)] font-black text-primary-dark">
-          Subject: {subject}
-        </p>
+        {/* Body zone — flexes + clips so it never pushes the signature off */}
+        <div className="flex-1 min-h-0 overflow-hidden flex flex-col">
+          {/* Subject */}
+          <p className="mt-[5%] text-[clamp(0.75rem,1.8vw,1rem)] font-black text-primary-dark shrink-0">
+            Subject: {subject}
+          </p>
 
-        {/* Salutation + body */}
-        <p className="mt-[4%] text-[clamp(0.7rem,1.6vw,0.9rem)] font-semibold text-foreground">
-          Dear {data.recipientName || 'Candidate'},
-        </p>
-        {isHtml(body) ? (
-          <div
-            className="mt-2 text-[clamp(0.68rem,1.5vw,0.85rem)] leading-relaxed text-foreground/80 doc-richtext"
-            dangerouslySetInnerHTML={{ __html: sanitize(body) }}
-          />
-        ) : (
-          <div className="mt-2 text-[clamp(0.68rem,1.5vw,0.85rem)] leading-relaxed text-foreground/80 whitespace-pre-line">
-            {body}
-          </div>
-        )}
-
-        {/* Signature */}
-        <div className="mt-[4%] flex justify-end">
-          <SignatureBlock data={data} />
+          {/* Salutation + body */}
+          <p className="mt-[4%] text-[clamp(0.7rem,1.6vw,0.9rem)] font-semibold text-foreground shrink-0">
+            Dear {data.recipientName || 'Candidate'},
+          </p>
+          {isHtml(body) ? (
+            <div
+              className="mt-2 text-[clamp(0.68rem,1.5vw,0.85rem)] leading-relaxed text-foreground/80 doc-richtext"
+              dangerouslySetInnerHTML={{ __html: sanitize(body) }}
+            />
+          ) : (
+            <div className="mt-2 text-[clamp(0.68rem,1.5vw,0.85rem)] leading-relaxed text-foreground/80 whitespace-pre-line">
+              {body}
+            </div>
+          )}
         </div>
 
-        {/* Footer id */}
-        <div className="mt-[3%] pt-2 border-t border-foreground/10 flex items-center justify-between">
-          <p className="text-[9px] font-mono font-bold text-foreground/50 break-all">
-            OFFER LETTER ID: {data.documentId || ID_PLACEHOLDER}
-          </p>
-          <p className="text-[8px] uppercase tracking-widest text-foreground/30">SUG Creative</p>
+        {/* Signature + footer — pinned at the bottom */}
+        <div className="shrink-0">
+          <div className="flex justify-end">
+            <SignatureBlock data={data} />
+          </div>
+          <div className="mt-[3%] pt-2 border-t border-foreground/10 flex items-center justify-between">
+            <p className="text-[9px] font-mono font-bold text-foreground/50 break-all">
+              OFFER LETTER ID: {data.documentId || ID_PLACEHOLDER}
+            </p>
+            <p className="text-[8px] uppercase tracking-widest text-foreground/30">SUG Creative</p>
+          </div>
         </div>
       </div>
     </div>

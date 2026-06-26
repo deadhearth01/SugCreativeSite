@@ -9,6 +9,7 @@ import {
 
 type Profile = {
   id: string
+  display_id: string | null
   full_name: string | null
   email: string | null
   role: string
@@ -290,6 +291,11 @@ export default function ProfilePage() {
               <span className={`text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full ${profile.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
                 {profile.status}
               </span>
+              {profile.display_id && (
+                <span className="text-[11px] font-mono font-bold text-[#1A9AB5] bg-[#35C8E0]/10 border border-[#35C8E0]/30 rounded-md px-2 py-0.5">
+                  {profile.display_id}
+                </span>
+              )}
             </div>
           </div>
 

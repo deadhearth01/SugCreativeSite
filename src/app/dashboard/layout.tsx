@@ -231,6 +231,7 @@ type UserProfile = {
   email: string | null
   avatar_url: string | null
   username: string | null
+  display_id: string | null
 }
 
 function NavLink({ item, collapsed, isActive, onClick }: {
@@ -319,7 +320,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       if (!user) return
       supabase
         .from('profiles')
-        .select('full_name, email, avatar_url, username')
+        .select('full_name, email, avatar_url, username, display_id')
         .eq('id', user.id)
         .single()
         .then(({ data }) => {
@@ -573,6 +574,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     <p className="text-xs font-mono text-[#5B8E2A] truncate">@{userProfile.username}</p>
                   ) : (
                     <p className="text-xs italic text-amber-600 truncate">@username not set</p>
+                  )}
+                  {userProfile?.display_id && (
+                    <p className="text-[11px] font-mono font-bold text-[#1A9AB5] bg-[#35C8E0]/10 border border-[#35C8E0]/30 rounded-md px-2 py-0.5 mt-1.5 inline-block">
+                      {userProfile.display_id}
+                    </p>
                   )}
                 </div>
                 <div className="py-1">
