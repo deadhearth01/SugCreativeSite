@@ -6,7 +6,8 @@ import {
   ArrowLeft, User, Mail, Phone, Calendar, Tag, Shield, Activity,
   FileText, GraduationCap, Briefcase, DollarSign, Clock, CheckCircle,
   AlertCircle, Edit, Ban, Trash2, KeyRound, MoreVertical, Building,
-  BookOpen, Award, Users, MessageSquare, Target, TrendingUp, Loader2, Plus
+  BookOpen, Award, Users, MessageSquare, Target, TrendingUp, Loader2, Plus,
+  Upload, ExternalLink
 } from 'lucide-react'
 import { PageHeader, StatusBadge } from '@/components/dashboard/DashboardUI'
 import { createClient } from '@/lib/supabase/client'
@@ -164,12 +165,21 @@ export default function UserDetailPage() {
             .eq('student_id', userId)
           data.enrollments = enrollments || []
 
-          // Load certificates
+          // Load certificates (legacy course-completion table)
           const { data: certificates } = await supabase
             .from('certificates')
             .select('*, courses(title)')
             .eq('student_id', userId)
           data.certificates = certificates || []
+
+          // Load certificate documents (cert/offer system)
+          const { data: certDocs } = await supabase
+            .from('documents')
+            .select('id, document_id, title, sub_type, issued_on, status, pdf_url')
+            .eq('type', 'certificate')
+            .eq('recipient_profile_id', userId)
+            .order('issued_on', { ascending: false })
+          data.certificateDocs = certDocs || []
 
           // Load payments
           const { data: payments } = await supabase
@@ -203,14 +213,32 @@ export default function UserDetailPage() {
             .from('mentor_sessions')
             .select('*, profiles!mentor_sessions_student_id_fkey(full_name, email)')
             .eq('mentor_id', userId)
+            .order('created_at', { ascending: false })
           data.sessions = sessions || []
+
+          // Load meetings the mentor initiated (organizer)
+          const { data: organizedMeetings } = await supabase
+            .from('meetings')
+            .select('id, title, meeting_type, meeting_link, scheduled_at, duration_minutes, status, notes')
+            .eq('organizer_id', userId)
+            .order('scheduled_at', { ascending: false })
+          data.organizedMeetings = organizedMeetings || []
 
           // Load resources
           const { data: resources } = await supabase
             .from('mentor_resources')
             .select('*')
             .eq('mentor_id', userId)
+            .order('created_at', { ascending: false })
           data.resources = resources || []
+
+          // Load assigned students (mentee profiles)
+          const { data: assignments } = await supabase
+            .from('mentor_assignments')
+            .select('id, assigned_at, notes, mentee:mentee_id(id, full_name, email, display_id, role)')
+            .eq('mentor_id', userId)
+            .order('assigned_at', { ascending: false })
+          data.assignedStudents = assignments || []
           break
 
         case 'employee':
@@ -706,6 +734,248 @@ export default function UserDetailPage() {
             </div>
           )}
 
+          {/* Assigned Students Tab (Mentor) */}
+          {activeTab === 'students' && user.role === 'mentor' && (
+            <div className="bg-white border border-border rounded-xl">
+              <div className="p-5 border-b border-border">
+                <h3 className="text-sm font-semibold text-primary">Assigned Students</h3>
+              </div>
+              {(roleData.assignedStudents as unknown[])?.length === 0 ? (
+                <div className="p-8 text-center text-foreground/50">
+                  <GraduationCap size={32} className="mx-auto mb-3 opacity-30" />
+                  <p>No students assigned yet.</p>
+                </div>
+              ) : (
+                <div className="divide-y divide-border">
+                  {(roleData.assignedStudents as { id: string; assigned_at: string; mentee: { id: string; full_name: string; email: string; display_id: string | null; role: string } | null }[])?.map((a) => (
+                    a.mentee && (
+                      <button
+                        key={a.id}
+                        onClick={() => router.push(`/dashboard/admin/users/${a.mentee!.id}`)}
+                        className="w-full p-4 flex items-center justify-between text-left hover:bg-off-white transition-colors"
+                      >
+                        <div className="flex items-center gap-3 min-w-0">
+                          <div className="w-9 h-9 rounded-lg bg-[#35C8E0]/20 flex items-center justify-center text-primary text-xs font-bold flex-shrink-0">
+                            {a.mentee.full_name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
+                          </div>
+                          <div className="min-w-0">
+                            <p className="font-medium text-primary truncate">{a.mentee.full_name}</p>
+                            <p className="text-xs text-foreground/50 truncate">{a.mentee.email}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2 flex-shrink-0">
+                          <span className="text-xs font-semibold uppercase px-2 py-0.5 rounded-md bg-off-white text-foreground/60">{a.mentee.role}</span>
+                          {a.mentee.display_id && (
+                            <span className="text-xs font-mono font-bold text-[#1A9AB5] bg-[#35C8E0]/10 border border-[#35C8E0]/30 rounded-md px-2 py-0.5">
+                              {a.mentee.display_id}
+                            </span>
+                          )}
+                        </div>
+                      </button>
+                    )
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Sessions Tab (Mentor) */}
+          {activeTab === 'sessions' && user.role === 'mentor' && (
+            <div className="space-y-6">
+              {/* Mentoring sessions */}
+              <div className="bg-white border border-border rounded-xl">
+                <div className="p-5 border-b border-border">
+                  <h3 className="text-sm font-semibold text-primary">Mentoring Sessions</h3>
+                </div>
+                {(roleData.sessions as unknown[])?.length === 0 ? (
+                  <div className="p-8 text-center text-foreground/50">
+                    <Users size={32} className="mx-auto mb-3 opacity-30" />
+                    <p>No mentoring sessions yet.</p>
+                  </div>
+                ) : (
+                  <div className="divide-y divide-border">
+                    {(roleData.sessions as { id: string; duration_minutes: number; rating: number | null; feedback: string | null; created_at: string; profiles: { full_name: string; email: string } | null }[])?.map((s) => (
+                      <div key={s.id} className="p-4">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="font-medium text-primary">{s.profiles?.full_name || 'Student'}</p>
+                            <p className="text-xs text-foreground/50">{s.created_at ? formatDate(s.created_at) : ''}</p>
+                          </div>
+                          <div className="flex items-center gap-3 text-sm">
+                            {s.duration_minutes != null && (
+                              <span className="text-foreground/50">{s.duration_minutes} min</span>
+                            )}
+                            {s.rating != null && (
+                              <span className="text-xs px-2 py-0.5 rounded-full bg-yellow-100 text-yellow-700 font-medium">★ {s.rating}</span>
+                            )}
+                          </div>
+                        </div>
+                        {s.feedback && (
+                          <p className="text-xs text-foreground/60 mt-2 italic">&ldquo;{s.feedback}&rdquo;</p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Meetings initiated */}
+              <div className="bg-white border border-border rounded-xl">
+                <div className="p-5 border-b border-border">
+                  <h3 className="text-sm font-semibold text-primary">Meetings Initiated</h3>
+                </div>
+                {(roleData.organizedMeetings as unknown[])?.length === 0 ? (
+                  <div className="p-8 text-center text-foreground/50">
+                    <Calendar size={32} className="mx-auto mb-3 opacity-30" />
+                    <p>No meetings initiated yet.</p>
+                  </div>
+                ) : (
+                  <div className="divide-y divide-border">
+                    {(roleData.organizedMeetings as { id: string; title: string; scheduled_at: string; status: string; meeting_link: string | null }[])?.map((m) => (
+                      <div key={m.id} className="p-4 flex items-center justify-between">
+                        <div className="min-w-0">
+                          <p className="font-medium text-primary truncate">{m.title}</p>
+                          <p className="text-xs text-foreground/50">{m.scheduled_at ? new Date(m.scheduled_at).toLocaleString() : ''}</p>
+                        </div>
+                        <div className="flex items-center gap-3 flex-shrink-0">
+                          <span className={`text-xs px-2 py-0.5 rounded-full ${
+                            m.status === 'completed' ? 'bg-green-100 text-green-700' :
+                            m.status === 'cancelled' ? 'bg-red-100 text-red-700' :
+                            'bg-blue-100 text-blue-700'
+                          }`}>
+                            {m.status}
+                          </span>
+                          {m.meeting_link && (
+                            <a href={m.meeting_link} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="text-xs font-semibold text-[#1A9AB5] hover:underline">
+                              Join
+                            </a>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Resources Tab (Mentor) */}
+          {activeTab === 'resources' && user.role === 'mentor' && (
+            <div className="bg-white border border-border rounded-xl">
+              <div className="p-5 border-b border-border">
+                <h3 className="text-sm font-semibold text-primary">Shared Resources</h3>
+              </div>
+              {(roleData.resources as unknown[])?.length === 0 ? (
+                <div className="p-8 text-center text-foreground/50">
+                  <FileText size={32} className="mx-auto mb-3 opacity-30" />
+                  <p>No resources shared yet.</p>
+                </div>
+              ) : (
+                <div className="divide-y divide-border">
+                  {(roleData.resources as { id: string; title: string; description: string | null; file_url: string | null; resource_type: string | null; is_public: boolean; created_at: string }[])?.map((r) => (
+                    <div key={r.id} className="p-4 flex items-center justify-between">
+                      <div className="min-w-0">
+                        <p className="font-medium text-primary truncate">{r.title}</p>
+                        {r.description && <p className="text-xs text-foreground/50 truncate">{r.description}</p>}
+                        <div className="flex items-center gap-2 mt-1">
+                          {r.resource_type && (
+                            <span className="text-xs px-2 py-0.5 rounded-full bg-off-white text-foreground/60">{r.resource_type}</span>
+                          )}
+                          {r.is_public && (
+                            <span className="text-xs px-2 py-0.5 rounded-full bg-green-100 text-green-700">Public</span>
+                          )}
+                        </div>
+                      </div>
+                      {r.file_url && (
+                        <a href={r.file_url} target="_blank" rel="noopener noreferrer" className="text-xs font-semibold text-[#1A9AB5] hover:underline flex-shrink-0">
+                          Open
+                        </a>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Certificates Tab (Student) */}
+          {activeTab === 'certificates' && user.role === 'student' && (
+            <StudentCertificatesTab user={user} roleData={roleData} onReload={() => loadRoleSpecificData('student')} router={router} />
+          )}
+
+          {/* Meetings Tab (Employee/Intern/Client) */}
+          {activeTab === 'meetings' && ['employee', 'intern', 'client'].includes(user.role) && (
+            <div className="bg-white border border-border rounded-xl">
+              <div className="p-5 border-b border-border">
+                <h3 className="text-sm font-semibold text-primary">Meetings</h3>
+              </div>
+              {(roleData.meetings as unknown[])?.length === 0 ? (
+                <div className="p-8 text-center text-foreground/50">
+                  <Calendar size={32} className="mx-auto mb-3 opacity-30" />
+                  <p>No meetings yet.</p>
+                </div>
+              ) : (
+                <div className="divide-y divide-border">
+                  {(roleData.meetings as { id: string; status: string; meetings: { id: string; title: string; scheduled_at: string; status: string; meeting_link: string | null } | null }[])?.map((mp) => (
+                    mp.meetings && (
+                      <div key={mp.id} className="p-4 flex items-center justify-between">
+                        <div className="min-w-0">
+                          <p className="font-medium text-primary truncate">{mp.meetings.title}</p>
+                          <p className="text-xs text-foreground/50">{mp.meetings.scheduled_at ? new Date(mp.meetings.scheduled_at).toLocaleString() : ''}</p>
+                        </div>
+                        <div className="flex items-center gap-3 flex-shrink-0">
+                          <span className={`text-xs px-2 py-0.5 rounded-full ${
+                            mp.meetings.status === 'completed' ? 'bg-green-100 text-green-700' :
+                            mp.meetings.status === 'cancelled' ? 'bg-red-100 text-red-700' :
+                            'bg-blue-100 text-blue-700'
+                          }`}>
+                            {mp.meetings.status}
+                          </span>
+                          {mp.meetings.meeting_link && (
+                            <a href={mp.meetings.meeting_link} target="_blank" rel="noopener noreferrer" className="text-xs font-semibold text-[#1A9AB5] hover:underline">
+                              Join
+                            </a>
+                          )}
+                        </div>
+                      </div>
+                    )
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Performance Tab (Employee/Intern) */}
+          {activeTab === 'performance' && (user.role === 'employee' || user.role === 'intern') && (
+            <PerformanceTab roleData={roleData} />
+          )}
+
+          {/* Learning Tab (Intern) */}
+          {activeTab === 'learning' && user.role === 'intern' && (
+            <div className="bg-white border border-border rounded-xl">
+              <div className="p-5 border-b border-border">
+                <h3 className="text-sm font-semibold text-primary">Learning Progress</h3>
+              </div>
+              <div className="p-8 text-center text-foreground/50">
+                <BookOpen size={32} className="mx-auto mb-3 opacity-30" />
+                <p>No learning records yet.</p>
+              </div>
+            </div>
+          )}
+
+          {/* Reports Tab (Intern/Client) */}
+          {activeTab === 'reports' && (user.role === 'intern' || user.role === 'client') && (
+            <div className="bg-white border border-border rounded-xl">
+              <div className="p-5 border-b border-border">
+                <h3 className="text-sm font-semibold text-primary">Reports</h3>
+              </div>
+              <div className="p-8 text-center text-foreground/50">
+                <FileText size={32} className="mx-auto mb-3 opacity-30" />
+                <p>No reports yet.</p>
+              </div>
+            </div>
+          )}
+
           {/* Security Tab / Activity Tab - Show for all roles */}
           {(activeTab === 'security' || activeTab === 'activity') && (
             <div className="bg-white border border-border rounded-xl p-5">
@@ -743,8 +1013,12 @@ export default function UserDetailPage() {
             <UserPaymentsTab user={user} onUserUpdate={(u) => setUser(u)} />
           )}
 
-          {/* Default content for other tabs */}
-          {!['overview', 'courses', 'tasks', 'attendance', 'projects', 'security', 'activity'].includes(activeTab) &&
+          {/* Default content — only for genuinely unhandled tab/role combos */}
+          {![
+            'overview', 'courses', 'tasks', 'attendance', 'projects', 'security', 'activity',
+            'students', 'sessions', 'resources', 'certificates', 'meetings', 'performance',
+            'learning', 'reports',
+          ].includes(activeTab) &&
             !(activeTab === 'payments' && ['employee', 'intern', 'student', 'mentor'].includes(user.role)) && (
             <div className="bg-white border border-border rounded-xl p-8 text-center">
               <div className="w-16 h-16 rounded-xl bg-off-white flex items-center justify-center mx-auto mb-4">
@@ -786,6 +1060,209 @@ function ActivityItem({ icon, text, time }: { icon: React.ReactNode; text: strin
       <div className="flex-1">
         <p className="text-sm text-foreground/70">{text}</p>
         <p className="text-xs text-foreground/40">{time}</p>
+      </div>
+    </div>
+  )
+}
+
+// ─── Student Certificates tab ────────────────────────────────────────────────
+type CertDoc = { id: string; document_id: string; title: string; sub_type: string | null; issued_on: string; status: string; pdf_url: string | null }
+type LegacyCert = { id: string; certificate_number: string; issued_at: string; file_url: string | null; courses: { title: string } | null }
+
+function StudentCertificatesTab({
+  user, roleData, onReload, router,
+}: {
+  user: Profile
+  roleData: Record<string, unknown>
+  onReload: () => Promise<void> | void
+  router: ReturnType<typeof useRouter>
+}) {
+  const certDocs = (roleData.certificateDocs as CertDoc[]) || []
+  const legacy = (roleData.certificates as LegacyCert[]) || []
+
+  const [uploading, setUploading] = useState(false)
+  const [msg, setMsg] = useState<{ kind: 'ok' | 'err'; text: string } | null>(null)
+  const flash = (kind: 'ok' | 'err', text: string) => { setMsg({ kind, text }); setTimeout(() => setMsg(null), 6000) }
+
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    e.target.value = ''
+    if (!file) return
+    setUploading(true)
+    try {
+      const fd = new FormData()
+      fd.append('file', file)
+      fd.append('student_id', user.id)
+      fd.append('title', file.name.replace(/\.[^.]+$/, '') || 'Certificate')
+      const res = await fetch('/api/certificates/upload', { method: 'POST', body: fd })
+      const json = await res.json()
+      if (!res.ok) { flash('err', json.error || 'Upload failed'); return }
+      flash('ok', 'Certificate uploaded.')
+      await onReload()
+    } catch {
+      flash('err', 'Upload failed.')
+    } finally {
+      setUploading(false)
+    }
+  }
+
+  const isEmpty = certDocs.length === 0 && legacy.length === 0
+
+  return (
+    <div className="space-y-6">
+      {msg && (
+        <div className={`rounded-xl px-4 py-3 text-sm font-medium ${msg.kind === 'ok' ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-red-50 text-red-700 border border-red-200'}`}>
+          {msg.text}
+        </div>
+      )}
+
+      <div className="bg-white border border-border rounded-xl">
+        <div className="p-5 border-b border-border flex items-center justify-between gap-3 flex-wrap">
+          <h3 className="text-sm font-semibold text-primary">Certificates</h3>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => router.push('/dashboard/admin/documents')}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold bg-primary text-white hover:bg-primary/90 transition-all"
+            >
+              <Plus size={15} /> Generate Certificate
+            </button>
+            <label className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold border border-border text-foreground/70 hover:bg-off-white transition-all cursor-pointer ${uploading ? 'opacity-50 pointer-events-none' : ''}`}>
+              <Upload size={15} /> {uploading ? 'Uploading…' : 'Upload Certificate'}
+              <input type="file" accept="application/pdf,image/*" onChange={handleUpload} className="hidden" disabled={uploading} />
+            </label>
+          </div>
+        </div>
+
+        {isEmpty ? (
+          <div className="p-8 text-center text-foreground/50">
+            <Award size={32} className="mx-auto mb-3 opacity-30" />
+            <p>No certificates yet.</p>
+          </div>
+        ) : (
+          <div className="divide-y divide-border">
+            {certDocs.map((d) => (
+              <div key={d.id} className="p-4 flex items-center justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="font-medium text-primary truncate">{d.title}</p>
+                  <p className="text-xs text-foreground/50 font-mono">{d.document_id}</p>
+                  <p className="text-xs text-foreground/40">Issued {d.issued_on ? formatDate(d.issued_on) : '—'}</p>
+                </div>
+                <div className="flex items-center gap-3 flex-shrink-0">
+                  {d.pdf_url && (
+                    <a href={d.pdf_url} target="_blank" rel="noopener noreferrer" className="text-xs font-semibold text-foreground/60 hover:text-primary hover:underline flex items-center gap-1">
+                      <ExternalLink size={12} /> File
+                    </a>
+                  )}
+                  <a href={`/verify?id=${d.document_id}`} target="_blank" rel="noopener noreferrer" className="text-xs font-semibold text-[#1A9AB5] hover:underline">
+                    Verify
+                  </a>
+                </div>
+              </div>
+            ))}
+            {legacy.map((c) => (
+              <div key={c.id} className="p-4 flex items-center justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="font-medium text-primary truncate">{c.courses?.title || 'Course Certificate'}</p>
+                  <p className="text-xs text-foreground/50 font-mono">{c.certificate_number}</p>
+                  <p className="text-xs text-foreground/40">Issued {c.issued_at ? formatDate(c.issued_at) : '—'}</p>
+                </div>
+                {c.file_url && (
+                  <a href={c.file_url} target="_blank" rel="noopener noreferrer" className="text-xs font-semibold text-[#1A9AB5] hover:underline flex items-center gap-1 flex-shrink-0">
+                    <ExternalLink size={12} /> Open
+                  </a>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+// ─── Performance tab (Employee/Intern) ───────────────────────────────────────
+function PerfBar({ label, value, total, color }: { label: string; value: number; total: number; color: string }) {
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-1">
+        <span className="text-xs text-foreground/60">{label}</span>
+        <span className="text-xs font-medium text-foreground/70">{value}</span>
+      </div>
+      <div className="h-2 bg-off-white rounded-full overflow-hidden">
+        <div className={`h-full rounded-full ${color}`} style={{ width: `${total ? (value / total) * 100 : 0}%` }} />
+      </div>
+    </div>
+  )
+}
+
+function PerformanceTab({ roleData }: { roleData: Record<string, unknown> }) {
+  const tasks = (roleData.tasks as { status: string }[]) || []
+  const attendance = (roleData.attendance as { status: string }[]) || []
+
+  const totalTasks = tasks.length
+  const byStatus = (s: string) => tasks.filter((t) => t.status === s).length
+  const completed = byStatus('completed')
+  const inProgress = byStatus('in_progress')
+  const pending = byStatus('pending')
+  const overdue = byStatus('overdue')
+  const taskRate = totalTasks ? Math.round((completed / totalTasks) * 100) : 0
+
+  const totalAtt = attendance.length
+  const present = attendance.filter((a) => a.status === 'present').length
+  const late = attendance.filter((a) => a.status === 'late').length
+  const absent = attendance.filter((a) => a.status === 'absent').length
+  const presentRate = totalAtt ? Math.round((present / totalAtt) * 100) : 0
+
+  const score = Math.round(taskRate * 0.7 + presentRate * 0.3)
+  const scoreColor = score >= 75 ? 'text-green-600' : score >= 50 ? 'text-yellow-600' : 'text-red-600'
+
+  return (
+    <div className="space-y-6">
+      {/* Score + headline stats */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="bg-white border border-border rounded-xl p-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-lg bg-[#35C8E0]/20 flex items-center justify-center text-primary">
+              <TrendingUp size={20} />
+            </div>
+            <div>
+              <p className={`text-2xl font-bold ${scoreColor}`}>{score}</p>
+              <p className="text-xs text-foreground/50">Performance Score</p>
+            </div>
+          </div>
+        </div>
+        <StatCard label="Task Completion" value={`${taskRate}%`} icon={<Target size={20} />} />
+        <StatCard label="Attendance Rate" value={`${presentRate}%`} icon={<Clock size={20} />} />
+        <StatCard label="Total Tasks" value={totalTasks} icon={<CheckCircle size={20} />} />
+      </div>
+
+      {/* Task breakdown */}
+      <div className="bg-white border border-border rounded-xl p-5">
+        <h3 className="text-sm font-semibold text-primary mb-4">Task Breakdown</h3>
+        {totalTasks === 0 ? (
+          <p className="text-sm text-foreground/50">No tasks assigned yet.</p>
+        ) : (
+          <div className="space-y-3">
+            <PerfBar label="Completed" value={completed} total={totalTasks} color="bg-green-500" />
+            <PerfBar label="In Progress" value={inProgress} total={totalTasks} color="bg-blue-500" />
+            <PerfBar label="Pending" value={pending} total={totalTasks} color="bg-gray-400" />
+            <PerfBar label="Overdue" value={overdue} total={totalTasks} color="bg-red-500" />
+          </div>
+        )}
+      </div>
+
+      {/* Attendance summary */}
+      <div className="bg-white border border-border rounded-xl p-5">
+        <h3 className="text-sm font-semibold text-primary mb-4">Attendance (Last 30 days)</h3>
+        {totalAtt === 0 ? (
+          <p className="text-sm text-foreground/50">No attendance records yet.</p>
+        ) : (
+          <div className="space-y-3">
+            <PerfBar label="Present" value={present} total={totalAtt} color="bg-green-500" />
+            <PerfBar label="Late" value={late} total={totalAtt} color="bg-yellow-500" />
+            <PerfBar label="Absent" value={absent} total={totalAtt} color="bg-red-500" />
+          </div>
+        )}
       </div>
     </div>
   )
