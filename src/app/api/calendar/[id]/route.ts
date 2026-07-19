@@ -25,9 +25,19 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       }
     }
 
+    // calendar_events has no updated_at column, and the client sends back extra
+    // fields (id, created_by, joined profile). Only forward real, updatable
+    // columns so the UPDATE doesn't error on an unknown column.
+    const COLUMNS = ['title', 'description', 'event_type', 'start_time', 'end_time',
+                     'all_day', 'location', 'color', 'target_roles'] as const
+    const updatable: Record<string, unknown> = {}
+    for (const key of COLUMNS) {
+      if (key in body) updatable[key] = body[key]
+    }
+
     const { data, error } = await supabase
       .from('calendar_events')
-      .update({ ...body, updated_at: new Date().toISOString() })
+      .update(updatable)
       .eq('id', id)
       .select()
       .single()
