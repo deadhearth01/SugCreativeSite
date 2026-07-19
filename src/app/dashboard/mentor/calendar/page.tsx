@@ -52,7 +52,8 @@ export default function MentorCalendarPage() {
     })
   }
 
-  const upcomingEvents = events.filter(e => new Date(e.start_time) >= today).slice(0, 8)
+  const startOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate())
+  const upcomingEvents = events.filter(e => new Date(e.start_time) >= startOfToday).slice(0, 8)
 
   if (loading) return <div className="flex items-center justify-center py-32"><Loader2 size={28} className="animate-spin text-[#1A9AB5]" /></div>
 

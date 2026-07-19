@@ -68,7 +68,8 @@ export default function StudentCalendarPage() {
     })
   }
 
-  const upcomingEvents = events.filter((e) => new Date(e.start_time) >= today)
+  const startOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate())
+  const upcomingEvents = events.filter((e) => new Date(e.start_time) >= startOfToday)
 
   const prevMonth = () => setCurrentMonth(new Date(year, month - 1, 1))
   const nextMonth = () => setCurrentMonth(new Date(year, month + 1, 1))
