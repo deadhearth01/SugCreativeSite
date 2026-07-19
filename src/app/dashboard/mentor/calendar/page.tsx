@@ -26,7 +26,7 @@ export default function MentorCalendarPage() {
       const { data } = await supabase
         .from('calendar_events')
         .select('id, title, start_time, color, target_roles')
-        .or('target_roles.cs.{mentor},target_roles.cs.{all}')
+        .contains('target_roles', ['mentor'])
         .order('start_time', { ascending: true })
 
       if (data) setEvents(data)

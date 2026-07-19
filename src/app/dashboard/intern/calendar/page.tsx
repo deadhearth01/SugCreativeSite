@@ -9,7 +9,7 @@ type CalendarEvent = {
   id: string
   title: string
   description: string | null
-  start_at: string
+  start_time: string
   end_at: string | null
   event_type: string | null
   target_roles: string[] | null
@@ -42,8 +42,8 @@ export default function InternCalendarPage() {
       const { data } = await supabase
         .from('calendar_events')
         .select('*')
-        .or('target_roles.cs.{intern},target_roles.cs.{all}')
-        .order('start_at')
+        .contains('target_roles', ['intern'])
+        .order('start_time')
       setEvents((data as unknown as CalendarEvent[]) || [])
       setLoading(false)
     }
@@ -62,12 +62,12 @@ export default function InternCalendarPage() {
 
   const eventsForDay = (day: number) => {
     return events.filter((e) => {
-      const d = new Date(e.start_at)
+      const d = new Date(e.start_time)
       return d.getFullYear() === year && d.getMonth() === month && d.getDate() === day
     })
   }
 
-  const upcomingEvents = events.filter((e) => new Date(e.start_at) >= today)
+  const upcomingEvents = events.filter((e) => new Date(e.start_time) >= today)
 
   const prevMonth = () => setCurrentMonth(new Date(year, month - 1, 1))
   const nextMonth = () => setCurrentMonth(new Date(year, month + 1, 1))
@@ -150,7 +150,7 @@ export default function InternCalendarPage() {
           ) : (
             <div className="space-y-3">
               {upcomingEvents.slice(0, 8).map((e) => {
-                const eventDate = new Date(e.start_at)
+                const eventDate = new Date(e.start_time)
                 return (
                   <div key={e.id} className="flex items-start gap-3 p-3 rounded-lg border border-border/50 hover:bg-off-white/50 transition-colors">
                     <div className={`w-2 h-full min-h-[36px] rounded-full flex-shrink-0 ${colorForEvent(e.id)}`} />

@@ -19,7 +19,7 @@ export async function GET(_req: NextRequest) {
     const { data, error } = await supabase
       .from('announcements')
       .select(`*, author:created_by(full_name)`)
-      .or(`target_roles.cs.{${userRole}},target_roles.cs.{all}`)
+      .contains('target_roles', [userRole])
       .order('is_pinned', { ascending: false })
       .order('created_at', { ascending: false })
 

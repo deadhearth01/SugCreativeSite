@@ -37,7 +37,7 @@ export default function EmployeeDashboard() {
       setOpenTicketsCount(ticketCount || 0)
       const { count: courseCount } = await supabase.from('enrollments').select('id', { count: 'exact', head: true }).eq('student_id', user.id)
       setEnrolledCoursesCount(courseCount || 0)
-      const { data: announcementsData } = await supabase.from('announcements').select('id, title, created_at, author:created_by(full_name)').or('target_roles.cs.{employee},target_roles.cs.{all}').order('is_pinned', { ascending: false }).order('created_at', { ascending: false }).limit(4)
+      const { data: announcementsData } = await supabase.from('announcements').select('id, title, created_at, author:created_by(full_name)').contains('target_roles', ['employee']).order('is_pinned', { ascending: false }).order('created_at', { ascending: false }).limit(4)
       setAnnouncements((announcementsData as unknown as Announcement[]) || [])
       setLoading(false)
     }

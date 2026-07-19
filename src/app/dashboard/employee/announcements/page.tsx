@@ -26,7 +26,7 @@ export default function EmployeeAnnouncementsPage() {
       const { data } = await supabase
         .from('announcements')
         .select('*, author:created_by(full_name)')
-        .or('target_roles.cs.{employee},target_roles.cs.{all}')
+        .contains('target_roles', ['employee'])
         .order('is_pinned', { ascending: false })
         .order('created_at', { ascending: false })
       setAnnouncements((data as unknown as Announcement[]) || [])
