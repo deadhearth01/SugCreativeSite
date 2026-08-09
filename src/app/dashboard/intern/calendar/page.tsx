@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react'
 import { ChevronLeft, ChevronRight, Loader2, CalendarDays } from 'lucide-react'
 import { PageHeader } from '@/components/dashboard/DashboardUI'
-import { createClient } from '@/lib/supabase/client'
 
 type CalendarEvent = {
   id: string
@@ -37,15 +36,19 @@ export default function InternCalendarPage() {
   const [currentMonth, setCurrentMonth] = useState(new Date())
 
   useEffect(() => {
+    // Fetch via the API route: it resolves the caller's role from their
+    // server-side session, so visibility never depends on the browser client
+    // having a usable session.
     const fetchEvents = async () => {
-      const supabase = createClient()
-      const { data } = await supabase
-        .from('calendar_events')
-        .select('*')
-        .contains('target_roles', ['intern'])
-        .order('start_time')
-      setEvents((data as unknown as CalendarEvent[]) || [])
-      setLoading(false)
+      try {
+        const res = await fetch('/api/calendar')
+        const json = await res.json()
+        setEvents((json.data as CalendarEvent[]) || [])
+      } catch {
+        setEvents([])
+      } finally {
+        setLoading(false)
+      }
     }
     fetchEvents()
   }, [])

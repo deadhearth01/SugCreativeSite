@@ -12,7 +12,7 @@ export function mapCoursePayload(body: Record<string, unknown>) {
     'start_date', 'end_date', 'enrollment_limit', 'display_order',
     'syllabus', 'highlights', 'color_theme', 'slug',
     'original_price', 'offer_price', 'tech_stack', 'tags',
-    'batch_start_date', 'is_featured', 'photos',
+    'batch_start_date', 'is_featured', 'photos', 'course_type',
   ]
   for (const k of passthrough) if (body[k] !== undefined) out[k] = body[k]
 
@@ -35,6 +35,7 @@ export async function revalidateCoursePaths() {
   revalidatePath('/')                       // homepage Career Programs
   revalidatePath('/courses')                // public listing
   revalidatePath('/courses/[slug]', 'page') // all course detail pages
+  revalidatePath('/internships')            // training-course listing
 }
 
 export function slugify(input: string) {

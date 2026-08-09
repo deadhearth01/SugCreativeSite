@@ -35,6 +35,7 @@ import {
   Briefcase,
   Award,
   ReceiptText,
+  Rocket,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import WelcomeScreen from '@/components/dashboard/WelcomeScreen'
@@ -53,6 +54,7 @@ const roleNavItems: Record<string, NavItem[]> = {
     { label: 'Meetings', href: '/dashboard/admin/meetings', icon: Video },
     { label: 'SUG Calendar', href: '/dashboard/admin/calendar', icon: Calendar },
     { label: 'Course Management', href: '/dashboard/admin/courses', icon: BookOpen },
+    { label: 'Internships Page', href: '/dashboard/admin/internships-page', icon: Rocket },
     { label: 'Tasks', href: '/dashboard/admin/tasks', icon: ClipboardList },
     { label: 'Client Management', href: '/dashboard/admin/clients', icon: Briefcase },
     { label: 'Site Queries', href: '/dashboard/admin/queries', icon: MessageSquareMore },
@@ -187,6 +189,7 @@ const adminNavGroups: NavGroup[] = [
     icon: BookOpen,
     items: [
       { label: 'Course Management', href: '/dashboard/admin/courses', icon: BookOpen },
+      { label: 'Internships Page', href: '/dashboard/admin/internships-page', icon: Rocket },
     ],
   },
   {

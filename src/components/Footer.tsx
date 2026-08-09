@@ -170,11 +170,11 @@ export default function Footer() {
               </span> 
               support@sugcreative.com
             </a>
-            <a href="tel:+919876543210" className="flex items-center gap-3 hover:text-white transition-colors group">
+            <a href="tel:+919966647219" className="flex items-center gap-3 hover:text-white transition-colors group">
               <span className="w-10 h-10 rounded-3xl border border-white/20 flex items-center justify-center group-hover:bg-white group-hover:text-primary-dark transition-all shadow-[2px_2px_0px_rgba(255,255,255,0.1)] group-hover:shadow-[4px_4px_0px_rgba(255,255,255,1)]">
                 <Phone size={16} />
               </span> 
-              +91 98765 43210
+              +91 99666 47219
             </a>
             <span className="flex items-center gap-3 group">
               <span className="w-10 h-10 rounded-3xl border border-white/20 flex items-center justify-center shadow-[2px_2px_0px_rgba(255,255,255,0.1)]">

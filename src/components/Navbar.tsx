@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
-import { ArrowUpRight, ChevronDown, Server, Shield, Cpu, Globe, Plane, GraduationCap, Briefcase, BookOpen } from 'lucide-react'
+import { ArrowUpRight, ChevronDown, Server, Shield, Cpu, Globe, Plane, GraduationCap, Briefcase, BookOpen, Layers, Rocket } from 'lucide-react'
 import StaggeredMenu from './StaggeredMenu'
 
 // Navigation with submenus
@@ -26,6 +26,8 @@ const navLinks: NavLink[] = [
     href: '/courses', 
     label: 'Courses',
     subItems: [
+      { href: '/courses#specialization', label: 'Specialization Courses', icon: Layers, desc: 'In-depth career programs' },
+      { href: '/internships', label: 'Training Courses / Internships', icon: Rocket, desc: 'Short hands-on live projects' },
       { href: '/courses/devops-internship', label: 'DevOps Internship', icon: Server, desc: 'CI/CD, Docker, Kubernetes' },
       { href: '/courses/cyber-security-internship', label: 'Cyber Security', icon: Shield, desc: 'Ethical Hacking, VAPT' },
       { href: '/courses/iot-embedded-internship', label: 'IoT & Embedded', icon: Cpu, desc: 'Arduino, Raspberry Pi' },
@@ -51,6 +53,7 @@ const navLinks: NavLink[] = [
 const menuItems = [
   { label: 'Home', ariaLabel: 'Go to home page', link: '/' },
   { label: 'Courses', ariaLabel: 'View our courses', link: '/courses' },
+  { label: 'Internships', ariaLabel: 'View internship programs', link: '/internships' },
   { label: 'Services', ariaLabel: 'View our services', link: '/services' },
   { label: 'Business Solutions', ariaLabel: 'View business solutions', link: '/business-solutions' },
   { label: 'About', ariaLabel: 'Learn about us', link: '/about' },

@@ -35,8 +35,16 @@ type Course = {
   thumbnail_url?: string
   color_theme?: string
   tech_stack?: string[]
+  course_type?: string
+  highlights?: string[]
   enrollments?: { count: number }[]
 }
+
+// 'training' courses are the internship programs rendered on /internships.
+const COURSE_TYPES = [
+  { value: 'specialization', label: 'Specialization Course', hint: 'Full career program — shown on /courses' },
+  { value: 'training', label: 'Training / Internship', hint: 'Mini program — shown on /internships' },
+]
 
 const CATEGORIES = [
   { value: 'business_solutions', label: 'Business Solutions' },
@@ -86,6 +94,7 @@ export default function CoursesPage() {
   const [view, setView] = useState<'management' | 'raw'>('management')
   const [showOrderModal, setShowOrderModal] = useState(false)
   const [showImagePicker, setShowImagePicker] = useState(false)
+  const [typeFilter, setTypeFilter] = useState<'all' | 'specialization' | 'training'>('all')
   const [toast, setToast] = useState<{
     message: string
     type: 'success' | 'error'
@@ -110,6 +119,8 @@ export default function CoursesPage() {
     thumbnail: '',
     is_featured: false,
     tags: [] as string[],
+    course_type: 'specialization',
+    highlights: [] as string[],
   })
 
   // Tags input — chip entry + debounced auto-suggest from /api/course-tags
@@ -135,11 +146,14 @@ export default function CoursesPage() {
     loadCourses()
   }, [])
 
-  const filtered = courses.filter(
-    (c) =>
+  const filtered = courses.filter((c) => {
+    const matchesSearch =
       c.title.toLowerCase().includes(search.toLowerCase()) ||
       categoryLabel(c.category).toLowerCase().includes(search.toLowerCase())
-  )
+    // Rows saved before course_type existed default to 'specialization'.
+    const type = c.course_type || 'specialization'
+    return matchesSearch && (typeFilter === 'all' || type === typeFilter)
+  })
 
   const resetImageAndTagState = () => {
     setTagInput('')
@@ -168,6 +182,8 @@ export default function CoursesPage() {
       thumbnail: '',
       is_featured: false,
       tags: [],
+      course_type: 'specialization',
+      highlights: [],
     })
     resetImageAndTagState()
     setShowModal(true)
@@ -197,6 +213,8 @@ export default function CoursesPage() {
       thumbnail: course.thumbnail_url || '',
       is_featured: !!course.is_featured,
       tags: course.tags || [],
+      course_type: course.course_type || 'specialization',
+      highlights: course.highlights || [],
     })
     resetImageAndTagState()
     setShowModal(true)
@@ -237,6 +255,8 @@ export default function CoursesPage() {
         tags: form.tags,
         thumbnail: form.thumbnail || null,
         is_featured: form.is_featured,
+        course_type: form.course_type,
+        highlights: form.highlights.filter((h) => h.trim() !== ''),
       }
       const url = editCourse
         ? `/api/courses/${editCourse.id}`
@@ -385,6 +405,26 @@ export default function CoursesPage() {
             onChange={(e) => setSearch(e.target.value)}
             className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#35C8E0]/30 focus:border-[#35C8E0] transition-all"
           />
+        </div>
+        {/* Program type filter */}
+        <div className="flex items-center gap-1 bg-gray-100 rounded-xl p-1 shrink-0">
+          {([
+            { value: 'all', label: 'All' },
+            { value: 'specialization', label: 'Specialization' },
+            { value: 'training', label: 'Training' },
+          ] as const).map((t) => (
+            <button
+              key={t.value}
+              onClick={() => setTypeFilter(t.value)}
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+                typeFilter === t.value
+                  ? 'bg-white text-primary shadow-sm'
+                  : 'text-foreground/50 hover:text-foreground/70'
+              }`}
+            >
+              {t.label}
+            </button>
+          ))}
         </div>
         {/* Segmented view control */}
         <div className="flex items-center gap-1 bg-gray-100 rounded-xl p-1 shrink-0">
@@ -547,10 +587,37 @@ export default function CoursesPage() {
                 />
               </div>
 
-              {/* Description */}
+              {/* Program type — decides which public page this appears on */}
               <div>
                 <label className="block text-xs font-semibold text-foreground/60 mb-1.5 uppercase tracking-wide">
-                  Description
+                  Program Type *
+                </label>
+                <div className="grid grid-cols-2 gap-3">
+                  {COURSE_TYPES.map((t) => {
+                    const active = form.course_type === t.value
+                    return (
+                      <button
+                        key={t.value}
+                        type="button"
+                        onClick={() => setForm((f) => ({ ...f, course_type: t.value }))}
+                        className={`text-left px-3 py-2.5 rounded-xl border transition-all ${
+                          active
+                            ? 'border-[#35C8E0] bg-[#35C8E0]/10 ring-2 ring-[#35C8E0]/30'
+                            : 'border-gray-200 hover:border-gray-300'
+                        }`}
+                      >
+                        <span className="block text-sm font-semibold text-primary">{t.label}</span>
+                        <span className="block text-[11px] text-foreground/50 mt-0.5">{t.hint}</span>
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
+
+              {/* Description — the summary shown on cards and the detail page */}
+              <div>
+                <label className="block text-xs font-semibold text-foreground/60 mb-1.5 uppercase tracking-wide">
+                  Course Description
                 </label>
                 <textarea
                   value={form.description}
@@ -559,7 +626,64 @@ export default function CoursesPage() {
                   }
                   className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#35C8E0]/30 focus:border-[#35C8E0] resize-none transition-all"
                   rows={3}
+                  placeholder="Short summary shown on the course card and detail page"
                 />
+                <p className="text-[11px] text-foreground/40 mt-1">
+                  Appears under the course title on the public page.
+                </p>
+              </div>
+
+              {/* What You'll Learn — the `highlights` bullet list */}
+              <div>
+                <label className="block text-xs font-semibold text-foreground/60 mb-1.5 uppercase tracking-wide">
+                  {"What You'll Learn"}
+                </label>
+                <div className="space-y-2">
+                  {form.highlights.map((h, i) => (
+                    <div key={i} className="flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#35C8E0] flex-shrink-0" />
+                      <input
+                        type="text"
+                        value={h}
+                        onChange={(e) =>
+                          setForm((f) => ({
+                            ...f,
+                            highlights: f.highlights.map((x, xi) =>
+                              xi === i ? e.target.value : x
+                            ),
+                          }))
+                        }
+                        className="flex-1 border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#35C8E0]/30 focus:border-[#35C8E0] transition-all"
+                        placeholder={`Learning outcome ${i + 1}`}
+                      />
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setForm((f) => ({
+                            ...f,
+                            highlights: f.highlights.filter((_, xi) => xi !== i),
+                          }))
+                        }
+                        className="p-2 text-foreground/40 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                        aria-label={`Remove outcome ${i + 1}`}
+                      >
+                        <Trash2 size={15} />
+                      </button>
+                    </div>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setForm((f) => ({ ...f, highlights: [...f.highlights, ''] }))
+                    }
+                    className="inline-flex items-center gap-1.5 text-sm font-medium text-[#1A9AB5] hover:text-[#35C8E0] transition-colors"
+                  >
+                    <Plus size={15} /> Add learning outcome
+                  </button>
+                </div>
+                <p className="text-[11px] text-foreground/40 mt-1.5">
+                  {"Shown as the “What You'll Learn” list on the public course page."}
+                </p>
               </div>
 
               {/* Category + Status */}

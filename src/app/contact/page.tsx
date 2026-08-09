@@ -23,7 +23,7 @@ const services = [
 
 const contactInfo = [
   { icon: Mail, label: 'Email Us', value: 'support@sugcreative.com', href: 'mailto:support@sugcreative.com', color: 'bg-primary-dark', accent: '#82C93D' },
-  { icon: Phone, label: 'Call Us', value: '+91 98765 43210', href: 'tel:+919876543210', color: 'bg-[#82C93D]', accent: '#1A9AB5' },
+  { icon: Phone, label: 'Call Us', value: '+91 99666 47219', href: 'tel:+919966647219', color: 'bg-[#82C93D]', accent: '#1A9AB5' },
   { icon: MapPin, label: 'Visit Us', value: 'Rajahmundry', href: '#', color: 'bg-white border-2 border-primary-dark', accent: '#1A9AB5' },
   { icon: Clock, label: 'Office Hours', value: 'Mon–Sat: 10 AM–6:30 PM', subValue: 'Sun: 11 AM–7:30 PM', href: '#', color: 'bg-primary-dark/10 border-2 border-primary-dark', accent: '#1A9AB5' },
 ]

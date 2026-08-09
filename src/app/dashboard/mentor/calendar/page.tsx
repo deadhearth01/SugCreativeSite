@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react'
 import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react'
 import { PageHeader } from '@/components/dashboard/DashboardUI'
-import { createClient } from '@/lib/supabase/client'
 
 type CalendarEvent = {
   id: string
@@ -21,16 +20,19 @@ export default function MentorCalendarPage() {
   const [currentDate, setCurrentDate] = useState(new Date())
 
   useEffect(() => {
+    // Fetch via the API route: it resolves the caller's role from their
+    // server-side session, so visibility never depends on the browser client
+    // having a usable session.
     const load = async () => {
-      const supabase = createClient()
-      const { data } = await supabase
-        .from('calendar_events')
-        .select('id, title, start_time, color, target_roles')
-        .contains('target_roles', ['mentor'])
-        .order('start_time', { ascending: true })
-
-      if (data) setEvents(data)
-      setLoading(false)
+      try {
+        const res = await fetch('/api/calendar')
+        const json = await res.json()
+        setEvents((json.data as CalendarEvent[]) || [])
+      } catch {
+        setEvents([])
+      } finally {
+        setLoading(false)
+      }
     }
     load()
   }, [])

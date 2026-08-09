@@ -140,10 +140,10 @@ export default async function CourseDetailPage({ params }: PageProps) {
                 </p>
 
                 {/* Course Image (mobile) */}
-                {course.image_url && (
+                {course.thumbnail_url && (
                   <div className="relative h-56 rounded-2xl overflow-hidden mb-6 lg:hidden border border-gray-200 shadow-lg">
                     <Image
-                      src={course.image_url}
+                      src={course.thumbnail_url}
                       alt={course.title}
                       fill
                       className="object-cover"
@@ -211,10 +211,10 @@ export default async function CourseDetailPage({ params }: PageProps) {
               {/* Right - Perks Card + Image */}
               <div className="space-y-6">
                 {/* Course Image (desktop) */}
-                {course.image_url && (
+                {course.thumbnail_url && (
                   <div className="relative h-56 rounded-2xl overflow-hidden hidden lg:block border border-gray-200 shadow-lg">
                     <Image
-                      src={course.image_url}
+                      src={course.thumbnail_url}
                       alt={course.title}
                       fill
                       className="object-cover"
