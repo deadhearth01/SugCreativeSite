@@ -43,7 +43,7 @@ type Course = {
 // 'training' courses are the internship programs rendered on /internships.
 const COURSE_TYPES = [
   { value: 'specialization', label: 'Specialization Course', hint: 'Full career program — shown on /courses' },
-  { value: 'training', label: 'Training / Internship', hint: 'Mini program — shown on /internships' },
+  { value: 'training', label: 'Internship', hint: 'Hands-on program — shown on /internships' },
 ]
 
 const CATEGORIES = [
@@ -372,7 +372,7 @@ export default function CoursesPage() {
     <div>
       <PageHeader
         title="Course Management"
-        description="Create, edit, and manage all training courses"
+        description="Create, edit, and manage specialization courses and internships"
         action={
           <div className="flex items-center gap-2">
             <button
@@ -411,7 +411,7 @@ export default function CoursesPage() {
           {([
             { value: 'all', label: 'All' },
             { value: 'specialization', label: 'Specialization' },
-            { value: 'training', label: 'Training' },
+            { value: 'training', label: 'Internships' },
           ] as const).map((t) => (
             <button
               key={t.value}

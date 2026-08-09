@@ -22,6 +22,41 @@ export type CalendarEvent = {
  * as `error` instead of being swallowed — an empty calendar and a broken
  * calendar look identical otherwise, which makes visibility bugs invisible.
  */
+/** Fallback palette used only when an event has no colour stored. */
+const FALLBACK_COLORS = ['#35C8E0', '#82C93D', '#8B5CF6', '#F59E0B', '#0A2472']
+
+/**
+ * Resolve an event's chip colour to a concrete hex value.
+ *
+ * Applied as an inline style rather than a Tailwind class: the previous
+ * implementation hashed each event id onto a class-name palette that included
+ * a malformed entry ('bg-[#E0F2F8]0'), so some events rendered white-on-white
+ * and looked missing from the grid entirely.
+ */
+export function eventColor(e: { id: string; color?: string | null }): string {
+  if (e.color && /^#[0-9a-f]{3,8}$/i.test(e.color)) return e.color
+  let hash = 0
+  for (let i = 0; i < e.id.length; i++) hash = e.id.charCodeAt(i) + ((hash << 5) - hash)
+  return FALLBACK_COLORS[Math.abs(hash) % FALLBACK_COLORS.length]
+}
+
+/** Split events into upcoming (today onward) and past, each sorted sensibly. */
+export function splitByTime(events: CalendarEvent[]) {
+  const now = new Date()
+  const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+  const upcoming: CalendarEvent[] = []
+  const past: CalendarEvent[] = []
+  for (const e of events) {
+    // An event counts as still running until its end time passes.
+    const ends = new Date(e.end_time || e.start_time)
+    if (ends >= startOfToday) upcoming.push(e)
+    else past.push(e)
+  }
+  upcoming.sort((a, b) => +new Date(a.start_time) - +new Date(b.start_time))
+  past.sort((a, b) => +new Date(b.start_time) - +new Date(a.start_time)) // newest first
+  return { upcoming, past }
+}
+
 export function useCalendarEvents() {
   const [events, setEvents] = useState<CalendarEvent[]>([])
   const [loading, setLoading] = useState(true)

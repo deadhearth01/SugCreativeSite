@@ -190,7 +190,7 @@ export default function InternshipsPageEditor() {
           fetch('/api/page-content?page=internships').then((r) => r.json()).catch(() => ({})),
           supabase
             .from('courses')
-            .select('id, title, slug, description, thumbnail_url, duration_text, tech_stack')
+            .select('id, title, slug, description, thumbnail_url, duration_text, tech_stack, color_theme')
             .eq('status', 'active')
             .eq('course_type', 'training')
             .order('created_at', { ascending: false }),
@@ -542,7 +542,7 @@ export default function InternshipsPageEditor() {
                   Course Management
                 </Link>
                 . Any active course with type{' '}
-                <span className="font-semibold">Training / Internship</span> appears here.
+                <span className="font-semibold">Internship</span> appears here.
                 {' '}Currently <span className="font-bold">{programs.length}</span> published.
               </p>
             </div>

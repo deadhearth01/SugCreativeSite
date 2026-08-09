@@ -3,7 +3,8 @@
 import { useState } from 'react'
 import { ChevronLeft, ChevronRight, Loader2, AlertCircle } from 'lucide-react'
 import { PageHeader } from '@/components/dashboard/DashboardUI'
-import { useCalendarEvents } from '@/lib/useCalendarEvents'
+import { useCalendarEvents, eventColor } from '@/lib/useCalendarEvents'
+import CalendarSidePanel from '@/components/dashboard/CalendarSidePanel'
 
 const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 
@@ -28,8 +29,6 @@ export default function MentorCalendarPage() {
     })
   }
 
-  const startOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate())
-  const upcomingEvents = events.filter(e => new Date(e.start_time) >= startOfToday).slice(0, 8)
 
   if (loading) return <div className="flex items-center justify-center py-32"><Loader2 size={28} className="animate-spin text-[#1A9AB5]" /></div>
 
@@ -89,8 +88,8 @@ export default function MentorCalendarPage() {
                         {dayEvents.slice(0, 2).map(e => (
                           <div
                             key={e.id}
-                            className="text-[10px] text-white font-medium px-1 py-0.5 rounded truncate mb-0.5"
-                            style={{ backgroundColor: e.color || '#0A2472' }}
+                            className="text-[10px] text-white font-semibold px-1.5 py-0.5 rounded truncate mb-0.5"
+                            style={{ backgroundColor: eventColor(e) }}
                           >
                             {e.title}
                           </div>
@@ -107,29 +106,7 @@ export default function MentorCalendarPage() {
           </div>
         </div>
 
-        {/* Upcoming Events */}
-        <div className="bg-white border border-border rounded-xl overflow-hidden">
-          <div className="p-5 border-b border-border">
-            <h3 className="font-heading font-bold text-primary">Upcoming Events</h3>
-          </div>
-          <div className="p-4 space-y-3 max-h-[500px] overflow-y-auto">
-            {upcomingEvents.length === 0 ? (
-              <p className="text-sm text-foreground/40 text-center py-8">No upcoming events</p>
-            ) : (
-              upcomingEvents.map(e => (
-                <div key={e.id} className="flex gap-3 items-start">
-                  <div className="w-1 h-10 rounded-full flex-shrink-0" style={{ backgroundColor: e.color || '#0A2472' }} />
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-primary truncate">{e.title}</p>
-                    <p className="text-xs text-foreground/50">
-                      {new Date(e.start_time).toLocaleString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
-                    </p>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-        </div>
+        <CalendarSidePanel events={events} />
       </div>
     </div>
   )

@@ -107,7 +107,7 @@ export default function EmployeeCoursesPage() {
     <div>
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
 
-      <PageHeader title="Courses" description="Internal training courses and your enrollments" />
+      <PageHeader title="Courses" description="Internal courses and your enrollments" />
 
       {enrollments.length > 0 && (
         <>

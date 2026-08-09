@@ -69,11 +69,11 @@ export default async function CoursesPage() {
                   Specialization Courses
                 </a>
                 <a
-                  href="#training"
+                  href="#internships"
                   className="inline-flex items-center gap-2 px-6 py-3 bg-white text-[#1A9AB5] font-bold rounded-2xl border-2 border-[#35C8E0] shadow-lg hover:scale-[0.98] transition-all"
                 >
                   <Rocket className="w-4 h-4" />
-                  Training Courses
+                  Internships
                 </a>
               </div>
 
@@ -125,9 +125,9 @@ export default async function CoursesPage() {
           </div>
         </section>
 
-        {/* ── Training Courses (internship programs) ── */}
+        {/* ── Internships (internship programs) ── */}
         <section
-          id="training"
+          id="internships"
           className="py-16 bg-gradient-to-br from-[#35C8E0]/5 via-white to-[#82C93D]/5 scroll-mt-24"
         >
           <div className="container mx-auto px-4">
@@ -135,7 +135,7 @@ export default async function CoursesPage() {
               <div className="flex flex-wrap items-center justify-between gap-4 mb-3">
                 <div className="flex items-center gap-3">
                   <Rocket className="w-6 h-6 text-[#82C93D]" />
-                  <h2 className="text-3xl font-black tracking-tight">Training Courses</h2>
+                  <h2 className="text-3xl font-black tracking-tight">Internships</h2>
                 </div>
                 <Link
                   href="/internships"
@@ -159,7 +159,7 @@ export default async function CoursesPage() {
               ) : (
                 <div className="text-center py-16 rounded-3xl border border-dashed border-gray-200 bg-white/60">
                   <Rocket className="w-14 h-14 mx-auto text-gray-300 mb-4" />
-                  <h3 className="text-lg font-bold mb-1">No training courses yet</h3>
+                  <h3 className="text-lg font-bold mb-1">No internships published yet</h3>
                   <p className="text-gray-500 text-sm mb-5">
                     Explore the internships page to see how these programs work.
                   </p>

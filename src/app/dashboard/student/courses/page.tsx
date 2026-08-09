@@ -108,7 +108,7 @@ export default function StudentCoursesPage() {
 
   return (
     <div>
-      <PageHeader title="Training Courses" description="Your enrolled courses and learning progress" />
+      <PageHeader title="My Courses" description="Your enrolled courses and learning progress" />
 
       {/* Search + Tabs */}
       <div className="flex flex-col sm:flex-row gap-3 mb-6">

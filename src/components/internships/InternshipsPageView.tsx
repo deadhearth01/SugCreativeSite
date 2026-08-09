@@ -3,11 +3,13 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import {
-  Users, Award, Sparkles, BadgeCheck, TrendingUp, Shield, Rocket, Target,
-  ArrowRight, Star, Clock, Mail, Briefcase,
+  Building2, UserRoundCheck, Gauge, BadgeCheck, TrendingUp, ShieldCheck,
+  Rocket, Target, Code2, Briefcase, Network, Sparkles,
+  ArrowRight, ArrowUpRight, Star, Clock, Quote, CheckCircle2,
 } from 'lucide-react'
 import type { InternshipsContent } from '@/lib/pageContent'
 import { safeInternalHref } from '@/lib/pageContent'
+import { Reveal, RevealGroup, RevealItem } from '@/components/motion/Reveal'
 
 export type InternshipProgram = {
   id: string
@@ -17,14 +19,43 @@ export type InternshipProgram = {
   thumbnail_url?: string | null
   duration_text?: string | null
   tech_stack?: string[] | null
+  color_theme?: string | null
 }
 
-/**
- * next/image only accepts hosts listed in next.config remotePatterns, and an
- * admin can paste any URL into the image field. Anything outside the allowed
- * hosts renders through a plain <img> so a stray URL degrades instead of
- * throwing at runtime.
- */
+const WHY_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
+  // current, descriptive keys
+  building: Building2,
+  mentor: UserRoundCheck,
+  gauge: Gauge,
+  certificate: BadgeCheck,
+  career: TrendingUp,
+  shield: ShieldCheck,
+  rocket: Rocket,
+  target: Target,
+  code: Code2,
+  briefcase: Briefcase,
+  network: Network,
+  // legacy keys kept so previously-saved content still renders
+  users: Building2,
+  award: UserRoundCheck,
+  sparkles: Gauge,
+  badge: BadgeCheck,
+  trending: TrendingUp,
+}
+
+const ACCENTS: Record<string, string> = {
+  blue: '#3B82F6',
+  violet: '#8B5CF6',
+  green: '#10B981',
+  gold: '#F59E0B',
+  cyan: '#35C8E0',
+}
+
+function accentFor(theme?: string | null) {
+  return ACCENTS[theme || 'cyan'] ?? ACCENTS.cyan
+}
+
+/** next/image only accepts configured hosts; anything else degrades to <img>. */
 function isOptimizableHost(url: string): boolean {
   try {
     const { hostname } = new URL(url)
@@ -48,22 +79,40 @@ function RemoteImage({
   return <img src={src} alt={alt} className={`absolute inset-0 w-full h-full ${className ?? ''}`} />
 }
 
-const WHY_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
-  users: Users,
-  award: Award,
-  sparkles: Sparkles,
-  badge: BadgeCheck,
-  trending: TrendingUp,
-  shield: Shield,
-  rocket: Rocket,
-  target: Target,
+function SectionHeading({
+  eyebrow, title, subtitle, light = false, align = 'center',
+}: {
+  eyebrow: string; title: string; subtitle?: string
+  light?: boolean; align?: 'center' | 'left'
+}) {
+  return (
+    <div className={align === 'center' ? 'text-center max-w-2xl mx-auto' : 'max-w-2xl'}>
+      {eyebrow && (
+        <p className="text-[#35C8E0] text-xs font-bold uppercase tracking-[0.22em] mb-3">
+          {eyebrow}
+        </p>
+      )}
+      <h2
+        className={`text-3xl md:text-[2.6rem] leading-[1.1] font-black tracking-tight ${
+          light ? 'text-white' : 'text-[#0A2472]'
+        }`}
+      >
+        {title}
+      </h2>
+      <div
+        className={`h-1 w-16 rounded-full bg-gradient-to-r from-[#82C93D] to-[#35C8E0] mt-5 ${
+          align === 'center' ? 'mx-auto' : ''
+        }`}
+      />
+      {subtitle && (
+        <p className={`mt-5 leading-relaxed ${light ? 'text-white/65' : 'text-gray-600'}`}>
+          {subtitle}
+        </p>
+      )}
+    </div>
+  )
 }
 
-/**
- * The full /internships page body. Rendered by the public route and, at reduced
- * scale, by the admin editor's live preview — so what an admin sees while
- * editing is literally the same component the visitor gets.
- */
 export default function InternshipsPageView({
   content,
   programs,
@@ -72,305 +121,425 @@ export default function InternshipsPageView({
   programs: InternshipProgram[]
 }) {
   const { hero, stats, programs: programsMeta, why, journey, testimonials, cta } = content
+  const [lead, ...rest] = why.items
 
   return (
     <div className="bg-white">
-      {/* ── Breadcrumb banner ── */}
-      <section className="bg-[#0A2472] py-14">
-        <div className="container mx-auto px-4">
-          <p className="text-[#82C93D] text-xs font-bold uppercase tracking-[0.2em] mb-2">
-            {hero.eyebrow}
-          </p>
-          <h1 className="text-3xl md:text-5xl font-black text-white mb-3">Internships</h1>
-          <p className="text-white/60 text-xs font-semibold uppercase tracking-widest">
-            Home / Internships
-          </p>
-        </div>
-      </section>
+      {/* ════════ HERO ════════ */}
+      <section className="relative overflow-hidden bg-[#061539] pt-36 pb-40">
+        {/* depth: soft colour blooms + fine grid, no flat grey band */}
+        <div
+          className="absolute inset-0 opacity-[0.55]"
+          style={{
+            background:
+              'radial-gradient(60rem 40rem at 12% 8%, rgba(53,200,224,0.30), transparent 60%),' +
+              'radial-gradient(48rem 34rem at 92% 78%, rgba(130,201,61,0.26), transparent 62%)',
+          }}
+        />
+        <div
+          className="absolute inset-0 opacity-[0.16]"
+          style={{
+            backgroundImage:
+              'linear-gradient(rgba(255,255,255,.6) 1px, transparent 1px),' +
+              'linear-gradient(90deg, rgba(255,255,255,.6) 1px, transparent 1px)',
+            backgroundSize: '72px 72px',
+            maskImage: 'radial-gradient(70% 60% at 50% 40%, #000 30%, transparent 100%)',
+            WebkitMaskImage: 'radial-gradient(70% 60% at 50% 40%, #000 30%, transparent 100%)',
+          }}
+        />
 
-      {/* ── Hero ── */}
-      <section className="py-16 md:py-20">
-        <div className="container mx-auto px-4">
-          <div className="grid lg:grid-cols-2 gap-12 items-center max-w-6xl mx-auto">
+        <div className="container mx-auto px-4 relative">
+          <div className="grid lg:grid-cols-[1.05fr_1fr] gap-14 items-center max-w-6xl mx-auto">
             <div>
-              <p className="text-[#1A9AB5] text-xs font-bold uppercase tracking-[0.2em] mb-4">
-                Internship Programs
-              </p>
-              <h2 className="text-3xl md:text-5xl font-black tracking-tight mb-6 leading-tight">
-                {hero.title}
-                <br />
-                <span className="bg-gradient-to-r from-[#82C93D] to-[#35C8E0] bg-clip-text text-transparent">
-                  {hero.titleAccent}
+              <Reveal direction="up">
+                <nav className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.18em] text-white/40 mb-7">
+                  <Link href="/" className="hover:text-white/70 transition-colors">Home</Link>
+                  <span>/</span>
+                  <span className="text-[#82C93D]">Internships</span>
+                </nav>
+              </Reveal>
+
+              <Reveal direction="up" delay={0.06}>
+                <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-white/15 bg-white/[0.06] backdrop-blur text-[11px] font-bold uppercase tracking-[0.18em] text-white/75 mb-6">
+                  <span className="relative flex h-1.5 w-1.5">
+                    <span className="absolute inline-flex h-full w-full rounded-full bg-[#82C93D] opacity-75 animate-ping" />
+                    <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[#82C93D]" />
+                  </span>
+                  {hero.eyebrow}
                 </span>
-              </h2>
-              {hero.body && <p className="text-gray-600 leading-relaxed mb-4">{hero.body}</p>}
-              {hero.body2 && <p className="text-gray-600 leading-relaxed mb-8">{hero.body2}</p>}
+              </Reveal>
 
-              <div className="flex flex-wrap gap-4">
-                {hero.primaryCta && (
-                  <Link
-                    href={safeInternalHref(hero.primaryHref)}
-                    className="inline-flex items-center gap-2 px-7 py-3.5 bg-gradient-to-r from-[#82C93D] to-[#35C8E0] text-white font-bold rounded-2xl shadow-lg hover:scale-[0.98] transition-all"
-                  >
-                    {hero.primaryCta}
-                    <ArrowRight className="w-4 h-4" />
-                  </Link>
-                )}
-                {hero.secondaryCta && (
-                  <a
-                    href={safeInternalHref(hero.secondaryHref, '#programs')}
-                    className="inline-flex items-center gap-2 px-7 py-3.5 bg-white text-[#1A9AB5] font-bold rounded-2xl border-2 border-[#35C8E0] hover:scale-[0.98] transition-all"
-                  >
-                    {hero.secondaryCta}
-                  </a>
-                )}
-              </div>
+              <Reveal direction="up" delay={0.12}>
+                <h1 className="text-4xl md:text-6xl font-black tracking-tight leading-[1.04] text-white mb-6">
+                  {hero.title}
+                  <br />
+                  <span className="bg-gradient-to-r from-[#82C93D] via-[#35C8E0] to-[#7EE5F2] bg-clip-text text-transparent">
+                    {hero.titleAccent}
+                  </span>
+                </h1>
+              </Reveal>
+
+              <Reveal direction="up" delay={0.18}>
+                <div className="space-y-4 max-w-xl">
+                  {hero.body && <p className="text-white/65 leading-relaxed">{hero.body}</p>}
+                  {hero.body2 && <p className="text-white/50 leading-relaxed text-[15px]">{hero.body2}</p>}
+                </div>
+              </Reveal>
+
+              <Reveal direction="up" delay={0.26}>
+                <div className="flex flex-wrap gap-4 mt-9">
+                  {hero.primaryCta && (
+                    <Link
+                      href={safeInternalHref(hero.primaryHref)}
+                      className="group inline-flex items-center gap-2 px-7 py-3.5 bg-gradient-to-r from-[#82C93D] to-[#35C8E0] text-[#03102b] font-bold rounded-2xl shadow-[0_10px_40px_-10px_rgba(53,200,224,0.7)] hover:shadow-[0_14px_50px_-8px_rgba(53,200,224,0.85)] hover:-translate-y-0.5 transition-all"
+                    >
+                      {hero.primaryCta}
+                      <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+                    </Link>
+                  )}
+                  {hero.secondaryCta && (
+                    <a
+                      href={safeInternalHref(hero.secondaryHref, '#programs')}
+                      className="inline-flex items-center gap-2 px-7 py-3.5 text-white font-bold rounded-2xl border border-white/20 bg-white/[0.04] backdrop-blur hover:bg-white/[0.1] hover:-translate-y-0.5 transition-all"
+                    >
+                      {hero.secondaryCta}
+                    </a>
+                  )}
+                </div>
+              </Reveal>
             </div>
 
-            <div className="relative">
-              {hero.image ? (
-                <div className="relative aspect-[4/3] rounded-3xl overflow-hidden shadow-2xl">
-                  <RemoteImage
-                    src={hero.image}
-                    alt={hero.title}
-                    className="object-cover"
-                    sizes="(max-width: 1024px) 100vw, 50vw"
-                  />
+            {/* Hero visual */}
+            <Reveal direction="left" delay={0.2}>
+              <div className="relative">
+                <div className="absolute -inset-6 bg-gradient-to-tr from-[#35C8E0]/25 to-[#82C93D]/20 blur-3xl rounded-full" />
+                <div className="relative aspect-[4/3] rounded-[1.75rem] overflow-hidden ring-1 ring-white/15 shadow-2xl">
+                  {hero.image ? (
+                    <RemoteImage
+                      src={hero.image}
+                      alt={hero.title}
+                      className="object-cover"
+                      sizes="(max-width: 1024px) 100vw, 46vw"
+                    />
+                  ) : (
+                    <div className="absolute inset-0 bg-white/5 flex flex-col items-center justify-center gap-3">
+                      <Briefcase className="w-12 h-12 text-white/30" />
+                      <p className="text-sm font-bold text-white/40">Add a hero image</p>
+                    </div>
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#061539]/70 via-transparent to-transparent" />
                 </div>
-              ) : (
-                <div className="aspect-[4/3] rounded-3xl bg-gradient-to-br from-[#35C8E0]/15 to-[#82C93D]/15 border border-gray-200 flex flex-col items-center justify-center gap-3">
-                  <Briefcase className="w-12 h-12 text-[#35C8E0]" />
-                  <p className="text-sm font-bold text-gray-400">Add a hero image</p>
-                </div>
-              )}
-              <div className="absolute -bottom-5 -right-2 md:right-6 bg-[#0A2472] text-white px-5 py-3 rounded-2xl shadow-xl">
-                <p className="text-[10px] font-bold uppercase tracking-widest text-[#82C93D]">Learn.</p>
-                <p className="text-sm font-black">BUILD. LEAD.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
 
-      {/* ── Stats ── */}
-      {stats.items.length > 0 && (
-        <section className="pb-16">
-          <div className="container mx-auto px-4">
-            <div className="max-w-6xl mx-auto bg-white rounded-3xl border border-gray-200 shadow-xl p-6 md:p-8">
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 divide-y md:divide-y-0 lg:divide-x divide-gray-100">
-                {stats.items.map((s, i) => (
-                  <div key={i} className="text-center px-2 pt-6 md:pt-0 first:pt-0">
-                    <p className="text-2xl md:text-3xl font-black text-[#1A9AB5]">{s.value}</p>
-                    <p className="text-[10px] md:text-xs font-bold uppercase tracking-widest text-gray-500 mt-1">
-                      {s.label}
+                {/* floating credential chip */}
+                <div className="absolute -bottom-5 -left-3 md:-left-6 bg-white rounded-2xl shadow-2xl px-4 py-3 flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#82C93D] to-[#35C8E0] flex items-center justify-center">
+                    <CheckCircle2 className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Now enrolling</p>
+                    <p className="text-sm font-black text-[#0A2472]">
+                      {programs.length > 0 ? `${programs.length} live programs` : 'Next cohort'}
                     </p>
                   </div>
-                ))}
+                </div>
               </div>
-            </div>
+            </Reveal>
+          </div>
+        </div>
+
+        <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-b from-transparent to-white" />
+      </section>
+
+      {/* ════════ STATS — lifted over the hero edge ════════ */}
+      {stats.items.length > 0 && (
+        <section className="relative -mt-24 z-10">
+          <div className="container mx-auto px-4">
+            <Reveal direction="up">
+              <div className="max-w-5xl mx-auto rounded-3xl bg-white shadow-[0_24px_70px_-30px_rgba(6,21,57,0.45)] ring-1 ring-black/5 px-6 py-8 md:px-10">
+                <RevealGroup className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-y-8 gap-x-4">
+                  {stats.items.map((s, i) => (
+                    <RevealItem key={i} className="text-center relative">
+                      <p className="text-[1.9rem] md:text-4xl font-black bg-gradient-to-br from-[#0A2472] to-[#1A9AB5] bg-clip-text text-transparent">
+                        {s.value}
+                      </p>
+                      <p className="text-[10px] md:text-[11px] font-bold uppercase tracking-[0.14em] text-gray-400 mt-1.5">
+                        {s.label}
+                      </p>
+                    </RevealItem>
+                  ))}
+                </RevealGroup>
+              </div>
+            </Reveal>
           </div>
         </section>
       )}
 
-      {/* ── Programs ── */}
-      <section id="programs" className="py-16 bg-gray-50/60 scroll-mt-24">
+      {/* ════════ PROGRAMS ════════ */}
+      <section id="programs" className="py-24 scroll-mt-24">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <p className="text-[#82C93D] text-xs font-bold uppercase tracking-[0.2em] mb-3">
-              {programsMeta.eyebrow}
-            </p>
-            <h2 className="text-3xl md:text-4xl font-black tracking-tight">{programsMeta.title}</h2>
-            <div className="w-20 h-1 bg-gradient-to-r from-[#82C93D] to-[#35C8E0] mx-auto mt-4 rounded-full" />
-            {programsMeta.subtitle && (
-              <p className="text-gray-600 mt-4 max-w-2xl mx-auto">{programsMeta.subtitle}</p>
-            )}
-          </div>
+          <Reveal>
+            <SectionHeading
+              eyebrow={programsMeta.eyebrow}
+              title={programsMeta.title}
+              subtitle={programsMeta.subtitle || undefined}
+            />
+          </Reveal>
 
           {programs.length > 0 ? (
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 max-w-6xl mx-auto">
-              {programs.map((p) => (
-                <Link
-                  key={p.id}
-                  href={p.slug ? `/courses/${p.slug}` : '/contact'}
-                  className="group bg-white rounded-2xl border border-gray-200 shadow-md hover:shadow-xl hover:-translate-y-1 transition-all overflow-hidden flex flex-col"
-                >
-                  {p.thumbnail_url ? (
-                    <div className="relative h-32">
-                      <RemoteImage
-                        src={p.thumbnail_url}
-                        alt={p.title}
-                        className="object-cover"
-                        sizes="(max-width: 768px) 100vw, 20vw"
-                      />
-                    </div>
-                  ) : (
-                    <div className="h-32 bg-gradient-to-br from-[#35C8E0]/15 to-[#82C93D]/15 flex items-center justify-center">
-                      <Rocket className="w-8 h-8 text-[#35C8E0]" />
-                    </div>
-                  )}
-                  <div className="p-5 flex-1 flex flex-col">
-                    <h3 className="font-black text-center mb-2 group-hover:text-[#1A9AB5] transition-colors">
-                      {p.title}
-                    </h3>
-                    {p.description && (
-                      <p className="text-xs text-gray-600 text-center line-clamp-3 mb-4">
-                        {p.description}
-                      </p>
-                    )}
-                    <div className="mt-auto pt-4 border-t border-gray-100 flex items-center justify-center gap-2 text-[11px]">
-                      <Clock className="w-3 h-3 text-gray-400" />
-                      <span className="font-bold text-gray-500">{p.duration_text || '4-8 Weeks'}</span>
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
+            <RevealGroup className="grid sm:grid-cols-2 lg:grid-cols-3 gap-7 max-w-6xl mx-auto mt-14">
+              {programs.map((p) => {
+                const accent = accentFor(p.color_theme)
+                return (
+                  <RevealItem key={p.id}>
+                    <Link
+                      href={p.slug ? `/courses/${p.slug}` : '/contact'}
+                      className="group block h-full rounded-3xl bg-white ring-1 ring-black/[0.07] shadow-[0_4px_24px_-12px_rgba(6,21,57,0.25)] hover:shadow-[0_28px_60px_-24px_rgba(6,21,57,0.4)] hover:-translate-y-1.5 transition-all duration-300 overflow-hidden"
+                    >
+                      <div className="relative h-44 overflow-hidden">
+                        {p.thumbnail_url ? (
+                          <RemoteImage
+                            src={p.thumbnail_url}
+                            alt={p.title}
+                            className="object-cover transition-transform duration-500 group-hover:scale-105"
+                            sizes="(max-width: 768px) 100vw, 33vw"
+                          />
+                        ) : (
+                          <div className="absolute inset-0 bg-gradient-to-br from-[#35C8E0]/20 to-[#82C93D]/20" />
+                        )}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/10 to-transparent" />
+                        {p.duration_text && (
+                          <span className="absolute top-3.5 right-3.5 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/95 backdrop-blur text-[10px] font-bold uppercase tracking-wide text-[#0A2472]">
+                            <Clock className="w-3 h-3" />
+                            {p.duration_text}
+                          </span>
+                        )}
+                        <h3 className="absolute bottom-3.5 left-4 right-4 text-white font-black text-lg leading-snug">
+                          {p.title}
+                        </h3>
+                      </div>
+
+                      <div className="p-5">
+                        {p.description && (
+                          <p className="text-sm text-gray-600 leading-relaxed line-clamp-3">
+                            {p.description}
+                          </p>
+                        )}
+                        {(p.tech_stack?.length ?? 0) > 0 && (
+                          <div className="flex flex-wrap gap-1.5 mt-4">
+                            {p.tech_stack!.slice(0, 3).map((t, i) => (
+                              <span
+                                key={i}
+                                className="px-2 py-0.5 rounded-md text-[10px] font-bold"
+                                style={{ color: accent, backgroundColor: `${accent}18` }}
+                              >
+                                {t}
+                              </span>
+                            ))}
+                            {p.tech_stack!.length > 3 && (
+                              <span className="px-2 py-0.5 rounded-md text-[10px] font-bold text-gray-400 bg-gray-100">
+                                +{p.tech_stack!.length - 3}
+                              </span>
+                            )}
+                          </div>
+                        )}
+                        <span
+                          className="inline-flex items-center gap-1.5 mt-5 text-sm font-bold group-hover:gap-2.5 transition-all"
+                          style={{ color: accent }}
+                        >
+                          View program
+                          <ArrowUpRight className="w-4 h-4" />
+                        </span>
+                      </div>
+                    </Link>
+                  </RevealItem>
+                )
+              })}
+            </RevealGroup>
           ) : (
-            <div className="max-w-xl mx-auto text-center py-14 rounded-3xl border border-dashed border-gray-300 bg-white">
+            <div className="max-w-xl mx-auto text-center py-14 mt-12 rounded-3xl border border-dashed border-gray-300">
               <Rocket className="w-12 h-12 mx-auto text-gray-300 mb-3" />
-              <h3 className="font-bold mb-1">No internship programs published yet</h3>
+              <h3 className="font-bold mb-1">No internships published yet</h3>
               <p className="text-sm text-gray-500">
                 Add a course in Course Management and set its type to{' '}
-                <span className="font-semibold">Training / Internship</span>.
+                <span className="font-semibold">Internship</span>.
               </p>
             </div>
           )}
         </div>
       </section>
 
-      {/* ── Why intern with us ── */}
+      {/* ════════ WHY — bento, not a row of identical boxes ════════ */}
       {why.items.length > 0 && (
-        <section className="py-16">
+        <section className="py-24 bg-[#F7FAFC]">
           <div className="container mx-auto px-4">
-            <div className="text-center mb-12">
-              <p className="text-[#82C93D] text-xs font-bold uppercase tracking-[0.2em] mb-3">
-                {why.eyebrow}
-              </p>
-              <h2 className="text-3xl md:text-4xl font-black tracking-tight">{why.title}</h2>
-              <div className="w-20 h-1 bg-gradient-to-r from-[#82C93D] to-[#35C8E0] mx-auto mt-4 rounded-full" />
-            </div>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 max-w-6xl mx-auto">
-              {why.items.map((item, i) => {
+            <Reveal>
+              <SectionHeading eyebrow={why.eyebrow} title={why.title} />
+            </Reveal>
+
+            <RevealGroup className="grid lg:grid-cols-3 gap-6 max-w-6xl mx-auto mt-14">
+              {lead && (
+                <RevealItem className="lg:row-span-2">
+                  {(() => {
+                    const Icon = WHY_ICONS[lead.icon] ?? Building2
+                    return (
+                      <div className="h-full relative overflow-hidden rounded-3xl bg-[#061539] p-8 flex flex-col justify-between min-h-[280px]">
+                        <div
+                          className="absolute inset-0 opacity-60"
+                          style={{
+                            background:
+                              'radial-gradient(30rem 20rem at 80% 0%, rgba(53,200,224,0.35), transparent 65%)',
+                          }}
+                        />
+                        <div className="relative">
+                          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#82C93D] to-[#35C8E0] flex items-center justify-center mb-6">
+                            <Icon className="w-7 h-7 text-white" />
+                          </div>
+                          <h3 className="text-2xl font-black text-white mb-3">{lead.title}</h3>
+                          <p className="text-white/60 leading-relaxed">{lead.body}</p>
+                        </div>
+                      </div>
+                    )
+                  })()}
+                </RevealItem>
+              )}
+
+              {rest.map((item, i) => {
                 const Icon = WHY_ICONS[item.icon] ?? Sparkles
                 return (
-                  <div
-                    key={i}
-                    className="bg-white p-6 rounded-2xl border border-gray-200 shadow-md text-center hover:shadow-lg transition-shadow"
-                  >
-                    <div className="w-12 h-12 mx-auto mb-4 rounded-xl bg-gradient-to-br from-[#82C93D]/20 to-[#35C8E0]/20 flex items-center justify-center">
-                      <Icon className="w-6 h-6 text-[#1A9AB5]" />
+                  <RevealItem key={i}>
+                    <div className="h-full bg-white rounded-3xl p-6 ring-1 ring-black/[0.06] shadow-[0_2px_14px_-8px_rgba(6,21,57,0.3)] hover:shadow-[0_20px_44px_-24px_rgba(6,21,57,0.35)] hover:-translate-y-1 transition-all duration-300">
+                      <div className="w-11 h-11 rounded-xl bg-[#35C8E0]/10 ring-1 ring-[#35C8E0]/20 flex items-center justify-center mb-4">
+                        <Icon className="w-5 h-5 text-[#1A9AB5]" />
+                      </div>
+                      <h3 className="font-black text-[#0A2472] mb-2">{item.title}</h3>
+                      <p className="text-sm text-gray-600 leading-relaxed">{item.body}</p>
                     </div>
-                    <h3 className="font-bold mb-2 text-sm">{item.title}</h3>
-                    <p className="text-xs text-gray-600 leading-relaxed">{item.body}</p>
-                  </div>
+                  </RevealItem>
                 )
               })}
-            </div>
+            </RevealGroup>
           </div>
         </section>
       )}
 
-      {/* ── Journey ── */}
+      {/* ════════ JOURNEY — connected timeline ════════ */}
       {journey.items.length > 0 && (
-        <section className="py-16 bg-gray-50/60">
+        <section className="py-24">
           <div className="container mx-auto px-4">
-            <div className="text-center mb-12">
-              <p className="text-[#82C93D] text-xs font-bold uppercase tracking-[0.2em] mb-3">
-                {journey.eyebrow}
-              </p>
-              <h2 className="text-3xl md:text-4xl font-black tracking-tight">{journey.title}</h2>
-              <div className="w-20 h-1 bg-gradient-to-r from-[#82C93D] to-[#35C8E0] mx-auto mt-4 rounded-full" />
-            </div>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 max-w-6xl mx-auto">
-              {journey.items.map((step, i) => (
-                <div
-                  key={i}
-                  className="relative bg-white p-6 rounded-2xl border border-gray-200 shadow-md"
-                >
-                  <span className="absolute top-4 right-5 text-3xl font-black text-gray-100 select-none">
-                    {String(i + 1).padStart(2, '0')}
-                  </span>
-                  <div className="w-11 h-11 mb-4 rounded-xl bg-[#35C8E0]/10 flex items-center justify-center">
-                    <span className="text-sm font-black text-[#1A9AB5]">{i + 1}</span>
-                  </div>
-                  <h3 className="font-bold mb-2 text-sm">{step.title}</h3>
-                  <p className="text-xs text-gray-600 leading-relaxed">{step.body}</p>
-                </div>
-              ))}
+            <Reveal>
+              <SectionHeading eyebrow={journey.eyebrow} title={journey.title} />
+            </Reveal>
+
+            <div className="relative max-w-6xl mx-auto mt-16">
+              {/* connecting rail */}
+              <div className="hidden lg:block absolute top-7 left-[10%] right-[10%] h-px bg-gradient-to-r from-transparent via-[#35C8E0]/40 to-transparent" />
+
+              <RevealGroup
+                className="grid sm:grid-cols-2 lg:grid-cols-5 gap-8 relative"
+                stagger={0.12}
+              >
+                {journey.items.map((step, i) => (
+                  <RevealItem key={i}>
+                    <div className="text-center lg:text-left group">
+                      <div className="flex lg:block justify-center">
+                        <div className="relative w-14 h-14 rounded-2xl bg-white ring-1 ring-black/[0.07] shadow-lg flex items-center justify-center mb-5 group-hover:-translate-y-1 transition-transform duration-300">
+                          <span className="text-lg font-black bg-gradient-to-br from-[#0A2472] to-[#1A9AB5] bg-clip-text text-transparent">
+                            {String(i + 1).padStart(2, '0')}
+                          </span>
+                          <span className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-gradient-to-br from-[#82C93D] to-[#35C8E0]" />
+                        </div>
+                      </div>
+                      <h3 className="font-black text-[#0A2472] mb-2">{step.title}</h3>
+                      <p className="text-sm text-gray-600 leading-relaxed">{step.body}</p>
+                    </div>
+                  </RevealItem>
+                ))}
+              </RevealGroup>
             </div>
           </div>
         </section>
       )}
 
-      {/* ── Testimonials ── */}
+      {/* ════════ TESTIMONIALS ════════ */}
       {testimonials.items.length > 0 && (
-        <section className="py-16">
+        <section className="py-24 bg-[#F7FAFC]">
           <div className="container mx-auto px-4">
-            <div className="text-center mb-12">
-              <p className="text-[#82C93D] text-xs font-bold uppercase tracking-[0.2em] mb-3">
-                {testimonials.eyebrow}
-              </p>
-              <h2 className="text-3xl md:text-4xl font-black tracking-tight">{testimonials.title}</h2>
-              <div className="w-20 h-1 bg-gradient-to-r from-[#82C93D] to-[#35C8E0] mx-auto mt-4 rounded-full" />
-            </div>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
+            <Reveal>
+              <SectionHeading eyebrow={testimonials.eyebrow} title={testimonials.title} />
+            </Reveal>
+
+            <RevealGroup className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto mt-14">
               {testimonials.items.map((t, i) => (
-                <div key={i} className="bg-white p-6 rounded-2xl border border-gray-200 shadow-md">
-                  <p className="text-sm text-gray-700 italic leading-relaxed mb-5">
-                    {'"'}
-                    {t.quote}
-                    {'"'}
-                  </p>
-                  <div className="flex items-center justify-between gap-3">
-                    <div>
-                      <p className="font-bold text-sm">{t.name}</p>
-                      <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400">
-                        {t.role}
-                      </p>
-                    </div>
-                    <div className="flex gap-0.5">
-                      {Array.from({ length: Math.max(0, Math.min(5, t.rating || 0)) }).map((_, s) => (
-                        <Star key={s} className="w-3.5 h-3.5 fill-[#F5A623] text-[#F5A623]" />
-                      ))}
-                    </div>
-                  </div>
-                </div>
+                <RevealItem key={i}>
+                  <figure className="h-full bg-white rounded-3xl p-7 ring-1 ring-black/[0.06] shadow-[0_2px_14px_-8px_rgba(6,21,57,0.3)] hover:shadow-[0_20px_44px_-24px_rgba(6,21,57,0.35)] hover:-translate-y-1 transition-all duration-300 flex flex-col">
+                    <Quote className="w-7 h-7 text-[#35C8E0]/35 mb-4" />
+                    <blockquote className="text-[15px] text-gray-700 leading-relaxed flex-1">
+                      {t.quote}
+                    </blockquote>
+                    <figcaption className="flex items-center gap-3 mt-6 pt-5 border-t border-gray-100">
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#0A2472] to-[#1A9AB5] flex items-center justify-center text-white text-xs font-black shrink-0">
+                        {t.name.split(' ').map((n) => n[0]).slice(0, 2).join('').toUpperCase()}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="font-bold text-sm text-[#0A2472] truncate">{t.name}</p>
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400">
+                          {t.role}
+                        </p>
+                      </div>
+                      <div className="flex gap-0.5 shrink-0">
+                        {Array.from({ length: Math.max(0, Math.min(5, t.rating || 0)) }).map((_, s) => (
+                          <Star key={s} className="w-3 h-3 fill-[#F5A623] text-[#F5A623]" />
+                        ))}
+                      </div>
+                    </figcaption>
+                  </figure>
+                </RevealItem>
               ))}
-            </div>
+            </RevealGroup>
           </div>
         </section>
       )}
 
-      {/* ── Closing CTA ── */}
-      <section className="pb-20">
+      {/* ════════ CLOSING CTA ════════ */}
+      <section className="py-24">
         <div className="container mx-auto px-4">
-          <div className="max-w-5xl mx-auto bg-gradient-to-r from-[#35C8E0]/10 to-[#82C93D]/10 border border-gray-200 rounded-3xl p-8 md:p-10 flex flex-col md:flex-row items-center gap-6">
-            <div className="w-14 h-14 rounded-2xl bg-[#0A2472] flex items-center justify-center shrink-0">
-              <Mail className="w-6 h-6 text-white" />
+          <Reveal direction="up">
+            <div className="relative max-w-5xl mx-auto rounded-[2rem] overflow-hidden bg-[#061539] px-8 py-14 md:px-16 md:py-16 text-center">
+              <div
+                className="absolute inset-0 opacity-70"
+                style={{
+                  background:
+                    'radial-gradient(36rem 22rem at 20% 0%, rgba(130,201,61,0.30), transparent 60%),' +
+                    'radial-gradient(36rem 22rem at 85% 100%, rgba(53,200,224,0.34), transparent 62%)',
+                }}
+              />
+              <div className="relative">
+                <h2 className="text-3xl md:text-4xl font-black text-white mb-4 leading-tight">
+                  {cta.title}
+                </h2>
+                <p className="text-white/60 max-w-xl mx-auto mb-9">{cta.body}</p>
+                <div className="flex flex-wrap gap-4 justify-center">
+                  {cta.primaryCta && (
+                    <Link
+                      href={safeInternalHref(cta.primaryHref)}
+                      className="group inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-[#82C93D] to-[#35C8E0] text-[#03102b] font-bold rounded-2xl shadow-[0_10px_40px_-10px_rgba(53,200,224,0.7)] hover:-translate-y-0.5 transition-all"
+                    >
+                      {cta.primaryCta}
+                      <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+                    </Link>
+                  )}
+                  {cta.secondaryCta && (
+                    <Link
+                      href={safeInternalHref(cta.secondaryHref)}
+                      className="inline-flex items-center gap-2 px-8 py-4 text-white font-bold rounded-2xl border border-white/20 bg-white/[0.05] backdrop-blur hover:bg-white/[0.12] hover:-translate-y-0.5 transition-all"
+                    >
+                      {cta.secondaryCta}
+                    </Link>
+                  )}
+                </div>
+              </div>
             </div>
-            <div className="flex-1 text-center md:text-left">
-              <h3 className="text-xl md:text-2xl font-black mb-1">{cta.title}</h3>
-              <p className="text-sm text-gray-600">{cta.body}</p>
-            </div>
-            <div className="flex flex-wrap gap-3 justify-center shrink-0">
-              {cta.primaryCta && (
-                <Link
-                  href={safeInternalHref(cta.primaryHref)}
-                  className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#82C93D] to-[#35C8E0] text-white font-bold rounded-xl shadow-lg hover:scale-[0.98] transition-all"
-                >
-                  {cta.primaryCta}
-                </Link>
-              )}
-              {cta.secondaryCta && (
-                <Link
-                  href={safeInternalHref(cta.secondaryHref)}
-                  className="inline-flex items-center gap-2 px-6 py-3 bg-white text-[#1A9AB5] font-bold rounded-xl border-2 border-[#35C8E0] hover:scale-[0.98] transition-all"
-                >
-                  {cta.secondaryCta}
-                </Link>
-              )}
-            </div>
-          </div>
+          </Reveal>
         </div>
       </section>
     </div>

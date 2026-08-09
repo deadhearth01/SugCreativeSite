@@ -1,25 +1,12 @@
 'use client'
 
 import { useState } from 'react'
-import { ChevronLeft, ChevronRight, Loader2, CalendarDays, AlertCircle } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Loader2, AlertCircle } from 'lucide-react'
 import { PageHeader } from '@/components/dashboard/DashboardUI'
-import { useCalendarEvents } from '@/lib/useCalendarEvents'
+import { useCalendarEvents, eventColor } from '@/lib/useCalendarEvents'
+import CalendarSidePanel from '@/components/dashboard/CalendarSidePanel'
 
 const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
-
-const eventColors = [
-  'bg-primary-bright',
-  'bg-primary',
-  'bg-teal-500',
-  'bg-[#E0F2F8]0',
-  'bg-mint',
-]
-
-function colorForEvent(id: string) {
-  let hash = 0
-  for (let i = 0; i < id.length; i++) hash = id.charCodeAt(i) + ((hash << 5) - hash)
-  return eventColors[Math.abs(hash) % eventColors.length]
-}
 
 export default function StudentCalendarPage() {
   const { events, loading, error } = useCalendarEvents()
@@ -42,8 +29,6 @@ export default function StudentCalendarPage() {
     })
   }
 
-  const startOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate())
-  const upcomingEvents = events.filter((e) => new Date(e.start_time) >= startOfToday)
 
   const prevMonth = () => setCurrentMonth(new Date(year, month - 1, 1))
   const nextMonth = () => setCurrentMonth(new Date(year, month + 1, 1))
@@ -108,7 +93,8 @@ export default function StudentCalendarPage() {
                           {dayEvents.slice(0, 2).map((e) => (
                             <div
                               key={e.id}
-                              className={`px-1 py-0.5 text-[10px] text-white font-medium truncate rounded ${colorForEvent(e.id)}`}
+                              className="px-1.5 py-0.5 text-[10px] text-white font-semibold truncate rounded"
+                              style={{ backgroundColor: eventColor(e) }}
                               title={e.title}
                             >
                               {e.title}
@@ -127,43 +113,7 @@ export default function StudentCalendarPage() {
           </div>
         </div>
 
-        {/* Upcoming Events Panel */}
-        <div className="bg-white border border-border rounded-xl p-5">
-          <h3 className="font-heading font-bold text-primary mb-4">Upcoming Events</h3>
-          {upcomingEvents.length === 0 ? (
-            <div className="flex flex-col items-center py-8 gap-3">
-              <CalendarDays size={36} className="text-foreground/20" />
-              <p className="text-sm text-foreground/40 text-center">No upcoming events</p>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {upcomingEvents.slice(0, 8).map((e) => {
-                const eventDate = new Date(e.start_time)
-                return (
-                  <div key={e.id} className="flex items-start gap-3 p-3 rounded-lg border border-border/50 hover:bg-off-white/50 transition-colors">
-                    <div className={`w-2 h-full min-h-[36px] rounded-full flex-shrink-0 ${colorForEvent(e.id)}`} />
-                    <div className="min-w-0">
-                      <p className="text-sm font-medium text-primary truncate">{e.title}</p>
-                      <p className="text-xs text-foreground/50 mt-0.5">
-                        {eventDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                        {' · '}
-                        {eventDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
-                      </p>
-                      {e.event_type && (
-                        <span className="inline-block mt-1 text-[10px] bg-off-white px-2 py-0.5 rounded text-foreground/60 font-medium">
-                          {e.event_type}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                )
-              })}
-              {upcomingEvents.length > 8 && (
-                <p className="text-xs text-foreground/40 text-center">+{upcomingEvents.length - 8} more events</p>
-              )}
-            </div>
-          )}
-        </div>
+        <CalendarSidePanel events={events} />
       </div>
     </div>
   )

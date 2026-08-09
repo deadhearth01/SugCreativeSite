@@ -23,7 +23,7 @@ export default async function InternshipsPage() {
     supabase.from('page_content').select('section, data').eq('page', 'internships'),
     supabase
       .from('courses')
-      .select('id, title, slug, description, thumbnail_url, duration_text, tech_stack')
+      .select('id, title, slug, description, thumbnail_url, duration_text, tech_stack, color_theme')
       .eq('status', 'active')
       .eq('course_type', 'training')
       .order('is_featured', { ascending: false })

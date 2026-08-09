@@ -64,7 +64,7 @@ const roleNavItems: Record<string, NavItem[]> = {
   ],
   student: [
     { label: 'Dashboard', href: '/dashboard/student', icon: LayoutDashboard },
-    { label: 'Training Courses', href: '/dashboard/student/courses', icon: GraduationCap },
+    { label: 'My Courses', href: '/dashboard/student/courses', icon: GraduationCap },
     { label: 'Resume Builder', href: '/dashboard/student/resume', icon: FileText },
     { label: 'Meetings', href: '/dashboard/student/meetings', icon: Video },
     { label: 'Mentor Notes', href: '/dashboard/student/mentor-notes', icon: MessageSquareMore },

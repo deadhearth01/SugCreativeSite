@@ -27,7 +27,7 @@ const navLinks: NavLink[] = [
     label: 'Courses',
     subItems: [
       { href: '/courses#specialization', label: 'Specialization Courses', icon: Layers, desc: 'In-depth career programs' },
-      { href: '/internships', label: 'Training Courses / Internships', icon: Rocket, desc: 'Short hands-on live projects' },
+      { href: '/internships', label: 'Internships', icon: Rocket, desc: 'Short hands-on live projects' },
       { href: '/courses/devops-internship', label: 'DevOps Internship', icon: Server, desc: 'CI/CD, Docker, Kubernetes' },
       { href: '/courses/cyber-security-internship', label: 'Cyber Security', icon: Shield, desc: 'Ethical Hacking, VAPT' },
       { href: '/courses/iot-embedded-internship', label: 'IoT & Embedded', icon: Cpu, desc: 'Arduino, Raspberry Pi' },

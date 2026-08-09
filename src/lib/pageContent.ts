@@ -43,9 +43,15 @@ export type InternshipsContent = {
   cta: CtaSection
 }
 
-/** Icon keys offered in the admin editor for the "Why intern with us" cards. */
+/**
+ * Icon keys offered in the admin editor for the "Why intern with us" cards.
+ * Older seeded keys (users/award/sparkles/badge/trending) are kept so existing
+ * saved content keeps rendering.
+ */
 export const WHY_ICON_OPTIONS = [
-  'users', 'award', 'sparkles', 'badge', 'trending', 'shield', 'rocket', 'target',
+  'users', 'award', 'sparkles', 'badge', 'trending',
+  'building', 'mentor', 'gauge', 'certificate', 'career',
+  'shield', 'rocket', 'target', 'code', 'briefcase', 'network',
 ] as const
 
 export const DEFAULT_INTERNSHIPS_CONTENT: InternshipsContent = {
