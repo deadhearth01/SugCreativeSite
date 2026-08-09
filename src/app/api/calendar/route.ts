@@ -3,6 +3,10 @@ import { NextRequest, NextResponse } from 'next/server'
 
 const ALL_ROLES = ['admin', 'student', 'client', 'mentor', 'employee', 'intern']
 
+// The response is per-user; it must never be cached by Next, a CDN or a browser.
+export const dynamic = 'force-dynamic'
+const NO_STORE = { 'Cache-Control': 'no-store, max-age=0' }
+
 // GET — List calendar events (filtered by user's role)
 export async function GET(_req: NextRequest) {
   try {
@@ -21,7 +25,7 @@ export async function GET(_req: NextRequest) {
       .order('start_time', { ascending: true })
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
-    return NextResponse.json({ data })
+    return NextResponse.json({ data }, { headers: NO_STORE })
   } catch (err) {
     console.error('GET /api/calendar error:', err)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })

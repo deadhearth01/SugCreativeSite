@@ -1,41 +1,15 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react'
+import { useState } from 'react'
+import { ChevronLeft, ChevronRight, Loader2, AlertCircle } from 'lucide-react'
 import { PageHeader } from '@/components/dashboard/DashboardUI'
-
-type CalendarEvent = {
-  id: string
-  title: string
-  start_time: string
-  color?: string
-  target_roles: string[]
-}
+import { useCalendarEvents } from '@/lib/useCalendarEvents'
 
 const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 
 export default function MentorCalendarPage() {
-  const [events, setEvents] = useState<CalendarEvent[]>([])
-  const [loading, setLoading] = useState(true)
+  const { events, loading, error } = useCalendarEvents()
   const [currentDate, setCurrentDate] = useState(new Date())
-
-  useEffect(() => {
-    // Fetch via the API route: it resolves the caller's role from their
-    // server-side session, so visibility never depends on the browser client
-    // having a usable session.
-    const load = async () => {
-      try {
-        const res = await fetch('/api/calendar')
-        const json = await res.json()
-        setEvents((json.data as CalendarEvent[]) || [])
-      } catch {
-        setEvents([])
-      } finally {
-        setLoading(false)
-      }
-    }
-    load()
-  }, [])
 
   const year = currentDate.getFullYear()
   const month = currentDate.getMonth()
@@ -62,6 +36,16 @@ export default function MentorCalendarPage() {
   return (
     <div>
       <PageHeader title="Calendar" description="Your mentoring schedule and events" />
+
+      {error && (
+        <div className="mb-6 flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3">
+          <AlertCircle size={18} className="text-red-500 shrink-0 mt-0.5" />
+          <div>
+            <p className="text-sm font-semibold text-red-700">Could not load calendar events</p>
+            <p className="text-xs text-red-600 mt-0.5">{error}</p>
+          </div>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Calendar Grid */}

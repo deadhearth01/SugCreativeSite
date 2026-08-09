@@ -1,18 +1,9 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { ChevronLeft, ChevronRight, Loader2, CalendarDays } from 'lucide-react'
+import { useState } from 'react'
+import { ChevronLeft, ChevronRight, Loader2, CalendarDays, AlertCircle } from 'lucide-react'
 import { PageHeader } from '@/components/dashboard/DashboardUI'
-
-type CalendarEvent = {
-  id: string
-  title: string
-  description: string | null
-  start_time: string
-  end_at: string | null
-  event_type: string | null
-  target_roles: string[] | null
-}
+import { useCalendarEvents } from '@/lib/useCalendarEvents'
 
 const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 
@@ -31,27 +22,8 @@ function colorForEvent(id: string) {
 }
 
 export default function EmployeeCalendarPage() {
-  const [loading, setLoading] = useState(true)
-  const [events, setEvents] = useState<CalendarEvent[]>([])
+  const { events, loading, error } = useCalendarEvents()
   const [currentMonth, setCurrentMonth] = useState(new Date())
-
-  useEffect(() => {
-    // Fetch via the API route: it resolves the caller's role from their
-    // server-side session, so visibility never depends on the browser client
-    // having a usable session.
-    const fetchEvents = async () => {
-      try {
-        const res = await fetch('/api/calendar')
-        const json = await res.json()
-        setEvents((json.data as CalendarEvent[]) || [])
-      } catch {
-        setEvents([])
-      } finally {
-        setLoading(false)
-      }
-    }
-    fetchEvents()
-  }, [])
 
   const year = currentMonth.getFullYear()
   const month = currentMonth.getMonth()
@@ -87,6 +59,16 @@ export default function EmployeeCalendarPage() {
   return (
     <div>
       <PageHeader title="Calendar" description="Your work schedule and upcoming events" />
+
+      {error && (
+        <div className="mb-6 flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3">
+          <AlertCircle size={18} className="text-red-500 shrink-0 mt-0.5" />
+          <div>
+            <p className="text-sm font-semibold text-red-700">Could not load calendar events</p>
+            <p className="text-xs text-red-600 mt-0.5">{error}</p>
+          </div>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 bg-white border border-border rounded-xl">
