@@ -131,3 +131,19 @@ Available languages:
 - Storage: Upload files to buckets, store URLs in database
 - AI operations are OpenAI-compatible
 - **EXTRA IMPORTANT**: Use Tailwind CSS 3.4 (do not upgrade to v4). Lock these dependencies in `package.json`
+
+---
+
+## Project memory — SUG Creative site (read before changing anything)
+
+The notes above describe the InsForge SDK only. **This repository** is a Next.js 16 +
+React 19 + **Tailwind v4** + Supabase site (the "Tailwind 3.4" note does not apply here).
+
+Persistent agent context + evaluation data lives in **`docs/opencode-context/`** (local-only,
+excluded from Git). If present, read these first:
+- `docs/opencode-context/context/PROJECT.md` — domain, stack, routes, roles, data model, env vars
+- `docs/opencode-context/context/STATE.md` — current state, open items, manual steps, verification commands
+- `docs/opencode-context/context/CONVENTIONS.md` — brand palette + neo-brutalist design language
+- `docs/opencode-context/context/HISTORY.md` — chronological work log
+
+Keep `STATE.md` and `HISTORY.md` updated after meaningful work.
