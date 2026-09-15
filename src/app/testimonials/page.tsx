@@ -119,6 +119,7 @@ const businessStats = [
   { value: '200+', label: 'Businesses Scaled', icon: Building2 },
   { value: '50+', label: 'Startups Launched', icon: TrendingUp },
   { value: '₹50Cr+', label: 'Funding Raised', icon: Award },
+  { value: '15+', label: 'Industries Served', icon: Briefcase },
 ]
 
 const placementStats = [
@@ -184,9 +185,9 @@ export default function TestimonialsPage() {
               </div>
               
               {/* Business Stats */}
-              <div className="flex flex-wrap gap-6">
+              <div className="grid grid-cols-2 gap-6">
                 {businessStats.map((stat) => (
-                  <div key={stat.label} className="bg-gray-50 border-2 border-primary-dark/10 rounded-3xl p-5 text-center min-w-[140px]">
+                  <div key={stat.label} className="bg-gray-50 border-2 border-primary-dark/10 rounded-3xl p-5 text-center">
                     <stat.icon size={24} className="text-primary mx-auto mb-2" />
                     <div className="text-2xl font-black text-primary-dark">{stat.value}</div>
                     <div className="text-xs font-bold text-primary-dark/50 uppercase tracking-wider">{stat.label}</div>
@@ -267,7 +268,7 @@ export default function TestimonialsPage() {
                   <AnimatedSection key={t.name} delay={i * 0.1}>
                     <div className="bg-white border-2 border-black shadow-[6px_6px_0px_rgba(130,201,61,1)] p-6 h-full flex flex-col rounded-3xl">
                       <div className="flex items-center gap-4 mb-4">
-                        <div className="w-14 h-14 bg-primary/20 rounded-[inherit] border-2 border-black flex items-center justify-center text-2xl font-black text-primary-dark overflow-hidden">
+                        <div className="w-14 h-14 rounded-full overflow-hidden flex-shrink-0">
                           <img src={t.image} alt={t.name} className="w-full h-full object-cover" />
                         </div>
                         <div>
