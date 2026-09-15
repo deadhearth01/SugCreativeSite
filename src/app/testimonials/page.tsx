@@ -34,100 +34,80 @@ const businessTestimonials = [
     name: 'Priya Sharma',
     role: 'CEO, TechVentures India',
     rating: 5,
-    image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop&crop=face',
   },
   {
     quote: 'We engaged Sug Creative for our digital transformation journey. Their team delivered beyond expectations — on time, on budget, and with exceptional quality.',
     name: 'Kavitha Menon',
     role: 'CTO, FinServ Corp',
     rating: 5,
-    image: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=200&h=200&fit=crop&crop=face',
   },
   {
     quote: 'The brand strategy work Sug Creative did for us was transformative. Our brand recall improved by 400% and we saw a direct impact on customer acquisition.',
     name: 'Maria D\'Souza',
     role: 'Marketing Director, StyleBox',
     rating: 5,
-    image: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&h=200&fit=crop&crop=face',
   },
   {
     quote: 'Their startup incubation program is world-class. From business model to first funding round, they were with us every step. We raised ₹2Cr in our seed round.',
     name: 'Sneha Reddy',
     role: 'Founder, GreenLeaf AI',
     rating: 5,
-    image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&h=200&fit=crop&crop=face',
   },
   {
     quote: 'The edu-tech solutions Sug Creative built for our university have transformed how we deliver courses. Student engagement is up 300% and completion rates have doubled.',
     name: 'Dr. Lakshmi Iyer',
     role: 'Dean, IIS University',
     rating: 5,
-    image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&h=200&fit=crop&crop=face',
   },
   {
     quote: 'From a napkin idea to a funded startup in 6 months. Sug Creative\'s mentor network and structured program made what seemed impossible completely achievable.',
     name: 'Nikhil Jain',
     role: 'Co-founder, MediTrack',
     rating: 5,
-    image: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200&h=200&fit=crop&crop=face',
   },
 ]
 
 
-// Success stories / Testimonials
+// Success stories / Testimonials — real placements (names + companies from the
+// grid-motion-hero-section photo set; cropped headshots in /public/testimonials).
 const testimonials = [
   {
     name: 'Tanvi Bansal',
     company: 'WatchGuard',
-    domain: 'IoT',
-    quote: "Sug Creative's IoT domain training was exactly what I needed to enhance my skills and land a job at WatchGuard. The learning materials were spot-on, and the trainers helped me prepare for every interview.",
-    image: '/placements/placement_1.jpg',
-  },
-  {
-    name: 'Shyam',
-    company: 'Bosch',
-    domain: 'IoT',
-    quote: "Thanks to Sug Creative's domain training, I gained the expertise in IoT that helped me get placed at Bosch. The course covered everything I needed to know, and the mentors were incredibly supportive.",
-    image: '/placements/placement_2.jpg',
-  },
-  {
-    name: 'Anusha',
-    company: 'Google',
-    domain: 'Full Stack',
-    quote: "I thank Sug Creative for the training I received. It gave me the practical skills and confidence needed to land a job at Google. The instructors were knowledgeable and always available.",
-    image: '/placements/placement_3.jpg',
+    quote: "Sug Creative's training was exactly what I needed to sharpen my skills and land a job at WatchGuard. The learning materials were spot-on, and the trainers helped me prepare for every interview.",
+    image: '/testimonials/tanvi-bansal.jpg',
   },
   {
     name: 'Pradeep',
     company: 'Accenture',
-    domain: 'ML Engineer',
-    quote: "Sug Creative's Placement Prep gave me the edge I needed to land a role as a Machine Learning Engineer at Accenture. The hands-on training helped me become job-ready and confident.",
-    image: '/placements/placement_4.jpg',
+    quote: "Sug Creative's placement prep gave me the edge I needed to land a role at Accenture. The hands-on training helped me become job-ready and confident.",
+    image: '/testimonials/pradeep.jpg',
   },
   {
-    name: 'Chandrasekhar',
-    company: 'TCS',
-    domain: 'Web Design',
-    quote: "The Web Designing Course provided by Sug Creative was a game-changer for my career. The detailed curriculum and hands-on experience helped me secure a role at TCS.",
-    image: '/placements/placement_5.jpg',
+    name: 'Bhavya',
+    company: 'Verizon',
+    quote: "Thanks to Sug Creative's guidance, I gained the skills and confidence to get placed at Verizon. The mentors were supportive every step of the way.",
+    image: '/testimonials/bhavya.jpg',
   },
   {
-    name: 'Ruchita Patil',
+    name: 'Haritha',
     company: 'Capgemini',
-    domain: 'UX Design',
-    quote: "The practical approach to learning UX design helped me develop a strong portfolio and secure a role at Capgemini. I'm thrilled with my new career!",
-    image: '/placements/placement_6.jpg',
+    quote: "The practical, hands-on approach at Sug Creative helped me build a strong profile and secure a role at Capgemini. I couldn't be happier with my new career.",
+    image: '/testimonials/haritha.jpg',
+  },
+  {
+    name: 'Shruthi',
+    company: 'Coforge',
+    quote: "Sug Creative's detailed curriculum and real-world projects gave me exactly what I needed to land my role at Coforge.",
+    image: '/testimonials/shruthi.jpg',
+  },
+  {
+    name: 'Kiran Teja',
+    company: 'Mphasis',
+    quote: "The training at Sug Creative was a game-changer. From fundamentals to interview prep, they prepared me thoroughly to join Mphasis.",
+    image: '/testimonials/kiran-teja.jpg',
   },
 ];
-
-// Featured Placements (shown as cards)
-const featuredPlacements = [
-  { name: 'Arjun Patel', role: 'Software Engineer', company: 'Google', image: '/placements/placement_1.jpg' },
-  { name: 'Deepika Rao', role: 'Data Analyst', company: 'Bosch', image: '/placements/placement_2.jpg' },
-  { name: 'Vikram Singh', role: 'Cloud Architect', company: 'Accenture', image: '/placements/placement_3.jpg' },
-  { name: 'Priya Nair', role: 'Product Manager', company: 'Verizon', image: '/placements/placement_4.jpg' },
-  { name: 'Rahul Sharma', role: 'DevOps Engineer', company: 'TCS', image: '/placements/placement_5.jpg' },
-]
 
 // All 50 placement images
 const placementImages = Array.from({ length: 50 }, (_, i) => ({
@@ -145,6 +125,7 @@ const placementStats = [
   { value: '500+', label: 'Members Placed', icon: Users },
   { value: '150+', label: 'Partner Companies', icon: Briefcase },
   { value: '95%', label: 'Placement Rate', icon: GraduationCap },
+  { value: '3000+', label: 'Careers Transformed', icon: TrendingUp },
 ]
 
 export default function TestimonialsPage() {
@@ -230,14 +211,9 @@ export default function TestimonialsPage() {
                     <p className="text-primary-dark font-bold leading-relaxed mb-8 flex-1 text-base">
                       &ldquo;{item.quote}&rdquo;
                     </p>
-                    <div className="flex items-center gap-4 pt-6 border-t-2 border-primary-dark/10">
-                      <div className="w-12 h-12 rounded-full border-2 border-primary-dark overflow-hidden bg-primary-dark/5">
-                        <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
-                      </div>
-                      <div>
-                        <p className="font-black text-primary-dark text-sm uppercase tracking-wider">{item.name}</p>
-                        <p className="text-primary-dark/60 text-xs font-bold">{item.role}</p>
-                      </div>
+                    <div className="pt-6 border-t-2 border-primary-dark/10">
+                      <p className="font-black text-primary-dark text-sm uppercase tracking-wider">{item.name}</p>
+                      <p className="text-primary-dark/60 text-xs font-bold">{item.role}</p>
                     </div>
                   </CardContent>
                 </Card>
@@ -270,9 +246,9 @@ export default function TestimonialsPage() {
               </div>
               
               {/* Placement Stats */}
-              <div className="flex flex-wrap gap-6">
+              <div className="grid grid-cols-2 gap-6">
                 {placementStats.map((stat) => (
-                  <div key={stat.label} className="bg-white/5 border-2 border-white/10 rounded-3xl p-5 text-center min-w-[140px] backdrop-blur-sm">
+                  <div key={stat.label} className="bg-white/5 border-2 border-white/10 rounded-3xl p-5 text-center backdrop-blur-sm">
                     <stat.icon size={24} className="text-[#82C93D] mx-auto mb-2" />
                     <div className="text-2xl font-black text-white">{stat.value}</div>
                     <div className="text-xs font-bold text-white/50 uppercase tracking-wider">{stat.label}</div>
@@ -305,13 +281,8 @@ export default function TestimonialsPage() {
                       <div className="flex-1">
                         <Quote size={24} className="text-primary/30 mb-2" />
                         <p className="text-primary-dark/80 font-medium text-sm leading-relaxed">
-                          "{t.quote}"
+                          &ldquo;{t.quote}&rdquo;
                         </p>
-                      </div>
-                      <div className="mt-4 pt-4 border-t border-black/10">
-                        <span className="text-xs font-bold uppercase tracking-widest text-primary bg-primary/10 px-3 py-1.5 rounded-full">
-                          {t.domain}
-                        </span>
                       </div>
                     </div>
                   </AnimatedSection>
